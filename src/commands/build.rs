@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 pub fn run() -> Result<()> {
     let config = crate::config::load("config.toml")?;
@@ -6,6 +6,10 @@ pub fn run() -> Result<()> {
         "Loaded config: title='{}', theme='{}'",
         config.title, config.theme
     );
+    let index_markdown = std::fs::read_to_string("content/index.md")
+        .context("failed to read content/index.md for build preview")?;
+    let index_html = crate::content::markdown::render_html(&index_markdown);
+    println!("Rendered index markdown to HTML ({} bytes)", index_html.len());
     println!("`rustipo build` is not implemented yet");
     Ok(())
 }
