@@ -27,7 +27,7 @@
 
 ## Milestone 5: Local preview
 
-- [ ] implement `rustipo serve`
+- [x] implement `rustipo serve`
 
 ## Milestone 6: OSS polish
 

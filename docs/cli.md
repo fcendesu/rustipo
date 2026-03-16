@@ -41,7 +41,12 @@ Current behavior:
 
 Serves built static output locally.
 
-Status: command skeleton exists; local server is not implemented yet.
+Current behavior:
+
+- Serves files from `dist/`
+- Default address: `127.0.0.1:3000`
+- Prints local URL on startup
+- Returns readable error if `dist/` does not exist
 
 ## `rustipo theme list`
 

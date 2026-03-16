@@ -20,10 +20,10 @@ This file tracks known implementation debt that should be addressed after the re
 - Proposed fix: add date parsing/validation strategy with readable errors
 - Target milestone: Post-MVP or Milestone 5
 
-### 3) Build command does not yet print final build summary counters
+### 3) Serve command address is currently fixed
 
-- Area: CLI UX
-- Current state: build logs do not yet show full summary metrics from PRD examples
-- Impact: less visibility during generation
-- Proposed fix: print parsed page count, generated route count, copied asset count, and output path summary
-- Target milestone: Milestone 5
+- Area: CLI UX / server
+- Current state: `rustipo serve` is hardcoded to `127.0.0.1:3000`
+- Impact: no override for occupied port or custom host/port needs
+- Proposed fix: add serve flags (for example `--host` and `--port`)
+- Target milestone: Post-MVP or Milestone 6
