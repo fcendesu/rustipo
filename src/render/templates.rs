@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use serde::Serialize;
 use tera::{Context as TeraContext, Tera};
 
 use crate::config::SiteConfig;
@@ -57,6 +58,8 @@ pub fn render_pages(
         });
     }
 
+    rendered.extend(render_sections(&tera, config, pages)?);
+
     Ok(rendered)
 }
 
@@ -67,6 +70,60 @@ fn template_for_kind(kind: PageKind) -> &'static str {
         PageKind::BlogPost => "post.html",
         PageKind::Project => "project.html",
     }
+}
+
+#[derive(Serialize)]
+struct SectionItem {
+    title: String,
+    route: String,
+    summary: Option<String>,
+    date: Option<String>,
+}
+
+fn render_sections(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<Vec<RenderedPage>> {
+    let sections = [
+        ("blog", "Blog", PageKind::BlogPost),
+        ("projects", "Projects", PageKind::Project),
+    ];
+
+    let mut rendered = Vec::new();
+    for (section_name, section_title, kind) in sections {
+        let items = pages
+            .iter()
+            .filter(|page| page.kind == kind)
+            .map(|page| SectionItem {
+                title: page
+                    .frontmatter
+                    .title
+                    .clone()
+                    .unwrap_or_else(|| page.slug.clone()),
+                route: page.route.clone(),
+                summary: page.frontmatter.summary.clone(),
+                date: page.frontmatter.date.clone(),
+            })
+            .collect::<Vec<_>>();
+
+        let mut context = TeraContext::new();
+        context.insert("route", &format!("/{section_name}/"));
+        context.insert("section_name", &section_name);
+        context.insert("section_title", &section_title);
+        context.insert("items", &items);
+        context.insert("site_title", &config.title);
+        context.insert("site_description", &config.description);
+        context.insert("page_title", &format!("{section_title} | {}", config.title));
+        context.insert("content_html", "");
+
+        let html = tera.render("section.html", &context).with_context(|| {
+            format!("failed to render section template for '{section_name}'")
+        })?;
+
+        rendered.push(RenderedPage {
+            route: format!("/{section_name}/"),
+            html,
+        });
+    }
+
+    Ok(rendered)
 }
 
 #[cfg(test)]
@@ -133,9 +190,11 @@ mod tests {
         let theme = load_active_theme(project_root, "default").expect("theme should load");
 
         let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
-        assert_eq!(rendered.len(), 2);
+        assert_eq!(rendered.len(), 4);
         assert!(rendered.iter().any(|p| p.route == "/"));
         assert!(rendered.iter().any(|p| p.route == "/blog/post/"));
+        assert!(rendered.iter().any(|p| p.route == "/blog/"));
+        assert!(rendered.iter().any(|p| p.route == "/projects/"));
         assert!(rendered.iter().all(|p| p.html.contains("<h1>")));
     }
 }
