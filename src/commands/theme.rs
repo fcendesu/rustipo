@@ -1,6 +1,22 @@
 use anyhow::Result;
 
 pub fn list() -> Result<()> {
-    println!("`rustipo theme list` is not implemented yet");
+    let themes = crate::theme::loader::list_installed_themes(".")?;
+
+    if themes.is_empty() {
+        println!("No themes found.");
+        return Ok(());
+    }
+
+    for theme in themes {
+        println!(
+            "{} ({}) - {} [{}]",
+            theme.metadata.name,
+            theme.metadata.version,
+            theme.metadata.description,
+            theme.directory_name
+        );
+    }
+
     Ok(())
 }

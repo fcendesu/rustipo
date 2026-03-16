@@ -12,6 +12,12 @@ pub struct ThemeMetadata {
 }
 
 #[derive(Debug)]
+pub struct ThemeSummary {
+    pub directory_name: String,
+    pub metadata: ThemeMetadata,
+}
+
+#[derive(Debug)]
 #[allow(dead_code)]
 pub struct Theme {
     pub root_dir: PathBuf,

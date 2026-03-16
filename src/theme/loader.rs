@@ -3,7 +3,7 @@ use std::path::Path;
 
 use anyhow::{Context, Result, bail};
 
-use crate::theme::models::{Theme, ThemeMetadata};
+use crate::theme::models::{Theme, ThemeMetadata, ThemeSummary};
 
 const REQUIRED_TEMPLATES: &[&str] = &[
     "base.html",
@@ -13,6 +13,59 @@ const REQUIRED_TEMPLATES: &[&str] = &[
     "section.html",
     "index.html",
 ];
+
+pub fn list_installed_themes(project_root: impl AsRef<Path>) -> Result<Vec<ThemeSummary>> {
+    let themes_dir = project_root.as_ref().join("themes");
+    if !themes_dir.is_dir() {
+        return Ok(Vec::new());
+    }
+
+    let mut themes = Vec::new();
+    for entry in fs::read_dir(&themes_dir)
+        .with_context(|| format!("failed to read themes directory: {}", themes_dir.display()))?
+    {
+        let entry = entry.with_context(|| {
+            format!(
+                "failed to read themes directory entry: {}",
+                themes_dir.display()
+            )
+        })?;
+
+        let path = entry.path();
+        if !path.is_dir() {
+            continue;
+        }
+
+        let metadata_path = path.join("theme.toml");
+        if !metadata_path.is_file() {
+            continue;
+        }
+
+        let metadata_raw = fs::read_to_string(&metadata_path).with_context(|| {
+            format!("failed to read theme metadata: {}", metadata_path.display())
+        })?;
+        let metadata = toml::from_str::<ThemeMetadata>(&metadata_raw).with_context(|| {
+            format!(
+                "failed to parse theme metadata: {}",
+                metadata_path.display()
+            )
+        })?;
+
+        let directory_name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .context("invalid theme directory name")?
+            .to_string();
+
+        themes.push(ThemeSummary {
+            directory_name,
+            metadata,
+        });
+    }
+
+    themes.sort_by(|a, b| a.metadata.name.cmp(&b.metadata.name));
+    Ok(themes)
+}
 
 pub fn load_active_theme(project_root: impl AsRef<Path>, theme_name: &str) -> Result<Theme> {
     let project_root = project_root.as_ref();
@@ -70,7 +123,7 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::load_active_theme;
+    use super::{list_installed_themes, load_active_theme};
 
     #[test]
     fn loads_theme_with_required_files() {
@@ -135,5 +188,32 @@ mod tests {
                 .contains("required theme template missing"),
             "unexpected error: {error}"
         );
+    }
+
+    #[test]
+    fn lists_installed_themes_from_theme_toml() {
+        let dir = tempdir().expect("tempdir should be created");
+        let project_root = dir.path();
+
+        let default_theme = project_root.join("themes/default");
+        fs::create_dir_all(&default_theme).expect("default theme should be created");
+        fs::write(
+            default_theme.join("theme.toml"),
+            "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default theme\"\n",
+        )
+        .expect("default theme metadata should be written");
+
+        let dark_theme = project_root.join("themes/dark");
+        fs::create_dir_all(&dark_theme).expect("dark theme should be created");
+        fs::write(
+            dark_theme.join("theme.toml"),
+            "name = \"dark\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Dark theme\"\n",
+        )
+        .expect("dark theme metadata should be written");
+
+        let themes = list_installed_themes(project_root).expect("theme listing should succeed");
+        assert_eq!(themes.len(), 2);
+        assert_eq!(themes[0].metadata.name, "dark");
+        assert_eq!(themes[1].metadata.name, "default");
     }
 }
