@@ -8,10 +8,10 @@
 
 ## Milestone 2: Content pipeline
 
-- [ ] discover Markdown files
-- [ ] parse frontmatter
-- [ ] convert Markdown to HTML
-- [ ] create internal page models
+- [x] discover Markdown files
+- [x] parse frontmatter
+- [x] convert Markdown to HTML
+- [x] create internal page models
 
 ## Milestone 3: Theme system
 
