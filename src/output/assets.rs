@@ -17,7 +17,7 @@ pub fn copy_assets_with_collision_check(
     let user_files = collect_relative_files(user_static_dir)?;
     let theme_files = collect_relative_files(theme_static_dir)?;
 
-    for rel in user_files.intersection(&theme_files) {
+    if let Some(rel) = user_files.intersection(&theme_files).next() {
         bail!("asset path collision detected: {}", rel.display());
     }
 

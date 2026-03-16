@@ -4,6 +4,7 @@ mod config;
 mod content;
 mod output;
 mod render;
+mod server;
 mod theme;
 
 use anyhow::Result;

@@ -113,9 +113,9 @@ fn render_sections(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<V
         context.insert("page_title", &format!("{section_title} | {}", config.title));
         context.insert("content_html", "");
 
-        let html = tera.render("section.html", &context).with_context(|| {
-            format!("failed to render section template for '{section_name}'")
-        })?;
+        let html = tera
+            .render("section.html", &context)
+            .with_context(|| format!("failed to render section template for '{section_name}'"))?;
 
         rendered.push(RenderedPage {
             route: format!("/{section_name}/"),
