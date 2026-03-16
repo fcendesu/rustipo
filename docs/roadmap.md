@@ -4,7 +4,7 @@
 
 - [x] CLI skeleton (`new`, `build`, `serve`, `theme list`)
 - [x] `rustipo new` starter scaffold
-- [ ] config loader
+- [x] config loader
 
 ## Milestone 2: Content pipeline
 
