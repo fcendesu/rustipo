@@ -41,6 +41,14 @@ my-portfolio/
 
 See [MVP checklist](./docs/mvp-checklist.md).
 
+## Documentation
+
+- [CLI reference](./docs/cli.md)
+- [Project structure](./docs/project-structure.md)
+- [Theme contract](./docs/theme-contract.md)
+- [Content model](./docs/content-model.md)
+- [Roadmap](./docs/roadmap.md)
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
