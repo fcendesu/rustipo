@@ -45,8 +45,7 @@ mod tests {
         let root = dir.path();
 
         fs::create_dir_all(root.join("content/blog")).expect("blog dir should be created");
-        fs::create_dir_all(root.join("content/projects"))
-            .expect("projects dir should be created");
+        fs::create_dir_all(root.join("content/projects")).expect("projects dir should be created");
 
         fs::write(root.join("content/index.md"), "# Home").expect("index should be written");
         fs::write(root.join("content/blog/post.md"), "# Post").expect("post should be written");

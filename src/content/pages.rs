@@ -110,10 +110,7 @@ fn derive_page_meta(rel_path: &Path, frontmatter_slug: Option<&str>) -> Result<P
             slug,
             kind: PageKind::Project,
         }),
-        _ => bail!(
-            "unsupported content path structure: {}",
-            rel_path.display()
-        ),
+        _ => bail!("unsupported content path structure: {}", rel_path.display()),
     }
 }
 
@@ -144,8 +141,10 @@ mod tests {
 
     #[test]
     fn derives_routes_for_supported_paths() {
-        let index = derive_page_meta(Path::new("index.md"), None).expect("index route should parse");
-        let about = derive_page_meta(Path::new("about.md"), None).expect("about route should parse");
+        let index =
+            derive_page_meta(Path::new("index.md"), None).expect("index route should parse");
+        let about =
+            derive_page_meta(Path::new("about.md"), None).expect("about route should parse");
         let blog = derive_page_meta(Path::new("blog/hello-rust.md"), None)
             .expect("blog route should parse");
         let project = derive_page_meta(Path::new("projects/solar-map.md"), None)

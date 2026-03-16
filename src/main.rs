@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod content;
+mod render;
 mod theme;
 
 use anyhow::Result;

@@ -1,4 +1,4 @@
-pub mod loader;
 pub mod frontmatter;
+pub mod loader;
 pub mod markdown;
 pub mod pages;
