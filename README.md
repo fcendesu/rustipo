@@ -48,6 +48,7 @@ See [MVP checklist](./docs/mvp-checklist.md).
 - [Theme contract](./docs/theme-contract.md)
 - [Content model](./docs/content-model.md)
 - [Roadmap](./docs/roadmap.md)
+- [CI](./docs/ci.md)
 
 ## Contributing
 

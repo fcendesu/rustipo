@@ -15,9 +15,9 @@
 
 ## Milestone 3: Theme system
 
-- [ ] load active theme
-- [ ] validate theme structure
-- [ ] render pages with templates
+- [x] load active theme
+- [x] validate theme structure
+- [x] render pages with templates
 
 ## Milestone 4: Output generation
 

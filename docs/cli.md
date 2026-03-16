@@ -22,7 +22,19 @@ Current behavior:
 
 Builds site content into static output (`dist/`).
 
-Status: command skeleton exists; full build pipeline is not implemented yet.
+Current behavior:
+
+- Loads and validates `config.toml`
+- Loads active theme from `themes/<theme>/`
+- Validates required theme templates and `theme.toml`
+- Discovers Markdown files from `content/`
+- Parses frontmatter and excludes drafts
+- Converts Markdown to HTML
+- Renders pages through theme templates
+
+Current limitation:
+
+- Rendered output is not written to `dist/` yet (Milestone 4)
 
 ## `rustipo serve`
 
