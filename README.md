@@ -49,6 +49,7 @@ See [MVP checklist](./docs/mvp-checklist.md).
 - [Content model](./docs/content-model.md)
 - [Roadmap](./docs/roadmap.md)
 - [CI](./docs/ci.md)
+- [Technical debt](./docs/tech-debt.md)
 
 ## Contributing
 
