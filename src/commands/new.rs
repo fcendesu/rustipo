@@ -70,6 +70,88 @@ theme = "default"
 description = "My personal portfolio site"
 "#,
     )?;
+    write_file(
+        &root.join("themes/default/templates/base.html"),
+        r#"<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    {% block body %}{% endblock body %}
+  </body>
+</html>
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/templates/index.html"),
+        r#"{% extends "base.html" %}
+{% block body %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endblock body %}
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/templates/page.html"),
+        r#"{% extends "base.html" %}
+{% block body %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endblock body %}
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/templates/post.html"),
+        r#"{% extends "base.html" %}
+{% block body %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endblock body %}
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/templates/project.html"),
+        r#"{% extends "base.html" %}
+{% block body %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endblock body %}
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/templates/section.html"),
+        r#"{% extends "base.html" %}
+{% block body %}
+<main>
+  <h1>{{ section_title }}</h1>
+  <ul>
+    {% for item in items %}
+    <li><a href="{{ item.route }}">{{ item.title }}</a></li>
+    {% endfor %}
+  </ul>
+</main>
+{% endblock body %}
+"#,
+    )?;
+    write_file(
+        &root.join("themes/default/static/style.css"),
+        r#"body {
+  font-family: sans-serif;
+  margin: 2rem auto;
+  max-width: 720px;
+  line-height: 1.5;
+  padding: 0 1rem;
+}
+"#,
+    )?;
 
     println!("Created new Rustipo site: {}", root.display());
     Ok(())
