@@ -56,3 +56,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 ## License
 
 MIT license ([LICENSE.md](./LICENSE.md)).
+
+## Credits
+
+Rustipo was inspired by my friend's project, [Nerdfolio](https://github.com/atasoya/nerdfolio), created by [@atasoya](https://github.com/atasoya).
