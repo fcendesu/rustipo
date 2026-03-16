@@ -9,6 +9,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Added
 
+- Nothing yet.
+
+## [0.1.0] - 2026-03-17
+
+### Added
+
 - CLI command structure for:
   - `rustipo new <site-name>`
   - `rustipo build`
