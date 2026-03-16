@@ -6,6 +6,9 @@ pub fn run() -> Result<()> {
         "Loaded config: title='{}', theme='{}'",
         config.title, config.theme
     );
+    let markdown_files = crate::content::loader::discover_markdown_files("content")?;
+    println!("Discovered markdown files: {}", markdown_files.len());
+
     let index_markdown = std::fs::read_to_string("content/index.md")
         .context("failed to read content/index.md for build preview")?;
     let parsed = crate::content::frontmatter::parse(&index_markdown)?;
