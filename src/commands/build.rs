@@ -8,7 +8,11 @@ pub fn run() -> Result<()> {
     );
     let index_markdown = std::fs::read_to_string("content/index.md")
         .context("failed to read content/index.md for build preview")?;
-    let index_html = crate::content::markdown::render_html(&index_markdown);
+    let parsed = crate::content::frontmatter::parse(&index_markdown)?;
+    if let Some(title) = parsed.frontmatter.title.as_deref() {
+        println!("Parsed index frontmatter: title='{}'", title);
+    }
+    let index_html = crate::content::markdown::render_html(&parsed.content);
     println!("Rendered index markdown to HTML ({} bytes)", index_html.len());
     println!("`rustipo build` is not implemented yet");
     Ok(())
