@@ -1,0 +1,4 @@
+name = "default"
+version = "0.1.0"
+author = "Rustipo"
+description = "Default example theme"

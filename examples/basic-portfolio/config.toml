@@ -1,0 +1,4 @@
+title = "Basic Portfolio"
+base_url = "https://example.com"
+theme = "default"
+description = "A starter Rustipo example site"

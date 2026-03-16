@@ -37,6 +37,10 @@ my-portfolio/
   config.toml
 ```
 
+## Example Project
+
+- [basic-portfolio](./examples/basic-portfolio)
+
 ## Roadmap
 
 See [MVP checklist](./docs/mvp-checklist.md).

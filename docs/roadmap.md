@@ -35,3 +35,4 @@
 - [x] CONTRIBUTING
 - [x] LICENSE
 - [x] CODE_OF_CONDUCT
+- [x] example project
