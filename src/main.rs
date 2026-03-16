@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod content;
+mod theme;
 
 use anyhow::Result;
 use clap::Parser;
