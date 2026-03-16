@@ -21,9 +21,9 @@
 
 ## Milestone 4: Output generation
 
-- [ ] write pretty URLs to `dist/`
-- [ ] copy static and theme assets
-- [ ] generate blog/projects section indexes
+- [x] write pretty URLs to `dist/`
+- [x] copy static and theme assets
+- [x] generate blog/projects section indexes
 
 ## Milestone 5: Local preview
 

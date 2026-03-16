@@ -16,6 +16,7 @@ Current behavior:
 
 - Creates starter `content/`, `static/`, and `themes/default/` structure
 - Writes starter `config.toml` and Markdown pages
+- Writes required default theme templates and starter CSS
 - Fails if target directory already exists
 
 ## `rustipo build`
@@ -31,10 +32,10 @@ Current behavior:
 - Parses frontmatter and excludes drafts
 - Converts Markdown to HTML
 - Renders pages through theme templates
-
-Current limitation:
-
-- Rendered output is not written to `dist/` yet (Milestone 4)
+- Writes rendered pages to `dist/` using pretty URL output paths
+- Copies theme and user static assets into `dist/`
+- Fails on static asset path collisions
+- Generates section index pages for `/blog/` and `/projects/`
 
 ## `rustipo serve`
 
