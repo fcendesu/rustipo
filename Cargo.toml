@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0"
-clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0.102"
+clap = { version = "4.6.0", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
+toml = "1.0.6"
