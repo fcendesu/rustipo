@@ -15,6 +15,13 @@ pub fn run() -> Result<()> {
     println!("Built pages from content: {}", pages.len());
     let rendered_pages = crate::render::templates::render_pages(&theme, &config, &pages)?;
     println!("Rendered pages with templates: {}", rendered_pages.len());
-    println!("`rustipo build` is not implemented yet");
+    crate::output::writer::write_rendered_pages("dist", &rendered_pages)?;
+    let copied_assets = crate::output::assets::copy_assets_with_collision_check(
+        "static",
+        &theme.static_dir,
+        "dist",
+    )?;
+    println!("Copied assets: {}", copied_assets);
+    println!("Build completed: dist/");
     Ok(())
 }
