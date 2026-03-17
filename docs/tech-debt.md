@@ -4,19 +4,7 @@ This file tracks known implementation debt that should be addressed after the re
 
 ## Debt register
 
-### 1) Temporary `#[allow(dead_code)]` annotations remain in core models
-
-- Area: `src/content/*`, `src/theme/*`, `src/render/*`
-- Current state: several structs/fields still use `#[allow(dead_code)]` from early scaffolding
-- Impact: can hide stale fields and reduce signal from compiler warnings
-- Proposed fix:
-  - audit each `allow(dead_code)` usage
-  - remove allowances where fields are now consumed
-  - for intentionally-unused fields, document rationale near the type
-- Priority: Medium
-- Target: Near-term cleanup
-
-### 2) Frontmatter `date` remains a raw string at parse-time
+### 1) Frontmatter `date` remains a raw string at parse-time
 
 - Area: `src/content/frontmatter.rs` and downstream output modules
 - Current state: `date` is parsed as `Option<String>` and validated only in specific pipelines (RSS/archive)
@@ -30,7 +18,7 @@ This file tracks known implementation debt that should be addressed after the re
 - Priority: High
 - Target: Next quality pass
 
-### 3) Shortcode system is intentionally minimal and string-based
+### 2) Shortcode system is intentionally minimal and string-based
 
 - Area: `src/content/markdown.rs`
 - Current state: shortcodes are preprocessed with lightweight parsing and two built-ins (`youtube`, `link`)
@@ -43,15 +31,16 @@ This file tracks known implementation debt that should be addressed after the re
   - define typed argument decoding and shared error policy
   - add integration tests for nested/edge-case shortcode scenarios
 - Priority: Medium
-- Target: `0.3.0` prep
+- Target: Next content pipeline refactor
 
-### 4) Release workflow still needs final validation after merge-strategy change
+## Recently resolved
 
-- Area: `.github/workflows/release-please.yml`, repo settings
-- Current state: merge policy now preserves commits (rebase/merge-commit), but release flow should be re-verified end-to-end
-- Impact: potential release friction if assumptions were based on squash merges
-- Proposed fix:
-  - run one full release cycle (`release PR -> merge -> tag/release`)
-  - document exact maintainer release steps in docs
-- Priority: Medium
-- Target: Next release cycle
+- Dead code cleanup:
+  - removed blanket `#[allow(dead_code)]` annotations
+  - kept only targeted allowances with explicit rationale for contract fields
+- Runtime code highlighting panic:
+  - replaced `expect(...)` with a safe fallback path in `src/content/markdown.rs`
+  - added tests for empty/default theme-set behavior
+- Release workflow validation after merge-strategy change:
+  - completed end-to-end on 2026-03-17 with successful Release Please run
+  - `rustipo-v0.3.0` tag/release published
