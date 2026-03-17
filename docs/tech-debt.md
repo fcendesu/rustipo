@@ -20,10 +20,10 @@ This file tracks known implementation debt that should be addressed after the re
 - Proposed fix: add date parsing/validation strategy with readable errors
 - Target milestone: Post-MVP or Milestone 5
 
-### 3) Serve command address is currently fixed
+### 3) Serve watch mode does not yet auto-refresh browser
 
-- Area: CLI UX / server
-- Current state: `rustipo serve` is hardcoded to `127.0.0.1:3000`
-- Impact: no override for occupied port or custom host/port needs
-- Proposed fix: add serve flags (for example `--host` and `--port`)
-- Target milestone: Post-MVP or Milestone 6
+- Area: dev workflow
+- Current state: `rustipo serve --watch` rebuilds on changes, but browser reload remains manual
+- Impact: users still need to refresh browser after rebuild
+- Proposed fix: add live-reload support (for example websocket + injected reload script)
+- Target milestone: Post-MVP

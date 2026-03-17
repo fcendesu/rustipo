@@ -27,24 +27,44 @@ Current behavior:
 
 - Loads and validates `config.toml`
 - Loads active theme from `themes/<theme>/`
-- Validates required theme templates and `theme.toml`
+- Resolves theme inheritance chain when `extends` is used in `theme.toml`
+- Validates required templates across the resolved theme chain
 - Discovers Markdown files from `content/`
 - Parses frontmatter and excludes drafts
 - Converts Markdown to HTML
+- Renders supported shortcodes in Markdown content
+- Applies syntax highlighting to fenced code blocks
 - Renders pages through theme templates
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Copies theme and user static assets into `dist/`
+- Applies child-over-parent precedence when inherited themes provide the same template/asset path
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
+- Generates tag index pages at `/tags/<tag>/` from blog post tags
+- Generates RSS feed at `dist/rss.xml` from dated blog posts
+- Generates sitemap at `dist/sitemap.xml` from rendered site routes
+- Generates search index at `dist/search-index.json` from site content
 
 ## `rustipo serve`
 
 Serves built static output locally.
 
+Example:
+
+```bash
+rustipo serve --host 0.0.0.0 --port 4000
+```
+
+```bash
+rustipo serve --watch
+```
+
 Current behavior:
 
 - Serves files from `dist/`
 - Default address: `127.0.0.1:3000`
+- Supports custom host/port via `--host` and `--port`
+- Supports watch mode with `--watch` (rebuilds on file changes)
 - Prints local URL on startup
 - Returns readable error if `dist/` does not exist
 
@@ -52,4 +72,54 @@ Current behavior:
 
 Lists available themes.
 
-Status: command skeleton exists; listing logic is not implemented yet.
+Current behavior:
+
+- Reads installed themes from `themes/*/theme.toml`
+- Prints theme name, version, description, and directory name
+
+## `rustipo theme install <source>`
+
+Installs a theme into `themes/`.
+
+Examples:
+
+```bash
+rustipo theme install fcendesu/rustipo-theme
+```
+
+```bash
+rustipo theme install https://github.com/fcendesu/rustipo-theme
+```
+
+```bash
+rustipo theme install fcendesu/rustipo-theme --name cyberpunk
+```
+
+Current behavior:
+
+- Accepts GitHub shorthand (`owner/repo`) or GitHub URL
+- Also accepts local git repository path (useful for local development/testing)
+- Clones repository into `themes/<name>/` (or inferred repo name)
+- Removes cloned `.git` metadata from installed theme directory
+- Validates required theme contract after install
+- Fails with readable errors on clone/validation conflicts
+
+## `rustipo deploy github-pages`
+
+Generates a GitHub Actions workflow for deploying `dist/` to GitHub Pages.
+
+Example:
+
+```bash
+rustipo deploy github-pages
+```
+
+```bash
+rustipo deploy github-pages --force
+```
+
+Current behavior:
+
+- Writes `.github/workflows/deploy-pages.yml`
+- Workflow runs `cargo run -- build` and deploys `dist/` using Pages actions
+- Refuses to overwrite existing workflow unless `--force` is provided

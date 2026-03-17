@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -7,23 +8,51 @@ use walkdir::WalkDir;
 
 pub fn copy_assets_with_collision_check(
     user_static_dir: impl AsRef<Path>,
-    theme_static_dir: impl AsRef<Path>,
+    theme_static_dirs: &[PathBuf],
     dist_dir: impl AsRef<Path>,
 ) -> Result<usize> {
     let user_static_dir = user_static_dir.as_ref();
-    let theme_static_dir = theme_static_dir.as_ref();
     let dist_dir = dist_dir.as_ref();
 
     let user_files = collect_relative_files(user_static_dir)?;
-    let theme_files = collect_relative_files(theme_static_dir)?;
+    let mut theme_files = BTreeMap::new();
+    for theme_dir in theme_static_dirs {
+        let rel_files = collect_relative_files(theme_dir)?;
+        for rel in rel_files {
+            theme_files.insert(rel.clone(), theme_dir.join(rel));
+        }
+    }
 
-    if let Some(rel) = user_files.intersection(&theme_files).next() {
+    if let Some(rel) = user_files.iter().find(|rel| theme_files.contains_key(*rel)) {
         bail!("asset path collision detected: {}", rel.display());
     }
 
     let mut copied = 0;
-    copied += copy_files(theme_static_dir, dist_dir, &theme_files)?;
+    copied += copy_files_from_map(dist_dir, &theme_files)?;
     copied += copy_files(user_static_dir, dist_dir, &user_files)?;
+
+    Ok(copied)
+}
+
+fn copy_files_from_map(dist_dir: &Path, files: &BTreeMap<PathBuf, PathBuf>) -> Result<usize> {
+    let mut copied = 0;
+    for (rel, src) in files {
+        let dst = dist_dir.join(rel);
+        if let Some(parent) = dst.parent() {
+            fs::create_dir_all(parent).with_context(|| {
+                format!("failed to create asset output path: {}", parent.display())
+            })?;
+        }
+
+        fs::copy(src, &dst).with_context(|| {
+            format!(
+                "failed to copy asset from '{}' to '{}'",
+                src.display(),
+                dst.display()
+            )
+        })?;
+        copied += 1;
+    }
 
     Ok(copied)
 }
@@ -106,8 +135,12 @@ mod tests {
         fs::write(theme_static.join("css/style.css"), "body{}")
             .expect("theme asset should be written");
 
-        let copied = copy_assets_with_collision_check(&user_static, &theme_static, &dist)
-            .expect("asset copy should succeed");
+        let copied = copy_assets_with_collision_check(
+            &user_static,
+            std::slice::from_ref(&theme_static),
+            &dist,
+        )
+        .expect("asset copy should succeed");
 
         assert_eq!(copied, 2);
         assert!(dist.join("avatar.png").is_file());
@@ -129,9 +162,41 @@ mod tests {
         fs::write(user_static.join("shared.css"), "user").expect("user asset should be written");
         fs::write(theme_static.join("shared.css"), "theme").expect("theme asset should be written");
 
-        let error = copy_assets_with_collision_check(&user_static, &theme_static, &dist)
-            .expect_err("collision should fail");
+        let error = copy_assets_with_collision_check(
+            &user_static,
+            std::slice::from_ref(&theme_static),
+            &dist,
+        )
+        .expect_err("collision should fail");
 
         assert!(error.to_string().contains("asset path collision detected"));
+    }
+
+    #[test]
+    fn child_theme_assets_override_parent_assets() {
+        let dir = tempdir().expect("tempdir should be created");
+        let root = dir.path();
+
+        let user_static = root.join("static");
+        let parent_static = root.join("themes/base/static");
+        let child_static = root.join("themes/child/static");
+        let dist = root.join("dist");
+
+        fs::create_dir_all(&parent_static).expect("parent static should be created");
+        fs::create_dir_all(&child_static).expect("child static should be created");
+
+        fs::write(parent_static.join("style.css"), "base").expect("base asset should be written");
+        fs::write(child_static.join("style.css"), "child").expect("child asset should be written");
+
+        let copied = copy_assets_with_collision_check(
+            &user_static,
+            &[parent_static.clone(), child_static.clone()],
+            &dist,
+        )
+        .expect("asset copy should succeed");
+
+        assert_eq!(copied, 1);
+        let written = fs::read_to_string(dist.join("style.css")).expect("style should exist");
+        assert_eq!(written, "child");
     }
 }

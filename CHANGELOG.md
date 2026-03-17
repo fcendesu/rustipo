@@ -11,6 +11,24 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 - Nothing yet.
 
+## [0.2.0] - 2026-03-17
+
+### Added
+
+- `rustipo serve` now supports custom bind options with `--host` and `--port`.
+- `rustipo theme list` now lists installed themes from `themes/*/theme.toml`.
+- `rustipo serve --watch` now watches `content/`, `themes/`, `static/`, and `config.toml` and triggers rebuilds on change.
+- Fenced Markdown code blocks are now rendered with syntax highlighting.
+- `rustipo build` now generates RSS feed output at `dist/rss.xml` from dated blog posts.
+- `rustipo build` now generates sitemap output at `dist/sitemap.xml` from rendered routes.
+- Tag index pages are now generated at `/tags/<tag>/` from blog post frontmatter tags.
+- Blog archive page is now generated at `/blog/archive/` with month-based groups for dated posts.
+- `rustipo theme install <source>` now installs themes from GitHub shorthand/URL (and local git paths for development).
+- `rustipo build` now generates search index output at `dist/search-index.json` for client-side search.
+- Theme inheritance is now supported via `extends` in `theme.toml`, with parent-child template and static asset overrides.
+- `rustipo deploy github-pages` now generates a GitHub Pages deployment workflow under `.github/workflows/deploy-pages.yml`.
+- Markdown content now supports basic shortcodes: `youtube` and `link`.
+
 ## [0.1.0] - 2026-03-17
 
 ### Added
