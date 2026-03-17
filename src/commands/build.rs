@@ -26,8 +26,11 @@ pub fn build_site() -> Result<()> {
         "dist",
     )?;
     let rss_items = crate::output::rss::write_rss_feed("dist", &config, &pages)?;
+    let sitemap_urls =
+        crate::output::sitemap::write_sitemap("dist", &config.base_url, &rendered_pages)?;
     println!("Copied assets: {}", copied_assets);
     println!("Generated RSS items: {}", rss_items);
+    println!("Generated sitemap URLs: {}", sitemap_urls);
     println!("Build completed: dist/");
     Ok(())
 }
