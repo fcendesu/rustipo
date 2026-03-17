@@ -11,8 +11,9 @@ pub enum PageKind {
 }
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub struct Page {
+    // Kept for future diagnostics and source-linked features (watch mode, content tracing).
+    #[allow(dead_code)]
     pub source_path: PathBuf,
     pub route: String,
     pub slug: String,

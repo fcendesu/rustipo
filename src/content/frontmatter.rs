@@ -4,7 +4,6 @@ use gray_matter::{Matter, ParsedEntity};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Deserialize, Serialize)]
-#[allow(dead_code)]
 pub struct Frontmatter {
     pub title: Option<String>,
     pub date: Option<String>,

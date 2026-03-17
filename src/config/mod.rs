@@ -5,17 +5,19 @@ use anyhow::{Context, Result};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub struct SiteConfig {
     pub title: String,
     pub base_url: String,
     pub theme: String,
     pub description: String,
+    // Reserved for template contexts and future metadata outputs.
+    #[allow(dead_code)]
     pub author: Option<AuthorConfig>,
     pub site: Option<SiteOptions>,
 }
 
 #[derive(Debug, Deserialize)]
+// Author keys are accepted in config now even though rendering does not consume them yet.
 #[allow(dead_code)]
 pub struct AuthorConfig {
     pub name: Option<String>,
@@ -25,7 +27,6 @@ pub struct AuthorConfig {
 }
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub struct SiteOptions {
     pub posts_per_page: Option<usize>,
 }
