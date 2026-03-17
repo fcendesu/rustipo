@@ -65,6 +65,7 @@ Current behavior:
 - Default address: `127.0.0.1:3000`
 - Supports custom host/port via `--host` and `--port`
 - Supports watch mode with `--watch` (rebuilds on file changes)
+- In watch mode, injects live-reload script into HTML responses and auto-refreshes browser after successful rebuild
 - Prints local URL on startup
 - Returns readable error if `dist/` does not exist
 

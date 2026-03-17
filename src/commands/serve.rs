@@ -1,4 +1,6 @@
 use std::path::Path;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::thread;
 use std::time::Duration;
@@ -8,11 +10,18 @@ use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
 
 pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
     let addr = format_addr(host, port);
+    let live_reload_version = if watch {
+        Some(Arc::new(AtomicU64::new(0)))
+    } else {
+        None
+    };
 
     if watch {
         println!("Watch mode enabled");
         crate::commands::build::build_site()?;
-        spawn_watch_thread()?;
+        if let Some(version) = &live_reload_version {
+            spawn_watch_thread(Arc::clone(version))?;
+        }
     }
 
     let runtime = tokio::runtime::Builder::new_current_thread()
@@ -20,14 +29,18 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
         .build()
         .context("failed to initialize async runtime for local server")?;
 
-    runtime.block_on(crate::server::serve_dist("dist", &addr))
+    runtime.block_on(crate::server::serve_dist(
+        "dist",
+        &addr,
+        live_reload_version,
+    ))
 }
 
 fn format_addr(host: &str, port: u16) -> String {
     format!("{host}:{port}")
 }
 
-fn spawn_watch_thread() -> Result<()> {
+fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
     let (tx, rx) = mpsc::channel::<notify::Result<Event>>();
     let mut watcher = RecommendedWatcher::new(
         move |res| {
@@ -66,7 +79,10 @@ fn spawn_watch_thread() -> Result<()> {
 
                     println!("Change detected. Rebuilding...");
                     match crate::commands::build::build_site() {
-                        Ok(_) => println!("Rebuild completed"),
+                        Ok(_) => {
+                            live_reload_version.fetch_add(1, Ordering::SeqCst);
+                            println!("Rebuild completed");
+                        }
                         Err(err) => eprintln!("Rebuild failed: {err}"),
                     }
                 }

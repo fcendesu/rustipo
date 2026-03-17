@@ -9,7 +9,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Added
 
-- Nothing yet.
+- `rustipo serve --watch` now injects live-reload script and auto-refreshes browser after successful rebuilds.
 
 ## [0.2.0] - 2026-03-17
 

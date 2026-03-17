@@ -30,19 +30,7 @@ This file tracks known implementation debt that should be addressed after the re
 - Priority: High
 - Target: Next quality pass
 
-### 3) `serve --watch` rebuilds but still lacks browser live reload
-
-- Area: dev workflow (`src/commands/serve.rs`, `src/server/*`)
-- Current state: file watch + rebuild works, browser refresh is manual
-- Impact: slower authoring loop than expected from modern static-site workflows
-- Proposed fix:
-  - add optional live-reload endpoint (websocket or SSE)
-  - inject reload script only in serve/dev mode
-  - keep production output unchanged
-- Priority: Medium
-- Target: Post-`0.2.x`
-
-### 4) Shortcode system is intentionally minimal and string-based
+### 3) Shortcode system is intentionally minimal and string-based
 
 - Area: `src/content/markdown.rs`
 - Current state: shortcodes are preprocessed with lightweight parsing and two built-ins (`youtube`, `link`)
@@ -57,7 +45,7 @@ This file tracks known implementation debt that should be addressed after the re
 - Priority: Medium
 - Target: `0.3.0` prep
 
-### 5) Release workflow still needs final validation after merge-strategy change
+### 4) Release workflow still needs final validation after merge-strategy change
 
 - Area: `.github/workflows/release-please.yml`, repo settings
 - Current state: merge policy now preserves commits (rebase/merge-commit), but release flow should be re-verified end-to-end
