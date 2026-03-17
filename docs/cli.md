@@ -41,10 +41,17 @@ Current behavior:
 
 Serves built static output locally.
 
+Example:
+
+```bash
+rustipo serve --host 0.0.0.0 --port 4000
+```
+
 Current behavior:
 
 - Serves files from `dist/`
 - Default address: `127.0.0.1:3000`
+- Supports custom host/port via `--host` and `--port`
 - Prints local URL on startup
 - Returns readable error if `dist/` does not exist
 
@@ -52,4 +59,7 @@ Current behavior:
 
 Lists available themes.
 
-Status: command skeleton exists; listing logic is not implemented yet.
+Current behavior:
+
+- Reads installed themes from `themes/*/theme.toml`
+- Prints theme name, version, description, and directory name
