@@ -5,6 +5,7 @@ use crate::config::SiteConfig;
 use crate::content::pages::Page;
 use crate::theme::models::Theme;
 
+mod archive;
 mod page;
 mod section;
 mod tags;
@@ -31,6 +32,7 @@ pub fn render_pages(
 
     let mut rendered = page::render_content_pages(&tera, config, pages)?;
     rendered.extend(section::render_sections(&tera, config, pages)?);
+    rendered.extend(archive::render_blog_archive_page(&tera, config, pages)?);
     rendered.extend(tags::render_tag_pages(&tera, config, pages)?);
 
     Ok(rendered)

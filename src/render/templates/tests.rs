@@ -63,11 +63,12 @@ fn renders_pages_with_theme_templates() {
     let theme = load_active_theme(project_root, "default").expect("theme should load");
 
     let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
-    assert_eq!(rendered.len(), 7);
+    assert_eq!(rendered.len(), 8);
     assert!(rendered.iter().any(|p| p.route == "/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/post/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/post-with-tags/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
+    assert!(rendered.iter().any(|p| p.route == "/blog/archive/"));
     assert!(rendered.iter().any(|p| p.route == "/projects/"));
     assert!(rendered.iter().any(|p| p.route == "/tags/rust/"));
     assert!(rendered.iter().any(|p| p.route == "/tags/site-gen/"));
@@ -132,4 +133,74 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
     let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/page/2/"));
+    assert!(rendered.iter().any(|p| p.route == "/blog/archive/"));
+}
+
+#[test]
+fn renders_archive_groups_for_dated_posts() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+    fs::write(
+        project_root.join("content/blog/march.md"),
+        "---\ntitle: March\ndate: 2026-03-17\n---\n\n# March",
+    )
+    .expect("march post should be written");
+    fs::write(
+        project_root.join("content/blog/february.md"),
+        "---\ntitle: February\ndate: 2026-02-01\n---\n\n# February",
+    )
+    .expect("february post should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in ["index.html", "page.html", "post.html", "project.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("templates/section.html"),
+        "{% extends \"base.html\" %}{% block body %}{% for group in archive_groups | default(value=[]) %}<h2>{{ group.label }}</h2>{% for i in group.items %}<a href=\"{{ i.route }}\">{{ i.title }}</a>{% endfor %}{% endfor %}{% endblock body %}",
+    )
+    .expect("section template should be written");
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+
+    let archive = rendered
+        .iter()
+        .find(|page| page.route == "/blog/archive/")
+        .expect("archive page should exist");
+
+    assert!(archive.html.contains("<h2>2026-03</h2>"));
+    assert!(archive.html.contains("<h2>2026-02</h2>"));
+    assert!(archive.html.contains(">March<"));
+    assert!(archive.html.contains(">February<"));
 }
