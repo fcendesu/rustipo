@@ -28,6 +28,11 @@ Supported fields for MVP:
 
 These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_tags`).
 
+### Date format
+
+- `date` must use strict `YYYY-MM-DD` format.
+- Invalid dates fail frontmatter parsing with a readable error.
+
 ## URL rules
 
 - `content/index.md` -> `/`
