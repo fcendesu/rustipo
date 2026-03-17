@@ -38,6 +38,7 @@ Current behavior:
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
+- Generates sitemap at `dist/sitemap.xml` from rendered site routes
 
 ## `rustipo serve`
 
