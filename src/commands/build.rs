@@ -25,7 +25,9 @@ pub fn build_site() -> Result<()> {
         &theme.static_dir,
         "dist",
     )?;
+    let rss_items = crate::output::rss::write_rss_feed("dist", &config, &pages)?;
     println!("Copied assets: {}", copied_assets);
+    println!("Generated RSS items: {}", rss_items);
     println!("Build completed: dist/");
     Ok(())
 }
