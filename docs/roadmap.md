@@ -1,5 +1,7 @@
 # Roadmap (MVP)
 
+For post-MVP execution, see [v0.4.0 checklist](./v0.4.0-checklist.md).
+
 ## Milestone 1: Foundation
 
 - [x] CLI skeleton (`new`, `build`, `serve`, `theme list`)
