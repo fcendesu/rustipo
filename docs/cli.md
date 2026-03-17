@@ -36,6 +36,7 @@ Current behavior:
 - Applies syntax highlighting to fenced code blocks
 - Renders pages through theme templates
 - Writes rendered pages to `dist/` using pretty URL output paths
+- Fails with readable error on duplicate rendered output route collisions
 - Copies theme and user static assets into `dist/`
 - Applies child-over-parent precedence when inherited themes provide the same template/asset path
 - Fails on static asset path collisions

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -15,14 +16,30 @@ pub fn write_rendered_pages(dist_dir: impl AsRef<Path>, pages: &[RenderedPage]) 
     fs::create_dir_all(dist_dir)
         .with_context(|| format!("failed to create output directory: {}", dist_dir.display()))?;
 
+    let mut outputs = Vec::with_capacity(pages.len());
+    let mut seen_output_paths: HashMap<PathBuf, String> = HashMap::new();
     for page in pages {
         let output_path = route_to_output_path(dist_dir, &page.route)?;
+        if let Some(existing_route) =
+            seen_output_paths.insert(output_path.clone(), page.route.clone())
+        {
+            bail!(
+                "duplicate output route collision: '{}' and '{}' both map to '{}'",
+                existing_route,
+                page.route,
+                output_path.display()
+            );
+        }
+        outputs.push((output_path, page.html.as_str()));
+    }
+
+    for (output_path, html) in outputs {
         if let Some(parent) = output_path.parent() {
             fs::create_dir_all(parent)
                 .with_context(|| format!("failed to create output path: {}", parent.display()))?;
         }
 
-        fs::write(&output_path, &page.html)
+        fs::write(&output_path, html)
             .with_context(|| format!("failed to write output file: {}", output_path.display()))?;
     }
 
@@ -80,5 +97,29 @@ mod tests {
         let about_html =
             fs::read_to_string(dist.join("about/index.html")).expect("about html should exist");
         assert!(about_html.contains("About"));
+    }
+
+    #[test]
+    fn fails_on_duplicate_output_route_collision() {
+        let dir = tempdir().expect("tempdir should be created");
+        let dist = dir.path().join("dist");
+
+        let pages = vec![
+            RenderedPage {
+                route: "/about/".to_string(),
+                html: "<h1>About</h1>".to_string(),
+            },
+            RenderedPage {
+                route: "/about/".to_string(),
+                html: "<h1>About Duplicate</h1>".to_string(),
+            },
+        ];
+
+        let error = write_rendered_pages(&dist, &pages).expect_err("duplicate route should fail");
+        assert!(
+            error
+                .to_string()
+                .contains("duplicate output route collision")
+        );
     }
 }
