@@ -40,4 +40,12 @@ pub enum Commands {
 pub enum ThemeCommands {
     /// List available themes
     List,
+    /// Install a theme from GitHub (owner/repo or URL) or a local git path
+    Install {
+        /// GitHub source (owner/repo or URL) or local git repository path
+        source: String,
+        /// Override install directory name under themes/
+        #[arg(long)]
+        name: Option<String>,
+    },
 }

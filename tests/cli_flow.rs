@@ -12,6 +12,20 @@ fn run_cli(cwd: &Path, args: &[&str]) -> std::process::Output {
         .expect("rustipo command should run")
 }
 
+fn run_git(cwd: &Path, args: &[&str]) {
+    let output = Command::new("git")
+        .args(args)
+        .current_dir(cwd)
+        .output()
+        .expect("git command should run");
+    assert!(
+        output.status.success(),
+        "git command failed: {}\n{}",
+        String::from_utf8_lossy(&output.stderr),
+        args.join(" ")
+    );
+}
+
 #[test]
 fn new_and_build_generate_expected_output() {
     let dir = tempdir().expect("tempdir should be created");
@@ -80,4 +94,64 @@ fn theme_list_reads_local_theme_metadata() {
         stdout.contains("default (0.1.0)"),
         "unexpected stdout: {stdout}"
     );
+}
+
+#[test]
+fn theme_install_clones_from_local_git_repo() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let remote_repo = root.join("remote-theme");
+    fs::create_dir_all(remote_repo.join("templates")).expect("templates should be created");
+    fs::create_dir_all(remote_repo.join("static")).expect("static should be created");
+    fs::write(remote_repo.join("static/style.css"), "body {}").expect("static asset should exist");
+    fs::write(
+        remote_repo.join("theme.toml"),
+        "name = \"test-theme\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Test theme\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    for template in [
+        "base.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+        "index.html",
+    ] {
+        fs::write(
+            remote_repo.join("templates").join(template),
+            "{{ content_html }}",
+        )
+        .expect("template should be written");
+    }
+
+    run_git(root, &["init", "--initial-branch=main", "remote-theme"]);
+    run_git(&remote_repo, &["config", "user.email", "test@example.com"]);
+    run_git(&remote_repo, &["config", "user.name", "Test User"]);
+    run_git(&remote_repo, &["add", "."]);
+    run_git(&remote_repo, &["commit", "-m", "init theme"]);
+
+    let output = run_cli(
+        root,
+        &[
+            "theme",
+            "install",
+            remote_repo.to_string_lossy().as_ref(),
+            "--name",
+            "installed-theme",
+        ],
+    );
+    assert!(
+        output.status.success(),
+        "theme install failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(root.join("themes/installed-theme/theme.toml").is_file());
+    assert!(
+        root.join("themes/installed-theme/templates/section.html")
+            .is_file()
+    );
+    assert!(!root.join("themes/installed-theme/.git").exists());
 }

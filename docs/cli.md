@@ -72,3 +72,30 @@ Current behavior:
 
 - Reads installed themes from `themes/*/theme.toml`
 - Prints theme name, version, description, and directory name
+
+## `rustipo theme install <source>`
+
+Installs a theme into `themes/`.
+
+Examples:
+
+```bash
+rustipo theme install fcendesu/rustipo-theme
+```
+
+```bash
+rustipo theme install https://github.com/fcendesu/rustipo-theme
+```
+
+```bash
+rustipo theme install fcendesu/rustipo-theme --name cyberpunk
+```
+
+Current behavior:
+
+- Accepts GitHub shorthand (`owner/repo`) or GitHub URL
+- Also accepts local git repository path (useful for local development/testing)
+- Clones repository into `themes/<name>/` (or inferred repo name)
+- Removes cloned `.git` metadata from installed theme directory
+- Validates required theme contract after install
+- Fails with readable errors on clone/validation conflicts

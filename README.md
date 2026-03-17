@@ -4,7 +4,7 @@ Rustipo is an open-source, themeable static site generator written in Rust for p
 
 ## Status
 
-MVP in progress.
+MVP complete, active post-MVP development.
 
 ## Planned CLI
 
@@ -12,6 +12,7 @@ MVP in progress.
 - `rustipo build`
 - `rustipo serve`
 - `rustipo theme list`
+- `rustipo theme install <source>`
 
 ## Quick Start (target workflow)
 

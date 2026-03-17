@@ -17,6 +17,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - `rustipo build` now generates sitemap output at `dist/sitemap.xml` from rendered routes.
 - Tag index pages are now generated at `/tags/<tag>/` from blog post frontmatter tags.
 - Blog archive page is now generated at `/blog/archive/` with month-based groups for dated posts.
+- `rustipo theme install <source>` now installs themes from GitHub shorthand/URL (and local git paths for development).
 
 ## [0.1.0] - 2026-03-17
 

@@ -19,6 +19,9 @@ fn main() -> Result<()> {
         cli::Commands::Serve { host, port, watch } => commands::serve::run(&host, port, watch),
         cli::Commands::Theme { command } => match command {
             cli::ThemeCommands::List => commands::theme::list(),
+            cli::ThemeCommands::Install { source, name } => {
+                commands::theme::install(&source, name.as_deref())
+            }
         },
     }
 }
