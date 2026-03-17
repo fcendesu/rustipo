@@ -27,7 +27,8 @@ Current behavior:
 
 - Loads and validates `config.toml`
 - Loads active theme from `themes/<theme>/`
-- Validates required theme templates and `theme.toml`
+- Resolves theme inheritance chain when `extends` is used in `theme.toml`
+- Validates required templates across the resolved theme chain
 - Discovers Markdown files from `content/`
 - Parses frontmatter and excludes drafts
 - Converts Markdown to HTML
@@ -35,6 +36,7 @@ Current behavior:
 - Renders pages through theme templates
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Copies theme and user static assets into `dist/`
+- Applies child-over-parent precedence when inherited themes provide the same template/asset path
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
 - Generates tag index pages at `/tags/<tag>/` from blog post tags

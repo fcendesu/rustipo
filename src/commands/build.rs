@@ -22,7 +22,7 @@ pub fn build_site() -> Result<()> {
     crate::output::writer::write_rendered_pages("dist", &rendered_pages)?;
     let copied_assets = crate::output::assets::copy_assets_with_collision_check(
         "static",
-        &theme.static_dir,
+        &theme.static_dirs,
         "dist",
     )?;
     let rss_items = crate::output::rss::write_rss_feed("dist", &config, &pages)?;

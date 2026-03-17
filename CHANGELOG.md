@@ -19,6 +19,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - Blog archive page is now generated at `/blog/archive/` with month-based groups for dated posts.
 - `rustipo theme install <source>` now installs themes from GitHub shorthand/URL (and local git paths for development).
 - `rustipo build` now generates search index output at `dist/search-index.json` for client-side search.
+- Theme inheritance is now supported via `extends` in `theme.toml`, with parent-child template and static asset overrides.
 
 ## [0.1.0] - 2026-03-17
 

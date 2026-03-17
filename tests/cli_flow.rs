@@ -156,3 +156,73 @@ fn theme_install_clones_from_local_git_repo() {
     );
     assert!(!root.join("themes/installed-theme/.git").exists());
 }
+
+#[test]
+fn build_supports_inherited_theme_overrides() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    fs::create_dir_all(root.join("content")).expect("content dir should be created");
+    fs::create_dir_all(root.join("static")).expect("static dir should be created");
+    fs::write(root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        root.join("config.toml"),
+        "title = \"Rustipo\"\nbase_url = \"https://example.com\"\ntheme = \"child\"\ndescription = \"Test\"\n",
+    )
+    .expect("config should be written");
+
+    let base = root.join("themes/base");
+    fs::create_dir_all(base.join("templates")).expect("base templates should be created");
+    fs::create_dir_all(base.join("static")).expect("base static should be created");
+    fs::write(
+        base.join("theme.toml"),
+        "name = \"base\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Base\"\n",
+    )
+    .expect("base metadata should be written");
+    for template in [
+        "base.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+        "index.html",
+    ] {
+        fs::write(
+            base.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}<main>base</main>{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("base template should be written");
+    }
+    fs::write(
+        base.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base layout should be written");
+    fs::write(base.join("static/style.css"), "base-style").expect("base style should be written");
+
+    let child = root.join("themes/child");
+    fs::create_dir_all(child.join("templates")).expect("child templates should be created");
+    fs::create_dir_all(child.join("static")).expect("child static should be created");
+    fs::write(child.join("theme.toml"), "name = \"child\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Child\"\nextends = \"base\"\n").expect("child metadata should be written");
+    fs::write(
+        child.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}<main>child-index</main>{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("child index template should be written");
+    fs::write(child.join("static/style.css"), "child-style")
+        .expect("child style should be written");
+
+    let output = run_cli(root, &["build"]);
+    assert!(
+        output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let index_html =
+        fs::read_to_string(root.join("dist/index.html")).expect("index output should exist");
+    assert!(index_html.contains("child-index"));
+
+    let style = fs::read_to_string(root.join("dist/style.css")).expect("style should exist");
+    assert_eq!(style, "child-style");
+}

@@ -1,10 +1,10 @@
-# Theme Contract (MVP)
+# Theme Contract
 
 Themes are filesystem-based and selected via site config.
 
 ## Required files
 
-Each theme must include:
+For a standalone theme (no parent), include:
 
 - `templates/base.html`
 - `templates/page.html`
@@ -14,6 +14,8 @@ Each theme must include:
 - `templates/index.html`
 - `theme.toml`
 
+For an inherited theme, templates can be provided by parent themes in the inheritance chain.
+
 ## `theme.toml` fields
 
 Minimum metadata fields:
@@ -22,6 +24,20 @@ Minimum metadata fields:
 - `version`
 - `author`
 - `description`
+
+Optional field:
+
+- `extends` (parent theme directory name)
+
+Example:
+
+```toml
+name = "cyberpunk"
+version = "0.1.0"
+author = "Rustipo"
+description = "Cyberpunk variant"
+extends = "default"
+```
 
 ## Rendering responsibilities
 
@@ -34,6 +50,7 @@ Theme defines presentation:
 Generator responsibilities:
 
 - Load active theme
-- Validate required files
-- Render content through templates
-- Copy theme assets to output
+- Resolve inheritance chain (`parent -> child`) and detect cycles
+- Validate required templates across the full inheritance chain
+- Render content through merged templates (child overrides parent files by relative path)
+- Copy merged theme static assets to output (child overrides parent files by relative path)
