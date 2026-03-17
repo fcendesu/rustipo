@@ -24,4 +24,4 @@ This file tracks known implementation debt that should be addressed after the re
   - added tests for empty/default theme-set behavior
 - Release workflow validation after merge-strategy change:
   - completed end-to-end on 2026-03-17 with successful Release Please run
-  - `rustipo-v0.3.0` tag/release published
+  - release flow has continued successfully through `rustipo-v0.3.1`

@@ -30,7 +30,7 @@ Current behavior:
 - Resolves theme inheritance chain when `extends` is used in `theme.toml`
 - Validates required templates across the resolved theme chain
 - Discovers Markdown files from `content/`
-- Parses frontmatter and excludes drafts
+- Parses frontmatter, validates date format (`YYYY-MM-DD`), and excludes drafts
 - Converts Markdown to HTML
 - Renders supported shortcodes in Markdown content
 - Applies syntax highlighting to fenced code blocks
