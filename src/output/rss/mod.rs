@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn skips_posts_without_valid_date() {
+    fn fails_when_post_has_invalid_date() {
         let dir = tempdir().expect("tempdir should be created");
         let root = dir.path();
 
@@ -90,20 +90,10 @@ mod tests {
         )
         .expect("post should be written");
 
-        let pages = build_pages(root.join("content")).expect("pages should build");
-        let config = SiteConfig {
-            title: "Rustipo".to_string(),
-            base_url: "https://example.com".to_string(),
-            theme: "default".to_string(),
-            description: "Portfolio".to_string(),
-            author: None,
-            site: None,
-        };
-
-        let count = write_rss_feed(root.join("dist"), &config, &pages).expect("rss should write");
-        assert_eq!(count, 0);
-
-        let rss = fs::read_to_string(root.join("dist/rss.xml")).expect("rss should exist");
-        assert!(!rss.contains("<item>"));
+        let error = build_pages(root.join("content")).expect_err("invalid date should fail");
+        assert!(
+            error.to_string().contains("failed to parse markdown file"),
+            "unexpected error: {error}"
+        );
     }
 }

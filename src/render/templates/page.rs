@@ -22,7 +22,10 @@ pub(super) fn render_content_pages(
         context.insert("content_html", &page.html);
         context.insert("frontmatter", &page.frontmatter);
         context.insert("page_summary", &page.frontmatter.summary);
-        context.insert("page_date", &page.frontmatter.date);
+        context.insert(
+            "page_date",
+            &page.frontmatter.date.as_ref().map(ToString::to_string),
+        );
         context.insert("page_tags", &page.frontmatter.tags);
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
