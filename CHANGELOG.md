@@ -9,6 +9,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Added
 
+- Nothing yet.
+
+## [0.2.0] - 2026-03-17
+
+### Added
+
 - `rustipo serve` now supports custom bind options with `--host` and `--port`.
 - `rustipo theme list` now lists installed themes from `themes/*/theme.toml`.
 - `rustipo serve --watch` now watches `content/`, `themes/`, `static/`, and `config.toml` and triggers rebuilds on change.
