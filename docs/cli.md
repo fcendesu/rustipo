@@ -37,6 +37,7 @@ Current behavior:
 - Copies theme and user static assets into `dist/`
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
+- Generates tag index pages at `/tags/<tag>/` from blog post tags
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
 
