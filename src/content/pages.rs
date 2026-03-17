@@ -83,6 +83,12 @@ fn derive_page_meta(rel_path: &Path, frontmatter_slug: Option<&str>) -> Result<P
 
     let preferred_slug = frontmatter_slug.unwrap_or(raw_stem);
     let slug = normalize_slug(preferred_slug);
+    if slug.is_empty() {
+        bail!(
+            "slug must contain at least one ASCII letter or digit: {}",
+            rel_path.display()
+        );
+    }
 
     let components = rel_path
         .components()
@@ -169,6 +175,21 @@ mod tests {
             derive_page_meta(Path::new("blog/hello.md"), Some("My Custom Slug")).expect("meta");
         assert_eq!(page.slug, "my-custom-slug");
         assert_eq!(page.route, "/blog/my-custom-slug/");
+    }
+
+    #[test]
+    fn errors_when_slug_normalizes_to_empty() {
+        match derive_page_meta(Path::new("blog/hello.md"), Some("!!!")) {
+            Ok(_) => panic!("slug should be rejected"),
+            Err(error) => {
+                assert!(
+                    error
+                        .to_string()
+                        .contains("slug must contain at least one ASCII letter or digit"),
+                    "unexpected error: {error}"
+                );
+            }
+        }
     }
 
     #[test]
