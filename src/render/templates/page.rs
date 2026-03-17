@@ -20,6 +20,12 @@ pub(super) fn render_content_pages(
         context.insert("route", &page.route);
         context.insert("slug", &page.slug);
         context.insert("content_html", &page.html);
+        context.insert("frontmatter", &page.frontmatter);
+        context.insert("page_summary", &page.frontmatter.summary);
+        context.insert("page_date", &page.frontmatter.date);
+        context.insert("page_tags", &page.frontmatter.tags);
+        context.insert("page_links", &page.frontmatter.links);
+        context.insert("page_order", &page.frontmatter.order);
         context.insert("site_title", &config.title);
         context.insert("site_description", &config.description);
         context.insert(

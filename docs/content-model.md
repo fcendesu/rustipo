@@ -26,6 +26,8 @@ Supported fields for MVP:
 - `order`
 - `links`
 
+These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_tags`).
+
 ## URL rules
 
 - `content/index.md` -> `/`

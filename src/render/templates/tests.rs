@@ -204,3 +204,77 @@ fn renders_archive_groups_for_dated_posts() {
     assert!(archive.html.contains(">March<"));
     assert!(archive.html.contains(">February<"));
 }
+
+#[test]
+fn exposes_frontmatter_metadata_in_page_templates() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+    fs::write(
+        project_root.join("content/blog/post.md"),
+        "---\ntitle: Post\ndate: 2026-03-17\nsummary: Example summary\ntags: [\"rust\", \"ssg\"]\n---\n\n# Post",
+    )
+    .expect("post should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("index template should be written");
+    fs::write(
+        theme_root.join("templates/page.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("page template should be written");
+    fs::write(
+        theme_root.join("templates/post.html"),
+        "{% extends \"base.html\" %}{% block body %}<time>{{ frontmatter.date }}</time><p>{{ frontmatter.summary }}</p><div>{{ page_date }}</div><div>{{ page_summary }}</div>{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("post template should be written");
+    fs::write(
+        theme_root.join("templates/project.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("project template should be written");
+    fs::write(
+        theme_root.join("templates/section.html"),
+        "{% extends \"base.html\" %}{% block body %}{% endblock body %}",
+    )
+    .expect("section template should be written");
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+    let post = rendered
+        .iter()
+        .find(|page| page.route == "/blog/post/")
+        .expect("post route should be rendered");
+
+    assert!(post.html.contains("2026-03-17"));
+    assert!(post.html.contains("Example summary"));
+}
