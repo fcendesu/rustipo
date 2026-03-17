@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
 use crate::config::SiteConfig;
+use crate::content::date::ContentDate;
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -40,10 +41,11 @@ pub(super) fn render_blog_archive_page(
                 .unwrap_or_else(|| page.slug.clone()),
             route: page.route.clone(),
             summary: page.frontmatter.summary.clone(),
-            date: page.frontmatter.date.clone(),
+            date: page.frontmatter.date.as_ref().map(ToString::to_string),
         };
 
-        let group_key = month_key(item.date.as_deref()).unwrap_or_else(|| "undated".to_string());
+        let group_key =
+            month_key(page.frontmatter.date.as_ref()).unwrap_or_else(|| "undated".to_string());
         grouped.entry(group_key).or_default().push(item.clone());
         all_items.push(item);
     }
@@ -88,25 +90,6 @@ pub(super) fn render_blog_archive_page(
     Ok(vec![RenderedPage { route, html }])
 }
 
-fn month_key(date: Option<&str>) -> Option<String> {
-    let date = date?;
-    let mut parts = date.split('-');
-    let year = parts.next()?;
-    let month = parts.next()?;
-    let day = parts.next()?;
-    if parts.next().is_some() {
-        return None;
-    }
-
-    if !year.chars().all(|c| c.is_ascii_digit()) || year.len() != 4 {
-        return None;
-    }
-    if !month.chars().all(|c| c.is_ascii_digit()) || month.len() != 2 {
-        return None;
-    }
-    if !day.chars().all(|c| c.is_ascii_digit()) || day.len() != 2 {
-        return None;
-    }
-
-    Some(format!("{year}-{month}"))
+fn month_key(date: Option<&ContentDate>) -> Option<String> {
+    date.map(ContentDate::month_key)
 }

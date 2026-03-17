@@ -43,7 +43,7 @@ fn render_blog_section_pages(
                 .unwrap_or_else(|| page.slug.clone()),
             route: page.route.clone(),
             summary: page.frontmatter.summary.clone(),
-            date: page.frontmatter.date.clone(),
+            date: page.frontmatter.date.as_ref().map(ToString::to_string),
         })
         .collect::<Vec<_>>();
 
@@ -119,7 +119,7 @@ fn render_projects_section_page(
                 .unwrap_or_else(|| page.slug.clone()),
             route: page.route.clone(),
             summary: page.frontmatter.summary.clone(),
-            date: page.frontmatter.date.clone(),
+            date: page.frontmatter.date.as_ref().map(ToString::to_string),
         })
         .collect::<Vec<_>>();
 

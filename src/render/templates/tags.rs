@@ -37,7 +37,7 @@ pub(super) fn render_tag_pages(
             title,
             route: page.route.clone(),
             summary: page.frontmatter.summary.clone(),
-            date: page.frontmatter.date.clone(),
+            date: page.frontmatter.date.as_ref().map(ToString::to_string),
         };
 
         for tag in page_tags {

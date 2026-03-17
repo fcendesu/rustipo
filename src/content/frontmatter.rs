@@ -3,10 +3,12 @@ use gray_matter::engine::YAML;
 use gray_matter::{Matter, ParsedEntity};
 use serde::{Deserialize, Serialize};
 
+use crate::content::date::ContentDate;
+
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Frontmatter {
     pub title: Option<String>,
-    pub date: Option<String>,
+    pub date: Option<ContentDate>,
     pub summary: Option<String>,
     pub tags: Option<Vec<String>>,
     pub draft: Option<bool>,
@@ -60,5 +62,17 @@ draft: false
         let parsed = parse("# Heading").expect("content without frontmatter should parse");
         assert!(parsed.frontmatter.title.is_none());
         assert_eq!(parsed.content, "# Heading");
+    }
+
+    #[test]
+    fn rejects_invalid_date_in_frontmatter() {
+        let input = r#"---
+title: Bad Date
+date: 2026-13-17
+---
+
+# Heading
+"#;
+        parse(input).expect_err("invalid date should fail");
     }
 }
