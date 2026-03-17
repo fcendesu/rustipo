@@ -1,6 +1,10 @@
 use anyhow::Result;
 
 pub fn run() -> Result<()> {
+    build_site()
+}
+
+pub fn build_site() -> Result<()> {
     let config = crate::config::load("config.toml")?;
     println!(
         "Loaded config: title='{}', theme='{}'",

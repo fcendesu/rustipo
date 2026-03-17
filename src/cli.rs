@@ -25,6 +25,9 @@ pub enum Commands {
         /// Port to bind the local server to
         #[arg(long, default_value_t = 3000)]
         port: u16,
+        /// Watch files and rebuild on changes
+        #[arg(long, default_value_t = false)]
+        watch: bool,
     },
     /// Theme-related commands
     Theme {
