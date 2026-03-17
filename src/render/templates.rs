@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use serde::Serialize;
+use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
 use crate::config::SiteConfig;
@@ -59,6 +60,7 @@ pub fn render_pages(
     }
 
     rendered.extend(render_sections(&tera, config, pages)?);
+    rendered.extend(render_tag_pages(&tera, config, pages)?);
 
     Ok(rendered)
 }
@@ -126,6 +128,82 @@ fn render_sections(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<V
     Ok(rendered)
 }
 
+fn render_tag_pages(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<Vec<RenderedPage>> {
+    let mut tags: BTreeMap<String, Vec<SectionItem>> = BTreeMap::new();
+
+    for page in pages.iter().filter(|page| page.kind == PageKind::BlogPost) {
+        let Some(page_tags) = page.frontmatter.tags.as_ref() else {
+            continue;
+        };
+
+        let title = page
+            .frontmatter
+            .title
+            .clone()
+            .unwrap_or_else(|| page.slug.clone());
+        let item = SectionItem {
+            title,
+            route: page.route.clone(),
+            summary: page.frontmatter.summary.clone(),
+            date: page.frontmatter.date.clone(),
+        };
+
+        for tag in page_tags {
+            let tag_slug = normalize_tag_slug(tag);
+            if tag_slug.is_empty() {
+                continue;
+            }
+            tags.entry(tag_slug).or_default().push(SectionItem {
+                title: item.title.clone(),
+                route: item.route.clone(),
+                summary: item.summary.clone(),
+                date: item.date.clone(),
+            });
+        }
+    }
+
+    let mut rendered = Vec::new();
+    for (tag_slug, items) in tags {
+        let mut context = TeraContext::new();
+        context.insert("route", &format!("/tags/{tag_slug}/"));
+        context.insert("section_name", "tags");
+        context.insert("section_title", &format!("Tag: {tag_slug}"));
+        context.insert("items", &items);
+        context.insert("site_title", &config.title);
+        context.insert("site_description", &config.description);
+        context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
+        context.insert("content_html", "");
+
+        let html = tera
+            .render("section.html", &context)
+            .with_context(|| format!("failed to render tag section template for '{tag_slug}'"))?;
+
+        rendered.push(RenderedPage {
+            route: format!("/tags/{tag_slug}/"),
+            html,
+        });
+    }
+
+    Ok(rendered)
+}
+
+fn normalize_tag_slug(input: &str) -> String {
+    let mut slug = String::with_capacity(input.len());
+    let mut previous_dash = false;
+
+    for ch in input.chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch.to_ascii_lowercase());
+            previous_dash = false;
+        } else if !previous_dash {
+            slug.push('-');
+            previous_dash = true;
+        }
+    }
+
+    slug.trim_matches('-').to_string()
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs;
@@ -149,6 +227,11 @@ mod tests {
             .expect("index should be written");
         fs::write(project_root.join("content/blog/post.md"), "# Post")
             .expect("post should be written");
+        fs::write(
+            project_root.join("content/blog/post-with-tags.md"),
+            "---\ntitle: Tagged\ntags: [\"Rust\", \"Site Gen\"]\n---\n\n# Tagged",
+        )
+        .expect("tagged post should be written");
 
         let theme_root = project_root.join("themes/default");
         fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
@@ -190,11 +273,14 @@ mod tests {
         let theme = load_active_theme(project_root, "default").expect("theme should load");
 
         let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
-        assert_eq!(rendered.len(), 4);
+        assert_eq!(rendered.len(), 7);
         assert!(rendered.iter().any(|p| p.route == "/"));
         assert!(rendered.iter().any(|p| p.route == "/blog/post/"));
+        assert!(rendered.iter().any(|p| p.route == "/blog/post-with-tags/"));
         assert!(rendered.iter().any(|p| p.route == "/blog/"));
         assert!(rendered.iter().any(|p| p.route == "/projects/"));
+        assert!(rendered.iter().any(|p| p.route == "/tags/rust/"));
+        assert!(rendered.iter().any(|p| p.route == "/tags/site-gen/"));
         assert!(rendered.iter().all(|p| p.html.contains("<h1>")));
     }
 }
