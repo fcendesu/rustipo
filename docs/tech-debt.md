@@ -20,10 +20,10 @@ This file tracks known implementation debt that should be addressed after the re
 - Proposed fix: add date parsing/validation strategy with readable errors
 - Target milestone: Post-MVP or Milestone 5
 
-### 3) Serve command does not yet support hot reload
+### 3) Serve watch mode does not yet auto-refresh browser
 
 - Area: dev workflow
-- Current state: `rustipo serve` serves static output without watching files
-- Impact: users must re-run build manually to see content/template changes
-- Proposed fix: add optional watch mode and rebuild trigger for local development
+- Current state: `rustipo serve --watch` rebuilds on changes, but browser reload remains manual
+- Impact: users still need to refresh browser after rebuild
+- Proposed fix: add live-reload support (for example websocket + injected reload script)
 - Target milestone: Post-MVP

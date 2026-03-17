@@ -47,11 +47,16 @@ Example:
 rustipo serve --host 0.0.0.0 --port 4000
 ```
 
+```bash
+rustipo serve --watch
+```
+
 Current behavior:
 
 - Serves files from `dist/`
 - Default address: `127.0.0.1:3000`
 - Supports custom host/port via `--host` and `--port`
+- Supports watch mode with `--watch` (rebuilds on file changes)
 - Prints local URL on startup
 - Returns readable error if `dist/` does not exist
 
