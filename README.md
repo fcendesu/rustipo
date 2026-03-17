@@ -13,6 +13,7 @@ MVP complete, active post-MVP development.
 - `rustipo serve`
 - `rustipo theme list`
 - `rustipo theme install <source>`
+- `rustipo deploy github-pages`
 
 ## Quick Start (target workflow)
 

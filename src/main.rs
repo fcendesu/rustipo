@@ -23,5 +23,8 @@ fn main() -> Result<()> {
                 commands::theme::install(&source, name.as_deref())
             }
         },
+        cli::Commands::Deploy { command } => match command {
+            cli::DeployCommands::GithubPages { force } => commands::deploy::github_pages(force),
+        },
     }
 }

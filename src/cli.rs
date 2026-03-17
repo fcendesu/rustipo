@@ -34,6 +34,11 @@ pub enum Commands {
         #[command(subcommand)]
         command: ThemeCommands,
     },
+    /// Deployment helper commands
+    Deploy {
+        #[command(subcommand)]
+        command: DeployCommands,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -47,5 +52,15 @@ pub enum ThemeCommands {
         /// Override install directory name under themes/
         #[arg(long)]
         name: Option<String>,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+pub enum DeployCommands {
+    /// Generate GitHub Pages deployment workflow
+    GithubPages {
+        /// Overwrite existing workflow file if present
+        #[arg(long, default_value_t = false)]
+        force: bool,
     },
 }

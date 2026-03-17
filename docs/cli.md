@@ -102,3 +102,23 @@ Current behavior:
 - Removes cloned `.git` metadata from installed theme directory
 - Validates required theme contract after install
 - Fails with readable errors on clone/validation conflicts
+
+## `rustipo deploy github-pages`
+
+Generates a GitHub Actions workflow for deploying `dist/` to GitHub Pages.
+
+Example:
+
+```bash
+rustipo deploy github-pages
+```
+
+```bash
+rustipo deploy github-pages --force
+```
+
+Current behavior:
+
+- Writes `.github/workflows/deploy-pages.yml`
+- Workflow runs `cargo run -- build` and deploys `dist/` using Pages actions
+- Refuses to overwrite existing workflow unless `--force` is provided
