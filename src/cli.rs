@@ -18,7 +18,14 @@ pub enum Commands {
     /// Build the site into dist/
     Build,
     /// Serve the built site locally
-    Serve,
+    Serve {
+        /// Host address to bind the local server to
+        #[arg(long, default_value = "127.0.0.1")]
+        host: String,
+        /// Port to bind the local server to
+        #[arg(long, default_value_t = 3000)]
+        port: u16,
+    },
     /// Theme-related commands
     Theme {
         #[command(subcommand)]

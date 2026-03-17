@@ -16,7 +16,7 @@ fn main() -> Result<()> {
     match cli.command {
         cli::Commands::New { site_name } => commands::new::run(&site_name),
         cli::Commands::Build => commands::build::run(),
-        cli::Commands::Serve => commands::serve::run(),
+        cli::Commands::Serve { host, port } => commands::serve::run(&host, port),
         cli::Commands::Theme { command } => match command {
             cli::ThemeCommands::List => commands::theme::list(),
         },
