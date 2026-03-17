@@ -37,6 +37,7 @@ Current behavior:
 - Copies theme and user static assets into `dist/`
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
+- Generates RSS feed at `dist/rss.xml` from dated blog posts
 
 ## `rustipo serve`
 
