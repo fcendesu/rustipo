@@ -37,3 +37,7 @@ Supported fields for MVP:
 ## Draft behavior
 
 Entries with `draft: true` are excluded from production build output.
+
+## Code blocks
+
+Fenced code blocks are syntax-highlighted in rendered HTML output.

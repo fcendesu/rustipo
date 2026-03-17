@@ -31,6 +31,7 @@ Current behavior:
 - Discovers Markdown files from `content/`
 - Parses frontmatter and excludes drafts
 - Converts Markdown to HTML
+- Applies syntax highlighting to fenced code blocks
 - Renders pages through theme templates
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Copies theme and user static assets into `dist/`
