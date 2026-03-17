@@ -6,7 +6,7 @@ Rustipo is an open-source, themeable static site generator written in Rust for p
 
 MVP complete, active post-MVP development.
 
-## Planned CLI
+## CLI
 
 - `rustipo new <site-name>`
 - `rustipo build`
@@ -15,7 +15,7 @@ MVP complete, active post-MVP development.
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 
-## Quick Start (target workflow)
+## Quick Start
 
 ```bash
 cargo run -- new my-portfolio
@@ -24,7 +24,24 @@ cargo run -- build
 cargo run -- serve
 ```
 
-## Project Layout (target)
+## Current Features
+
+- Markdown content pipeline with YAML frontmatter and draft filtering
+- Theme loading with inheritance support (`extends`) and contract validation
+- Pretty URL output in `dist/`
+- Section/tag/archive generation:
+  - `/blog/`, `/projects/`
+  - `/tags/<tag>/`
+  - `/blog/archive/`
+- Output artifacts:
+  - `dist/rss.xml`
+  - `dist/sitemap.xml`
+  - `dist/search-index.json`
+- Local preview server with watch mode and live reload (`rustipo serve --watch`)
+- Theme installation from GitHub shorthand/URL or local git repo
+- GitHub Pages deploy workflow scaffolding
+
+## Project Layout
 
 ```text
 my-portfolio/
@@ -43,10 +60,6 @@ my-portfolio/
 
 - [basic-portfolio](./examples/basic-portfolio)
 
-## Roadmap
-
-See [MVP checklist](./docs/mvp-checklist.md).
-
 ## Documentation
 
 - [CLI reference](./docs/cli.md)
@@ -54,6 +67,7 @@ See [MVP checklist](./docs/mvp-checklist.md).
 - [Theme contract](./docs/theme-contract.md)
 - [Content model](./docs/content-model.md)
 - [Roadmap](./docs/roadmap.md)
+- [MVP checklist](./docs/mvp-checklist.md)
 - [CI](./docs/ci.md)
 - [Technical debt](./docs/tech-debt.md)
 
