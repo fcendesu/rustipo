@@ -11,6 +11,10 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 - `rustipo serve --watch` now injects live-reload script and auto-refreshes browser after successful rebuilds.
 
+### Fixed
+
+- `rustipo build` now fails with a readable error when multiple pages map to the same output path.
+
 ## [0.2.0] - 2026-03-17
 
 ### Added
