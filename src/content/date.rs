@@ -117,7 +117,10 @@ mod tests {
     #[test]
     fn rejects_invalid_dates() {
         for raw in ["2026-13-01", "2026-02-30", "2026-3-1", "abcd-ef-gh"] {
-            assert!(ContentDate::parse(raw).is_err(), "date should be invalid: {raw}");
+            assert!(
+                ContentDate::parse(raw).is_err(),
+                "date should be invalid: {raw}"
+            );
         }
     }
 }
