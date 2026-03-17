@@ -228,17 +228,22 @@ fn replace_code_blocks_with_highlighted_html<'a>(
 fn highlight_code(code: &str, language: Option<&str>) -> String {
     let syntax_set = syntax_set();
     let theme_set = theme_set();
-    let theme = theme_set
-        .themes
-        .get("base16-ocean.dark")
-        .or_else(|| theme_set.themes.values().next())
-        .expect("syntect default themes must contain at least one theme");
+    let Some(theme) = preferred_theme(theme_set) else {
+        return fallback_code_html(code);
+    };
     let syntax = language
         .and_then(|lang| syntax_set.find_syntax_by_token(lang))
         .unwrap_or_else(|| syntax_set.find_syntax_plain_text());
 
     highlighted_html_for_string(code, syntax_set, syntax, theme)
         .unwrap_or_else(|_| fallback_code_html(code))
+}
+
+fn preferred_theme(theme_set: &ThemeSet) -> Option<&syntect::highlighting::Theme> {
+    theme_set
+        .themes
+        .get("base16-ocean.dark")
+        .or_else(|| theme_set.themes.values().next())
 }
 
 fn syntax_set() -> &'static SyntaxSet {
@@ -264,7 +269,9 @@ fn escape_html(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::render_html;
+    use syntect::highlighting::ThemeSet;
+
+    use super::{preferred_theme, render_html};
 
     #[test]
     fn renders_basic_markdown() {
@@ -306,5 +313,17 @@ mod tests {
     fn does_not_render_shortcode_inside_code_fence() {
         let html = render_html("```\n{{< youtube id=\"dQw4w9WgXcQ\" >}}\n```");
         assert!(!html.contains("youtube.com/embed/"));
+    }
+
+    #[test]
+    fn preferred_theme_returns_none_for_empty_theme_set() {
+        let theme_set = ThemeSet::default();
+        assert!(preferred_theme(&theme_set).is_none());
+    }
+
+    #[test]
+    fn preferred_theme_returns_some_for_default_themes() {
+        let theme_set = ThemeSet::load_defaults();
+        assert!(preferred_theme(&theme_set).is_some());
     }
 }
