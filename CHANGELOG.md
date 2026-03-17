@@ -21,6 +21,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - `rustipo build` now generates search index output at `dist/search-index.json` for client-side search.
 - Theme inheritance is now supported via `extends` in `theme.toml`, with parent-child template and static asset overrides.
 - `rustipo deploy github-pages` now generates a GitHub Pages deployment workflow under `.github/workflows/deploy-pages.yml`.
+- Markdown content now supports basic shortcodes: `youtube` and `link`.
 
 ## [0.1.0] - 2026-03-17
 

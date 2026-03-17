@@ -41,3 +41,16 @@ Entries with `draft: true` are excluded from production build output.
 ## Code blocks
 
 Fenced code blocks are syntax-highlighted in rendered HTML output.
+
+## Shortcodes
+
+Supported shortcodes:
+
+- `{{< youtube id="VIDEO_ID" >}}`
+- `{{< link href="URL" text="Label" >}}`
+
+Notes:
+
+- Shortcodes are rendered before Markdown conversion.
+- Unknown or malformed shortcodes are left as plain text.
+- Shortcodes inside fenced code blocks are not rendered.
