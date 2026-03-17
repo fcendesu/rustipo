@@ -10,6 +10,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 ### Added
 
 - `rustipo serve --watch` now injects live-reload script and auto-refreshes browser after successful rebuilds.
+- Content page templates now receive full `frontmatter` metadata in render context.
 
 ### Fixed
 

@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
 use gray_matter::engine::YAML;
 use gray_matter::{Matter, ParsedEntity};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 #[allow(dead_code)]
 pub struct Frontmatter {
     pub title: Option<String>,
