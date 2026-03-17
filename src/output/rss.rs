@@ -195,6 +195,7 @@ mod tests {
             theme: "default".to_string(),
             description: "Portfolio".to_string(),
             author: None,
+            site: None,
         };
 
         let count = write_rss_feed(root.join("dist"), &config, &pages).expect("rss should write");
@@ -225,6 +226,7 @@ mod tests {
             theme: "default".to_string(),
             description: "Portfolio".to_string(),
             author: None,
+            site: None,
         };
 
         let count = write_rss_feed(root.join("dist"), &config, &pages).expect("rss should write");

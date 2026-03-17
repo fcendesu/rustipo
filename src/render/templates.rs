@@ -74,7 +74,7 @@ fn template_for_kind(kind: PageKind) -> &'static str {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 struct SectionItem {
     title: String,
     route: String,
@@ -83,49 +83,131 @@ struct SectionItem {
 }
 
 fn render_sections(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<Vec<RenderedPage>> {
-    let sections = [
-        ("blog", "Blog", PageKind::BlogPost),
-        ("projects", "Projects", PageKind::Project),
-    ];
-
     let mut rendered = Vec::new();
-    for (section_name, section_title, kind) in sections {
-        let items = pages
-            .iter()
-            .filter(|page| page.kind == kind)
-            .map(|page| SectionItem {
-                title: page
-                    .frontmatter
-                    .title
-                    .clone()
-                    .unwrap_or_else(|| page.slug.clone()),
-                route: page.route.clone(),
-                summary: page.frontmatter.summary.clone(),
-                date: page.frontmatter.date.clone(),
-            })
-            .collect::<Vec<_>>();
+    rendered.extend(render_blog_section_pages(tera, config, pages)?);
+    rendered.push(render_projects_section_page(tera, config, pages)?);
+
+    Ok(rendered)
+}
+
+fn render_blog_section_pages(
+    tera: &Tera,
+    config: &SiteConfig,
+    pages: &[Page],
+) -> Result<Vec<RenderedPage>> {
+    let items = pages
+        .iter()
+        .filter(|page| page.kind == PageKind::BlogPost)
+        .map(|page| SectionItem {
+            title: page
+                .frontmatter
+                .title
+                .clone()
+                .unwrap_or_else(|| page.slug.clone()),
+            route: page.route.clone(),
+            summary: page.frontmatter.summary.clone(),
+            date: page.frontmatter.date.clone(),
+        })
+        .collect::<Vec<_>>();
+
+    let per_page = config.posts_per_page();
+    let total_pages = usize::max(1, items.len().div_ceil(per_page));
+    let mut rendered = Vec::with_capacity(total_pages);
+
+    for page_idx in 0..total_pages {
+        let start = page_idx * per_page;
+        let end = usize::min(start + per_page, items.len());
+        let paged_items = if start >= items.len() {
+            Vec::new()
+        } else {
+            items[start..end].to_vec()
+        };
+
+        let page_number = page_idx + 1;
+        let route = if page_number == 1 {
+            "/blog/".to_string()
+        } else {
+            format!("/blog/page/{page_number}/")
+        };
+        let prev_url = if page_number <= 1 {
+            None
+        } else if page_number == 2 {
+            Some("/blog/".to_string())
+        } else {
+            Some(format!("/blog/page/{}/", page_number - 1))
+        };
+        let next_url = if page_number < total_pages {
+            Some(format!("/blog/page/{}/", page_number + 1))
+        } else {
+            None
+        };
 
         let mut context = TeraContext::new();
-        context.insert("route", &format!("/{section_name}/"));
-        context.insert("section_name", &section_name);
-        context.insert("section_title", &section_title);
-        context.insert("items", &items);
+        context.insert("route", &route);
+        context.insert("section_name", "blog");
+        context.insert("section_title", "Blog");
+        context.insert("items", &paged_items);
         context.insert("site_title", &config.title);
         context.insert("site_description", &config.description);
-        context.insert("page_title", &format!("{section_title} | {}", config.title));
+        context.insert("page_title", &format!("Blog | {}", config.title));
         context.insert("content_html", "");
+        context.insert("current_page", &page_number);
+        context.insert("total_pages", &total_pages);
+        context.insert("prev_url", &prev_url);
+        context.insert("next_url", &next_url);
 
-        let html = tera
-            .render("section.html", &context)
-            .with_context(|| format!("failed to render section template for '{section_name}'"))?;
+        let html = tera.render("section.html", &context).with_context(|| {
+            format!("failed to render section template for 'blog' page {page_number}")
+        })?;
 
-        rendered.push(RenderedPage {
-            route: format!("/{section_name}/"),
-            html,
-        });
+        rendered.push(RenderedPage { route, html });
     }
 
     Ok(rendered)
+}
+
+fn render_projects_section_page(
+    tera: &Tera,
+    config: &SiteConfig,
+    pages: &[Page],
+) -> Result<RenderedPage> {
+    let items = pages
+        .iter()
+        .filter(|page| page.kind == PageKind::Project)
+        .map(|page| SectionItem {
+            title: page
+                .frontmatter
+                .title
+                .clone()
+                .unwrap_or_else(|| page.slug.clone()),
+            route: page.route.clone(),
+            summary: page.frontmatter.summary.clone(),
+            date: page.frontmatter.date.clone(),
+        })
+        .collect::<Vec<_>>();
+
+    let mut context = TeraContext::new();
+    context.insert("route", "/projects/");
+    context.insert("section_name", "projects");
+    context.insert("section_title", "Projects");
+    context.insert("items", &items);
+    context.insert("site_title", &config.title);
+    context.insert("site_description", &config.description);
+    context.insert("page_title", &format!("Projects | {}", config.title));
+    context.insert("content_html", "");
+    context.insert("current_page", &1usize);
+    context.insert("total_pages", &1usize);
+    context.insert("prev_url", &Option::<String>::None);
+    context.insert("next_url", &Option::<String>::None);
+
+    let html = tera
+        .render("section.html", &context)
+        .with_context(|| "failed to render section template for 'projects'".to_string())?;
+
+    Ok(RenderedPage {
+        route: "/projects/".to_string(),
+        html,
+    })
 }
 
 fn render_tag_pages(tera: &Tera, config: &SiteConfig, pages: &[Page]) -> Result<Vec<RenderedPage>> {
@@ -267,6 +349,7 @@ mod tests {
             theme: "default".to_string(),
             description: "A portfolio".to_string(),
             author: None,
+            site: None,
         };
 
         let pages = build_pages(project_root.join("content")).expect("pages should build");
@@ -282,5 +365,67 @@ mod tests {
         assert!(rendered.iter().any(|p| p.route == "/tags/rust/"));
         assert!(rendered.iter().any(|p| p.route == "/tags/site-gen/"));
         assert!(rendered.iter().all(|p| p.html.contains("<h1>")));
+    }
+
+    #[test]
+    fn paginates_blog_section_when_posts_exceed_page_size() {
+        let dir = tempdir().expect("tempdir should be created");
+        let project_root = dir.path();
+
+        fs::create_dir_all(project_root.join("content/blog"))
+            .expect("content dir should be created");
+        fs::write(project_root.join("content/index.md"), "# Welcome")
+            .expect("index should be written");
+        fs::write(project_root.join("content/blog/post-1.md"), "# Post 1")
+            .expect("post 1 should be written");
+        fs::write(project_root.join("content/blog/post-2.md"), "# Post 2")
+            .expect("post 2 should be written");
+        fs::write(project_root.join("content/blog/post-3.md"), "# Post 3")
+            .expect("post 3 should be written");
+
+        let theme_root = project_root.join("themes/default");
+        fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+        fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+        fs::write(
+            theme_root.join("templates/base.html"),
+            "{% block body %}{% endblock body %}",
+        )
+        .expect("base template should be written");
+        for template in ["index.html", "page.html", "post.html", "project.html"] {
+            fs::write(
+                theme_root.join("templates").join(template),
+                "{% extends \"base.html\" %}{% block body %}<h1>{{ page_title }}</h1>{{ content_html | safe }}{% endblock body %}",
+            )
+            .expect("template should be written");
+        }
+        fs::write(
+            theme_root.join("templates/section.html"),
+            "{% extends \"base.html\" %}{% block body %}<h1>{{ page_title }}</h1>{% for i in items %}<a href=\"{{ i.route }}\">{{ i.title }}</a>{% endfor %}{% if next_url %}<a href=\"{{ next_url }}\">Next</a>{% endif %}{% endblock body %}",
+        )
+        .expect("section template should be written");
+        fs::write(
+            theme_root.join("theme.toml"),
+            "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+        )
+        .expect("theme metadata should be written");
+
+        let config = SiteConfig {
+            title: "My Site".to_string(),
+            base_url: "https://example.com".to_string(),
+            theme: "default".to_string(),
+            description: "A portfolio".to_string(),
+            author: None,
+            site: Some(crate::config::SiteOptions {
+                posts_per_page: Some(2),
+            }),
+        };
+
+        let pages = build_pages(project_root.join("content")).expect("pages should build");
+        let theme = load_active_theme(project_root, "default").expect("theme should load");
+
+        let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+        assert!(rendered.iter().any(|p| p.route == "/blog/"));
+        assert!(rendered.iter().any(|p| p.route == "/blog/page/2/"));
     }
 }

@@ -12,6 +12,7 @@ pub struct SiteConfig {
     pub theme: String,
     pub description: String,
     pub author: Option<AuthorConfig>,
+    pub site: Option<SiteOptions>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -21,6 +22,22 @@ pub struct AuthorConfig {
     pub email: Option<String>,
     pub github: Option<String>,
     pub linkedin: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+pub struct SiteOptions {
+    pub posts_per_page: Option<usize>,
+}
+
+impl SiteConfig {
+    pub fn posts_per_page(&self) -> usize {
+        self.site
+            .as_ref()
+            .and_then(|s| s.posts_per_page)
+            .filter(|v| *v > 0)
+            .unwrap_or(10)
+    }
 }
 
 pub fn load(path: impl AsRef<Path>) -> Result<SiteConfig> {
