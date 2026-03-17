@@ -14,7 +14,6 @@ mod section;
 mod tags;
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub struct RenderedPage {
     pub route: String,
     pub html: String,
