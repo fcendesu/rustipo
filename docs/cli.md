@@ -40,6 +40,7 @@ Current behavior:
 - Generates tag index pages at `/tags/<tag>/` from blog post tags
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
+- Generates search index at `dist/search-index.json` from site content
 
 ## `rustipo serve`
 

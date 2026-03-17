@@ -52,6 +52,7 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/blog/index.html").is_file());
     assert!(project.join("dist/projects/index.html").is_file());
     assert!(project.join("dist/style.css").is_file());
+    assert!(project.join("dist/search-index.json").is_file());
 }
 
 #[test]
