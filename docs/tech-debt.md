@@ -4,26 +4,66 @@ This file tracks known implementation debt that should be addressed after the re
 
 ## Debt register
 
-### 1) Temporary `#[allow(dead_code)]` annotations
+### 1) Temporary `#[allow(dead_code)]` annotations remain in core models
 
-- Area: content/theme models
-- Current state: some structs/fields are allowed as dead code during incremental implementation
-- Impact: can hide stale or unused fields if left in place
-- Proposed fix: remove allowances when all fields are consumed by final pipeline
-- Target milestone: Milestone 4-5
+- Area: `src/content/*`, `src/theme/*`, `src/render/*`
+- Current state: several structs/fields still use `#[allow(dead_code)]` from early scaffolding
+- Impact: can hide stale fields and reduce signal from compiler warnings
+- Proposed fix:
+  - audit each `allow(dead_code)` usage
+  - remove allowances where fields are now consumed
+  - for intentionally-unused fields, document rationale near the type
+- Priority: Medium
+- Target: Near-term cleanup
 
-### 2) Frontmatter date is currently an unvalidated string
+### 2) Frontmatter `date` remains a raw string at parse-time
 
-- Area: frontmatter model
-- Current state: `date` parsed as `Option<String>`
-- Impact: invalid dates are not caught early
-- Proposed fix: add date parsing/validation strategy with readable errors
-- Target milestone: Post-MVP or Milestone 5
+- Area: `src/content/frontmatter.rs` and downstream output modules
+- Current state: `date` is parsed as `Option<String>` and validated only in specific pipelines (RSS/archive)
+- Impact:
+  - invalid dates can survive into page data
+  - behavior differs by feature (RSS may skip, other outputs may still render)
+- Proposed fix:
+  - introduce a shared date parsing utility or typed date wrapper
+  - validate at content-model build stage with readable file/field errors
+  - decide policy for invalid dates (fail-fast vs warn-and-skip)
+- Priority: High
+- Target: Next quality pass
 
-### 3) Serve watch mode does not yet auto-refresh browser
+### 3) `serve --watch` rebuilds but still lacks browser live reload
 
-- Area: dev workflow
-- Current state: `rustipo serve --watch` rebuilds on changes, but browser reload remains manual
-- Impact: users still need to refresh browser after rebuild
-- Proposed fix: add live-reload support (for example websocket + injected reload script)
-- Target milestone: Post-MVP
+- Area: dev workflow (`src/commands/serve.rs`, `src/server/*`)
+- Current state: file watch + rebuild works, browser refresh is manual
+- Impact: slower authoring loop than expected from modern static-site workflows
+- Proposed fix:
+  - add optional live-reload endpoint (websocket or SSE)
+  - inject reload script only in serve/dev mode
+  - keep production output unchanged
+- Priority: Medium
+- Target: Post-`0.2.x`
+
+### 4) Shortcode system is intentionally minimal and string-based
+
+- Area: `src/content/markdown.rs`
+- Current state: shortcodes are preprocessed with lightweight parsing and two built-ins (`youtube`, `link`)
+- Impact:
+  - no reusable shortcode registry yet
+  - limited validation/escaping policy per shortcode
+  - adding many shortcodes will bloat current module
+- Proposed fix:
+  - extract shortcode parser/registry into `src/content/shortcodes/`
+  - define typed argument decoding and shared error policy
+  - add integration tests for nested/edge-case shortcode scenarios
+- Priority: Medium
+- Target: `0.3.0` prep
+
+### 5) Release workflow still needs final validation after merge-strategy change
+
+- Area: `.github/workflows/release-please.yml`, repo settings
+- Current state: merge policy now preserves commits (rebase/merge-commit), but release flow should be re-verified end-to-end
+- Impact: potential release friction if assumptions were based on squash merges
+- Proposed fix:
+  - run one full release cycle (`release PR -> merge -> tag/release`)
+  - document exact maintainer release steps in docs
+- Priority: Medium
+- Target: Next release cycle
