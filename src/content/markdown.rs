@@ -1,5 +1,5 @@
-use std::sync::OnceLock;
 use std::collections::BTreeMap;
+use std::sync::OnceLock;
 
 use pulldown_cmark::{CodeBlockKind, CowStr, Event, Options, Parser, Tag, TagEnd, html};
 use syntect::highlighting::ThemeSet;
