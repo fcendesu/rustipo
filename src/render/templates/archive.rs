@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::SiteConfig;
+use crate::config::{FaviconLinks, SiteConfig};
 use crate::content::date::ContentDate;
 use crate::content::pages::{Page, PageKind};
 
@@ -28,6 +28,7 @@ pub(super) fn render_blog_archive_page(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<Vec<RenderedPage>> {
     let mut grouped: BTreeMap<String, Vec<ArchiveItem>> = BTreeMap::new();
     let mut all_items = Vec::new();
@@ -76,6 +77,13 @@ pub(super) fn render_blog_archive_page(
     context.insert("archive_groups", &archive_groups);
     context.insert("site_title", &config.title);
     context.insert("site_description", &config.description);
+    context.insert("site_favicon", &favicon_links.icon_href);
+    context.insert("site_favicon_svg", &favicon_links.svg_href);
+    context.insert("site_favicon_ico", &favicon_links.ico_href);
+    context.insert(
+        "site_apple_touch_icon",
+        &favicon_links.apple_touch_icon_href,
+    );
     context.insert("page_title", &format!("Archive | {}", config.title));
     context.insert("content_html", "");
     context.insert("current_page", &1usize);

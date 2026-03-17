@@ -61,8 +61,12 @@ fn renders_pages_with_theme_templates() {
 
     let pages = build_pages(project_root.join("content")).expect("pages should build");
     let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
 
-    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+    let rendered =
+        render_pages(&theme, &config, &pages, &favicon_links).expect("pages should render");
     assert_eq!(rendered.len(), 8);
     assert!(rendered.iter().any(|p| p.route == "/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/post/"));
@@ -124,13 +128,18 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         author: None,
         site: Some(crate::config::SiteOptions {
             posts_per_page: Some(2),
+            favicon: None,
         }),
     };
 
     let pages = build_pages(project_root.join("content")).expect("pages should build");
     let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
 
-    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+    let rendered =
+        render_pages(&theme, &config, &pages, &favicon_links).expect("pages should render");
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/page/2/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/archive/"));
@@ -192,7 +201,11 @@ fn renders_archive_groups_for_dated_posts() {
 
     let pages = build_pages(project_root.join("content")).expect("pages should build");
     let theme = load_active_theme(project_root, "default").expect("theme should load");
-    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let rendered =
+        render_pages(&theme, &config, &pages, &favicon_links).expect("pages should render");
 
     let archive = rendered
         .iter()
@@ -269,7 +282,11 @@ fn exposes_frontmatter_metadata_in_page_templates() {
 
     let pages = build_pages(project_root.join("content")).expect("pages should build");
     let theme = load_active_theme(project_root, "default").expect("theme should load");
-    let rendered = render_pages(&theme, &config, &pages).expect("pages should render");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let rendered =
+        render_pages(&theme, &config, &pages, &favicon_links).expect("pages should render");
     let post = rendered
         .iter()
         .find(|page| page.route == "/blog/post/")

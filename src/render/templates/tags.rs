@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::SiteConfig;
+use crate::config::{FaviconLinks, SiteConfig};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -20,6 +20,7 @@ pub(super) fn render_tag_pages(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<Vec<RenderedPage>> {
     let mut tags: BTreeMap<String, Vec<SectionItem>> = BTreeMap::new();
 
@@ -63,6 +64,13 @@ pub(super) fn render_tag_pages(
         context.insert("items", &items);
         context.insert("site_title", &config.title);
         context.insert("site_description", &config.description);
+        context.insert("site_favicon", &favicon_links.icon_href);
+        context.insert("site_favicon_svg", &favicon_links.svg_href);
+        context.insert("site_favicon_ico", &favicon_links.ico_href);
+        context.insert(
+            "site_apple_touch_icon",
+            &favicon_links.apple_touch_icon_href,
+        );
         context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
         context.insert("content_html", "");
 
