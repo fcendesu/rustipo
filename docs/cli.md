@@ -16,6 +16,7 @@ Current behavior:
 
 - Creates starter `content/`, `static/`, and `themes/default/` structure
 - Writes starter `config.toml` and Markdown pages
+- Writes starter `static/favicon.svg` and configures favicon in `config.toml`
 - Writes required default theme templates and starter CSS
 - Fails if target directory already exists
 
@@ -35,6 +36,8 @@ Current behavior:
 - Renders supported shortcodes in Markdown content
 - Applies syntax highlighting to fenced code blocks
 - Renders pages through theme templates
+- Resolves favicon links for template context (`site_favicon*` variables)
+- Fails with a readable error when configured favicon path is missing in `static/`
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Fails with readable error on duplicate rendered output route collisions
 - Copies theme and user static assets into `dist/`

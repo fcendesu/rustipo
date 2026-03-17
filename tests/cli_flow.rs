@@ -52,7 +52,13 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/blog/index.html").is_file());
     assert!(project.join("dist/projects/index.html").is_file());
     assert!(project.join("dist/style.css").is_file());
+    assert!(project.join("dist/favicon.svg").is_file());
     assert!(project.join("dist/search-index.json").is_file());
+
+    let index_html =
+        fs::read_to_string(project.join("dist/index.html")).expect("index html should be readable");
+    assert!(index_html.contains("rel=\"icon\""));
+    assert!(index_html.contains("favicon.svg"));
 }
 
 #[test]
@@ -225,6 +231,57 @@ fn build_supports_inherited_theme_overrides() {
 
     let style = fs::read_to_string(root.join("dist/style.css")).expect("style should exist");
     assert_eq!(style, "child-style");
+}
+
+#[test]
+fn build_fails_when_configured_favicon_is_missing() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    fs::create_dir_all(root.join("content")).expect("content dir should be created");
+    fs::create_dir_all(root.join("themes/default/templates"))
+        .expect("theme templates should be created");
+    fs::create_dir_all(root.join("themes/default/static")).expect("theme static should be created");
+    fs::create_dir_all(root.join("static")).expect("static dir should be created");
+
+    fs::write(root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        root.join("config.toml"),
+        "title = \"Rustipo\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\ndescription = \"Test\"\n\n[site]\nfavicon = \"/favicon.ico\"\n",
+    )
+    .expect("config should be written");
+    fs::write(
+        root.join("themes/default/theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+    for template in [
+        "base.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+        "index.html",
+    ] {
+        fs::write(
+            root.join("themes/default/templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        root.join("themes/default/templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+
+    let output = run_cli(root, &["build"]);
+    assert!(!output.status.success(), "build should fail");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("configured favicon file not found"),
+        "unexpected stderr: {stderr}"
+    );
 }
 
 #[test]

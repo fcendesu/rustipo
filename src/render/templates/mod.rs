@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tera::Tera;
 use walkdir::WalkDir;
 
-use crate::config::SiteConfig;
+use crate::config::{FaviconLinks, SiteConfig};
 use crate::content::pages::Page;
 use crate::theme::models::Theme;
 
@@ -23,13 +23,24 @@ pub fn render_pages(
     theme: &Theme,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme)?;
 
-    let mut rendered = page::render_content_pages(&tera, config, pages)?;
-    rendered.extend(section::render_sections(&tera, config, pages)?);
-    rendered.extend(archive::render_blog_archive_page(&tera, config, pages)?);
-    rendered.extend(tags::render_tag_pages(&tera, config, pages)?);
+    let mut rendered = page::render_content_pages(&tera, config, pages, favicon_links)?;
+    rendered.extend(section::render_sections(
+        &tera,
+        config,
+        pages,
+        favicon_links,
+    )?);
+    rendered.extend(archive::render_blog_archive_page(
+        &tera,
+        config,
+        pages,
+        favicon_links,
+    )?);
+    rendered.extend(tags::render_tag_pages(&tera, config, pages, favicon_links)?);
 
     Ok(rendered)
 }

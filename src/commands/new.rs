@@ -68,7 +68,18 @@ description = "Default Rustipo theme"
 base_url = "https://example.com"
 theme = "default"
 description = "My personal portfolio site"
+
+[site]
+favicon = "/favicon.svg"
 "#,
+    )?;
+    write_file(
+        &root.join("static/favicon.svg"),
+        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#111827"/>
+  <text x="50%" y="54%" text-anchor="middle" font-size="30" font-family="Arial, sans-serif" fill="#ffffff">R</text>
+</svg>
+"##,
     )?;
     write_file(
         &root.join("themes/default/templates/base.html"),
@@ -78,6 +89,10 @@ description = "My personal portfolio site"
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page_title }}</title>
+    {% if site_favicon_svg %}<link rel="icon" href="{{ site_favicon_svg }}" type="image/svg+xml" />{% endif %}
+    {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
+    {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
+    {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>

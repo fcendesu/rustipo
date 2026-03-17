@@ -13,6 +13,7 @@
     blog/
     projects/
   static/
+    favicon.svg
   themes/
     default/
       templates/

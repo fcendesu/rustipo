@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use serde::Serialize;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::SiteConfig;
+use crate::config::{FaviconLinks, SiteConfig};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -19,10 +19,21 @@ pub(super) fn render_sections(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<Vec<RenderedPage>> {
     let mut rendered = Vec::new();
-    rendered.extend(render_blog_section_pages(tera, config, pages)?);
-    rendered.push(render_projects_section_page(tera, config, pages)?);
+    rendered.extend(render_blog_section_pages(
+        tera,
+        config,
+        pages,
+        favicon_links,
+    )?);
+    rendered.push(render_projects_section_page(
+        tera,
+        config,
+        pages,
+        favicon_links,
+    )?);
 
     Ok(rendered)
 }
@@ -31,6 +42,7 @@ fn render_blog_section_pages(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<Vec<RenderedPage>> {
     let items = pages
         .iter()
@@ -86,6 +98,13 @@ fn render_blog_section_pages(
         context.insert("items", &paged_items);
         context.insert("site_title", &config.title);
         context.insert("site_description", &config.description);
+        context.insert("site_favicon", &favicon_links.icon_href);
+        context.insert("site_favicon_svg", &favicon_links.svg_href);
+        context.insert("site_favicon_ico", &favicon_links.ico_href);
+        context.insert(
+            "site_apple_touch_icon",
+            &favicon_links.apple_touch_icon_href,
+        );
         context.insert("page_title", &format!("Blog | {}", config.title));
         context.insert("content_html", "");
         context.insert("current_page", &page_number);
@@ -107,6 +126,7 @@ fn render_projects_section_page(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    favicon_links: &FaviconLinks,
 ) -> Result<RenderedPage> {
     let items = pages
         .iter()
@@ -130,6 +150,13 @@ fn render_projects_section_page(
     context.insert("items", &items);
     context.insert("site_title", &config.title);
     context.insert("site_description", &config.description);
+    context.insert("site_favicon", &favicon_links.icon_href);
+    context.insert("site_favicon_svg", &favicon_links.svg_href);
+    context.insert("site_favicon_ico", &favicon_links.ico_href);
+    context.insert(
+        "site_apple_touch_icon",
+        &favicon_links.apple_touch_icon_href,
+    );
     context.insert("page_title", &format!("Projects | {}", config.title));
     context.insert("content_html", "");
     context.insert("current_page", &1usize);

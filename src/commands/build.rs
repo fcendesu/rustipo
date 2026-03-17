@@ -15,9 +15,11 @@ pub fn build_site() -> Result<()> {
         "Loaded theme: {} ({})",
         theme.metadata.name, theme.metadata.version
     );
+    let favicon_links = config.resolve_favicon_links(".")?;
     let pages = crate::content::pages::build_pages("content")?;
     println!("Built pages from content: {}", pages.len());
-    let rendered_pages = crate::render::templates::render_pages(&theme, &config, &pages)?;
+    let rendered_pages =
+        crate::render::templates::render_pages(&theme, &config, &pages, &favicon_links)?;
     println!("Rendered pages with templates: {}", rendered_pages.len());
     crate::output::writer::write_rendered_pages("dist", &rendered_pages)?;
     let copied_assets = crate::output::assets::copy_assets_with_collision_check(
