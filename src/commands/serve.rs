@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
 use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
@@ -22,7 +22,12 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
 
     if watch {
         println!("Watch mode enabled");
+        let start = Instant::now();
         crate::commands::build::build_site()?;
+        println!(
+            "Initial build completed in {}",
+            format_duration(start.elapsed())
+        );
         if let Some(version) = &live_reload_version {
             spawn_watch_thread(Arc::clone(version))?;
         }
@@ -95,13 +100,17 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
                     }
 
                     println!("Change detected. Rebuilding...");
+                    let start = Instant::now();
                     match crate::commands::build::build_site_quiet() {
                         Ok(_) => {
                             last_fingerprint = Some(current_fingerprint);
                             live_reload_version.fetch_add(1, Ordering::SeqCst);
-                            println!("Rebuild completed");
+                            println!("Rebuild completed in {}", format_duration(start.elapsed()));
                         }
-                        Err(err) => eprintln!("Rebuild failed: {err}"),
+                        Err(err) => eprintln!(
+                            "Rebuild failed in {}: {err}",
+                            format_duration(start.elapsed())
+                        ),
                     }
                 }
                 Ok(Err(err)) => eprintln!("Watch error: {err}"),
@@ -155,15 +164,26 @@ fn watch_paths() -> Vec<std::path::PathBuf> {
     ]
 }
 
+fn format_duration(duration: Duration) -> String {
+    let millis = duration.as_millis();
+    if millis < 1_000 {
+        return format!("{millis}ms");
+    }
+
+    let seconds = duration.as_secs_f64();
+    format!("{seconds:.2}s")
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::Path;
+    use std::time::Duration;
 
     use std::fs;
 
     use tempfile::tempdir;
 
-    use super::{compute_watch_fingerprint, format_addr, watch_paths};
+    use super::{compute_watch_fingerprint, format_addr, format_duration, watch_paths};
 
     #[test]
     fn formats_host_and_port() {
@@ -200,5 +220,11 @@ mod tests {
         fs::write(&markdown, "# Home Updated").expect("markdown should be updated");
         let third = compute_watch_fingerprint(&paths).expect("fingerprint should be computed");
         assert_ne!(second, third);
+    }
+
+    #[test]
+    fn formats_duration_for_millis_and_seconds() {
+        assert_eq!(format_duration(Duration::from_millis(140)), "140ms");
+        assert_eq!(format_duration(Duration::from_millis(1450)), "1.45s");
     }
 }
