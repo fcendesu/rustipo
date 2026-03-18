@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.4.0...rustipo-v0.5.0) (2026-03-18)
+
+
+### Features
+
+* **serve:** print watch rebuild durations ([19366b1](https://github.com/fcendesu/rustipo/commit/19366b17ced8b6070c9bbb345d7be02fb1c1f8f1))
+
+
+### Bug Fixes
+
+* **serve:** skip no-op rebuilds in watch mode ([b2b2c72](https://github.com/fcendesu/rustipo/commit/b2b2c72d72ffd64d873a5cce3434900ffdfc4a9d))
+
 ## [0.4.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.3.1...rustipo-v0.4.0) (2026-03-17)
 
 
