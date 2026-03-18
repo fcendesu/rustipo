@@ -18,6 +18,7 @@ Current behavior:
 - Writes starter `config.toml` and Markdown pages
 - Writes starter `static/favicon.svg` and configures favicon in `config.toml`
 - Writes required default theme templates and starter CSS
+- Starter CSS includes default markdown prose styling (headings, spacing, code, links, tables, blockquotes)
 - Fails if target directory already exists
 
 ## `rustipo build`
