@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig};
+use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -21,6 +21,8 @@ pub(super) fn render_tag_pages(
     config: &SiteConfig,
     pages: &[Page],
     favicon_links: &FaviconLinks,
+    site_style: &SiteStyleOptions,
+    site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let mut tags: BTreeMap<String, Vec<SectionItem>> = BTreeMap::new();
 
@@ -62,14 +64,12 @@ pub(super) fn render_tag_pages(
         context.insert("section_name", "tags");
         context.insert("section_title", &format!("Tag: {tag_slug}"));
         context.insert("items", &items);
-        context.insert("site_title", &config.title);
-        context.insert("site_description", &config.description);
-        context.insert("site_favicon", &favicon_links.icon_href);
-        context.insert("site_favicon_svg", &favicon_links.svg_href);
-        context.insert("site_favicon_ico", &favicon_links.ico_href);
-        context.insert(
-            "site_apple_touch_icon",
-            &favicon_links.apple_touch_icon_href,
+        super::insert_common_site_context(
+            &mut context,
+            config,
+            favicon_links,
+            site_style,
+            site_has_custom_css,
         );
         context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
         context.insert("content_html", "");

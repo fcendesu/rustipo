@@ -2,3 +2,13 @@ title = "Basic Portfolio"
 base_url = "https://example.com"
 theme = "default"
 description = "A starter Rustipo example site"
+
+# Basic design controls (applied by theme CSS variables).
+# You can tune layout/typography here without editing CSS files.
+[site.layout]
+content_width = "98%"
+top_gap = "2rem"
+vertical_align = "center"
+
+[site.typography]
+line_height = "1.5"

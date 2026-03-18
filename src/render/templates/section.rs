@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use serde::Serialize;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig};
+use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -20,6 +20,8 @@ pub(super) fn render_sections(
     config: &SiteConfig,
     pages: &[Page],
     favicon_links: &FaviconLinks,
+    site_style: &SiteStyleOptions,
+    site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let mut rendered = Vec::new();
     rendered.extend(render_blog_section_pages(
@@ -27,12 +29,16 @@ pub(super) fn render_sections(
         config,
         pages,
         favicon_links,
+        site_style,
+        site_has_custom_css,
     )?);
     rendered.push(render_projects_section_page(
         tera,
         config,
         pages,
         favicon_links,
+        site_style,
+        site_has_custom_css,
     )?);
 
     Ok(rendered)
@@ -43,6 +49,8 @@ fn render_blog_section_pages(
     config: &SiteConfig,
     pages: &[Page],
     favicon_links: &FaviconLinks,
+    site_style: &SiteStyleOptions,
+    site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let items = pages
         .iter()
@@ -96,14 +104,12 @@ fn render_blog_section_pages(
         context.insert("section_name", "blog");
         context.insert("section_title", "Blog");
         context.insert("items", &paged_items);
-        context.insert("site_title", &config.title);
-        context.insert("site_description", &config.description);
-        context.insert("site_favicon", &favicon_links.icon_href);
-        context.insert("site_favicon_svg", &favicon_links.svg_href);
-        context.insert("site_favicon_ico", &favicon_links.ico_href);
-        context.insert(
-            "site_apple_touch_icon",
-            &favicon_links.apple_touch_icon_href,
+        super::insert_common_site_context(
+            &mut context,
+            config,
+            favicon_links,
+            site_style,
+            site_has_custom_css,
         );
         context.insert("page_title", &format!("Blog | {}", config.title));
         context.insert("content_html", "");
@@ -127,6 +133,8 @@ fn render_projects_section_page(
     config: &SiteConfig,
     pages: &[Page],
     favicon_links: &FaviconLinks,
+    site_style: &SiteStyleOptions,
+    site_has_custom_css: bool,
 ) -> Result<RenderedPage> {
     let items = pages
         .iter()
@@ -148,14 +156,12 @@ fn render_projects_section_page(
     context.insert("section_name", "projects");
     context.insert("section_title", "Projects");
     context.insert("items", &items);
-    context.insert("site_title", &config.title);
-    context.insert("site_description", &config.description);
-    context.insert("site_favicon", &favicon_links.icon_href);
-    context.insert("site_favicon_svg", &favicon_links.svg_href);
-    context.insert("site_favicon_ico", &favicon_links.ico_href);
-    context.insert(
-        "site_apple_touch_icon",
-        &favicon_links.apple_touch_icon_href,
+    super::insert_common_site_context(
+        &mut context,
+        config,
+        favicon_links,
+        site_style,
+        site_has_custom_css,
     );
     context.insert("page_title", &format!("Projects | {}", config.title));
     context.insert("content_html", "");
