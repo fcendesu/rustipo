@@ -38,6 +38,12 @@ Current behavior:
 - Renders pages through theme templates
 - Resolves favicon links for template context (`site_favicon*` variables)
 - Fails with a readable error when configured favicon path is missing in `static/`
+- Exposes style context from `config.toml` to templates (`site_style.*`):
+  - `site.layout.content_width`
+  - `site.layout.top_gap`
+  - `site.layout.vertical_align` (`center` or `start`, default: `center`)
+  - `site.typography.line_height`
+- Auto-includes `static/custom.css` in template context when present (`site_has_custom_css`)
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Fails with readable error on duplicate rendered output route collisions
 - Copies theme and user static assets into `dist/`
@@ -129,3 +135,20 @@ Current behavior:
 - Writes `.github/workflows/deploy-pages.yml`
 - Workflow runs `cargo run -- build` and deploys `dist/` using Pages actions
 - Refuses to overwrite existing workflow unless `--force` is provided
+
+## Style Options (`config.toml`)
+
+You can control default layout behavior without editing theme CSS:
+
+```toml
+[site.layout]
+content_width = "98%"
+top_gap = "2rem"
+vertical_align = "center" # "center" (default) or "start"
+
+[site.typography]
+line_height = "1.5"
+```
+
+- `vertical_align = "center"` keeps the classic vertically centered intro layout.
+- `vertical_align = "start"` aligns content to the top while keeping horizontal centering.

@@ -14,6 +14,7 @@
     projects/
   static/
     favicon.svg
+    custom.css (optional)
   themes/
     default/
       templates/
@@ -26,6 +27,7 @@
 
 - `content/`: Markdown source content for pages, blog posts, and projects
 - `static/`: user-provided static assets copied to output
+- `static/custom.css` (optional): loaded after theme CSS when present for user overrides
 - `themes/`: theme files (templates + theme assets + metadata)
 - `config.toml`: site-level configuration
 - `dist/`: generated static output (created by build step)
