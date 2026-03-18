@@ -70,6 +70,7 @@ Current behavior:
 - Supports custom host/port via `--host` and `--port`
 - Supports watch mode with `--watch` (rebuilds on file changes)
 - In watch mode, injects live-reload script into HTML responses and auto-refreshes browser after successful rebuild
+- In watch mode, skips rebuild when file content hash is unchanged (reduces no-op save rebuild noise)
 - Prints local URL on startup
 - Returns readable error if `dist/` does not exist
 

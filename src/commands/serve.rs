@@ -1,3 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
+use std::fs;
+use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -7,6 +10,7 @@ use std::time::Duration;
 
 use anyhow::{Context, Result};
 use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
+use walkdir::WalkDir;
 
 pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
     let addr = format_addr(host, port);
@@ -41,6 +45,7 @@ fn format_addr(host: &str, port: u16) -> String {
 }
 
 fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
+    let watch_paths = watch_paths();
     let (tx, rx) = mpsc::channel::<notify::Result<Event>>();
     let mut watcher = RecommendedWatcher::new(
         move |res| {
@@ -50,10 +55,10 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
     )
     .context("failed to initialize file watcher")?;
 
-    for path in watch_paths() {
+    for path in &watch_paths {
         if path.exists() {
             watcher
-                .watch(&path, RecursiveMode::Recursive)
+                .watch(path, RecursiveMode::Recursive)
                 .with_context(|| format!("failed to watch path: {}", path.display()))?;
         }
     }
@@ -61,6 +66,7 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
     thread::spawn(move || {
         let _watcher = watcher;
         let debounce = Duration::from_millis(300);
+        let mut last_fingerprint = compute_watch_fingerprint(&watch_paths).ok();
 
         loop {
             match rx.recv() {
@@ -77,9 +83,21 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
                         }
                     }
 
+                    let current_fingerprint = match compute_watch_fingerprint(&watch_paths) {
+                        Ok(value) => value,
+                        Err(err) => {
+                            eprintln!("Watch fingerprint error: {err}");
+                            continue;
+                        }
+                    };
+                    if last_fingerprint == Some(current_fingerprint) {
+                        continue;
+                    }
+
                     println!("Change detected. Rebuilding...");
-                    match crate::commands::build::build_site() {
+                    match crate::commands::build::build_site_quiet() {
                         Ok(_) => {
+                            last_fingerprint = Some(current_fingerprint);
                             live_reload_version.fetch_add(1, Ordering::SeqCst);
                             println!("Rebuild completed");
                         }
@@ -95,6 +113,39 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
     Ok(())
 }
 
+fn compute_watch_fingerprint(paths: &[std::path::PathBuf]) -> Result<u64> {
+    let mut file_paths = Vec::new();
+
+    for path in paths {
+        if path.is_file() {
+            file_paths.push(path.clone());
+            continue;
+        }
+        if !path.is_dir() {
+            continue;
+        }
+
+        for entry in WalkDir::new(path) {
+            let entry = entry.with_context(|| format!("failed to walk: {}", path.display()))?;
+            if entry.file_type().is_file() {
+                file_paths.push(entry.path().to_path_buf());
+            }
+        }
+    }
+
+    file_paths.sort();
+
+    let mut hasher = DefaultHasher::new();
+    for path in &file_paths {
+        path.hash(&mut hasher);
+        let bytes = fs::read(path)
+            .with_context(|| format!("failed to read watched file: {}", path.display()))?;
+        bytes.hash(&mut hasher);
+    }
+
+    Ok(hasher.finish())
+}
+
 fn watch_paths() -> Vec<std::path::PathBuf> {
     vec![
         Path::new("content").to_path_buf(),
@@ -108,7 +159,11 @@ fn watch_paths() -> Vec<std::path::PathBuf> {
 mod tests {
     use std::path::Path;
 
-    use super::{format_addr, watch_paths};
+    use std::fs;
+
+    use tempfile::tempdir;
+
+    use super::{compute_watch_fingerprint, format_addr, watch_paths};
 
     #[test]
     fn formats_host_and_port() {
@@ -123,5 +178,27 @@ mod tests {
         assert!(paths.contains(&Path::new("themes").to_path_buf()));
         assert!(paths.contains(&Path::new("static").to_path_buf()));
         assert!(paths.contains(&Path::new("config.toml").to_path_buf()));
+    }
+
+    #[test]
+    fn fingerprint_changes_only_when_file_content_changes() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+        let markdown = content_dir.join("index.md");
+        fs::write(&markdown, "# Home").expect("markdown should be written");
+
+        let paths = vec![content_dir];
+        let first = compute_watch_fingerprint(&paths).expect("fingerprint should be computed");
+
+        // Rewrite same content: fingerprint should stay stable.
+        fs::write(&markdown, "# Home").expect("markdown should be rewritten");
+        let second = compute_watch_fingerprint(&paths).expect("fingerprint should be computed");
+        assert_eq!(first, second);
+
+        // Change content: fingerprint should change.
+        fs::write(&markdown, "# Home Updated").expect("markdown should be updated");
+        let third = compute_watch_fingerprint(&paths).expect("fingerprint should be computed");
+        assert_ne!(second, third);
     }
 }
