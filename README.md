@@ -24,6 +24,20 @@ cargo run -- build
 cargo run -- serve
 ```
 
+## Layout Without CSS Editing
+
+Use `config.toml` for basic style controls:
+
+```toml
+[site.layout]
+content_width = "98%"
+top_gap = "2rem"
+vertical_align = "center" # or "start"
+
+[site.typography]
+line_height = "1.5"
+```
+
 ## Current Features
 
 - Markdown content pipeline with YAML frontmatter and draft filtering
@@ -40,6 +54,8 @@ cargo run -- serve
 - Local preview server with watch mode and live reload (`rustipo serve --watch`)
 - Theme installation from GitHub shorthand/URL or local git repo
 - GitHub Pages deploy workflow scaffolding
+- Config-driven layout knobs (`content_width`, `top_gap`, `vertical_align`, `line_height`)
+- Optional `static/custom.css` override loaded after theme CSS
 
 ## Project Layout
 

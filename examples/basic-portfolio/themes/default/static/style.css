@@ -1,7 +1,26 @@
 body {
   font-family: sans-serif;
-  max-width: 760px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  line-height: 1.5;
+  margin: 0;
+  min-height: 100vh;
+  padding: var(--rustipo-top-gap) 0 2rem;
+  display: grid;
+  place-items: var(--rustipo-vertical-align) center;
+  line-height: var(--rustipo-line-height);
+}
+
+main {
+  width: fit-content;
+  max-width: var(--rustipo-content-width);
+  margin: 0 auto;
+  padding-inline: 1rem;
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+p,
+li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

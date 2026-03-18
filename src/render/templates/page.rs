@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig};
+use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
@@ -11,6 +11,8 @@ pub(super) fn render_content_pages(
     config: &SiteConfig,
     pages: &[Page],
     favicon_links: &FaviconLinks,
+    site_style: &SiteStyleOptions,
+    site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let mut rendered = Vec::with_capacity(pages.len());
 
@@ -30,14 +32,12 @@ pub(super) fn render_content_pages(
         context.insert("page_tags", &page.frontmatter.tags);
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
-        context.insert("site_title", &config.title);
-        context.insert("site_description", &config.description);
-        context.insert("site_favicon", &favicon_links.icon_href);
-        context.insert("site_favicon_svg", &favicon_links.svg_href);
-        context.insert("site_favicon_ico", &favicon_links.ico_href);
-        context.insert(
-            "site_apple_touch_icon",
-            &favicon_links.apple_touch_icon_href,
+        super::insert_common_site_context(
+            &mut context,
+            config,
+            favicon_links,
+            site_style,
+            site_has_custom_css,
         );
         context.insert(
             "page_title",

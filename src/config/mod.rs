@@ -30,6 +30,20 @@ pub struct AuthorConfig {
 pub struct SiteOptions {
     pub posts_per_page: Option<usize>,
     pub favicon: Option<String>,
+    pub layout: Option<LayoutOptions>,
+    pub typography: Option<TypographyOptions>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LayoutOptions {
+    pub content_width: Option<String>,
+    pub top_gap: Option<String>,
+    pub vertical_align: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TypographyOptions {
+    pub line_height: Option<String>,
 }
 
 impl SiteConfig {
@@ -88,6 +102,32 @@ impl SiteConfig {
 
         Ok(links)
     }
+
+    pub fn style_options(&self) -> SiteStyleOptions {
+        let layout = self.site.as_ref().and_then(|site| site.layout.as_ref());
+        let typography = self.site.as_ref().and_then(|site| site.typography.as_ref());
+
+        SiteStyleOptions {
+            content_width: css_value_or_default(
+                layout.and_then(|l| l.content_width.as_deref()),
+                "90%",
+            ),
+            top_gap: css_value_or_default(layout.and_then(|l| l.top_gap.as_deref()), "2rem"),
+            vertical_align: vertical_align_or_default(
+                layout.and_then(|l| l.vertical_align.as_deref()),
+                "center",
+            ),
+            line_height: css_value_or_default(
+                typography.and_then(|t| t.line_height.as_deref()),
+                "1.5",
+            ),
+        }
+    }
+
+    pub fn has_custom_css(&self, project_root: impl AsRef<Path>) -> bool {
+        let _ = self;
+        project_root.as_ref().join("static/custom.css").is_file()
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
@@ -98,11 +138,40 @@ pub struct FaviconLinks {
     pub apple_touch_icon_href: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct SiteStyleOptions {
+    pub content_width: String,
+    pub top_gap: String,
+    pub vertical_align: String,
+    pub line_height: String,
+}
+
 fn normalize_favicon_href(value: &str) -> String {
     if value.starts_with('/') {
         value.to_string()
     } else {
         format!("/{value}")
+    }
+}
+
+fn css_value_or_default(value: Option<&str>, default: &str) -> String {
+    value
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .unwrap_or(default)
+        .to_string()
+}
+
+fn vertical_align_or_default(value: Option<&str>, default: &str) -> String {
+    let normalized = value
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(|value| value.to_ascii_lowercase());
+
+    match normalized.as_deref() {
+        Some("center") => "center".to_string(),
+        Some("start") => "start".to_string(),
+        _ => default.to_string(),
     }
 }
 
@@ -124,7 +193,7 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::{SiteConfig, SiteOptions};
+    use super::{LayoutOptions, SiteConfig, SiteOptions, TypographyOptions};
 
     fn base_config() -> SiteConfig {
         SiteConfig {
@@ -163,6 +232,8 @@ mod tests {
         config.site = Some(SiteOptions {
             posts_per_page: None,
             favicon: Some("/favicon.ico".to_string()),
+            layout: None,
+            typography: None,
         });
 
         let error = config
@@ -173,5 +244,52 @@ mod tests {
                 .to_string()
                 .contains("configured favicon file not found")
         );
+    }
+
+    #[test]
+    fn provides_default_style_options() {
+        let config = base_config();
+        let style = config.style_options();
+
+        assert_eq!(style.content_width, "90%");
+        assert_eq!(style.top_gap, "2rem");
+        assert_eq!(style.vertical_align, "center");
+        assert_eq!(style.line_height, "1.5");
+    }
+
+    #[test]
+    fn uses_style_options_from_config_when_present() {
+        let mut config = base_config();
+        config.site = Some(SiteOptions {
+            posts_per_page: None,
+            favicon: None,
+            layout: Some(LayoutOptions {
+                content_width: Some("98%".to_string()),
+                top_gap: Some("3rem".to_string()),
+                vertical_align: Some("start".to_string()),
+            }),
+            typography: Some(TypographyOptions {
+                line_height: Some("1.7".to_string()),
+            }),
+        });
+
+        let style = config.style_options();
+        assert_eq!(style.content_width, "98%");
+        assert_eq!(style.top_gap, "3rem");
+        assert_eq!(style.vertical_align, "start");
+        assert_eq!(style.line_height, "1.7");
+    }
+
+    #[test]
+    fn detects_custom_css_file() {
+        let dir = tempdir().expect("tempdir should be created");
+        fs::create_dir_all(dir.path().join("static")).expect("static dir should be created");
+
+        let config = base_config();
+        assert!(!config.has_custom_css(dir.path()));
+
+        fs::write(dir.path().join("static/custom.css"), "body{}")
+            .expect("custom css should be written");
+        assert!(config.has_custom_css(dir.path()));
     }
 }

@@ -28,12 +28,20 @@ fn build_site_with_logging(verbose: bool) -> Result<()> {
         );
     }
     let favicon_links = config.resolve_favicon_links(".")?;
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(".");
     let pages = crate::content::pages::build_pages("content")?;
     if verbose {
         println!("Built pages from content: {}", pages.len());
     }
-    let rendered_pages =
-        crate::render::templates::render_pages(&theme, &config, &pages, &favicon_links)?;
+    let rendered_pages = crate::render::templates::render_pages(
+        &theme,
+        &config,
+        &pages,
+        &favicon_links,
+        &site_style,
+        site_has_custom_css,
+    )?;
     if verbose {
         println!("Rendered pages with templates: {}", rendered_pages.len());
     }

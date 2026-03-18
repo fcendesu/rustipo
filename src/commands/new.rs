@@ -71,6 +71,16 @@ description = "My personal portfolio site"
 
 [site]
 favicon = "/favicon.svg"
+
+# Basic design controls (applied by theme CSS variables).
+# You can tune layout/typography here without editing CSS files.
+[site.layout]
+content_width = "98%"
+top_gap = "2rem"
+vertical_align = "center"
+
+[site.typography]
+line_height = "1.5"
 "#,
     )?;
     write_file(
@@ -93,7 +103,18 @@ favicon = "/favicon.svg"
     {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
     {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
     {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
+    <style>
+      :root {
+        --rustipo-content-width: {{ site_style.content_width | default(value="98%") }};
+        --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
+        --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
+        --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
+      }
+    </style>
     <link rel="stylesheet" href="/style.css" />
+    {% if site_has_custom_css %}
+    <link rel="stylesheet" href="/custom.css" />
+    {% endif %}
   </head>
   <body>
     {% block body %}{% endblock body %}
@@ -160,10 +181,29 @@ favicon = "/favicon.svg"
         &root.join("themes/default/static/style.css"),
         r#"body {
   font-family: sans-serif;
-  margin: 2rem auto;
-  max-width: 720px;
-  line-height: 1.5;
-  padding: 0 1rem;
+  margin: 0;
+  min-height: 100vh;
+  padding: var(--rustipo-top-gap) 0 2rem;
+  line-height: var(--rustipo-line-height);
+  display: grid;
+  place-items: var(--rustipo-vertical-align) center;
+}
+
+main {
+  width: fit-content;
+  max-width: var(--rustipo-content-width);
+  margin: 0 auto;
+  padding-inline: 1rem;
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+p,
+li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 "#,
     )?;

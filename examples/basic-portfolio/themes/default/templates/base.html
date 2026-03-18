@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page_title }}</title>
+    <style>
+      :root {
+        --rustipo-content-width: {{ site_style.content_width | default(value="90%") }};
+        --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
+        --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
+        --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
+      }
+    </style>
     <link rel="stylesheet" href="/style.css" />
+    {% if site_has_custom_css %}
+    <link rel="stylesheet" href="/custom.css" />
+    {% endif %}
   </head>
   <body>
     {% block body %}{% endblock body %}
