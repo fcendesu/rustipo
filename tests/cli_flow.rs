@@ -59,6 +59,12 @@ fn new_and_build_generate_expected_output() {
         fs::read_to_string(project.join("dist/index.html")).expect("index html should be readable");
     assert!(index_html.contains("rel=\"icon\""));
     assert!(index_html.contains("favicon.svg"));
+
+    let style_css =
+        fs::read_to_string(project.join("dist/style.css")).expect("style css should be readable");
+    assert!(style_css.contains("main blockquote"));
+    assert!(style_css.contains("main pre"));
+    assert!(style_css.contains("main table"));
 }
 
 #[test]

@@ -16,11 +16,118 @@ main {
   box-sizing: border-box;
 }
 
-h1,
-h2,
-h3,
-p,
-li {
+main > :first-child {
+  margin-top: 0;
+}
+
+main > :last-child {
+  margin-bottom: 0;
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5,
+main h6,
+main p,
+main li {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+main h1 {
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+main h2 {
+  margin: 1.8rem 0 0.85rem;
+  line-height: 1.25;
+}
+
+main h3 {
+  margin: 1.45rem 0 0.7rem;
+  line-height: 1.3;
+}
+
+main p {
+  margin: 0 0 1rem;
+}
+
+main ul,
+main ol {
+  margin: 0 0 1rem 1.35rem;
+  padding: 0;
+}
+
+main li + li {
+  margin-top: 0.35rem;
+}
+
+main blockquote {
+  margin: 1.2rem 0;
+  padding: 0.2rem 1rem;
+  border-left: 4px solid #cbd5e1;
+  background: #f8fafc;
+}
+
+main hr {
+  border: 0;
+  border-top: 1px solid #d1d5db;
+  margin: 1.8rem 0;
+}
+
+main a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+main a:hover {
+  color: #1e40af;
+}
+
+main :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.95em;
+  padding: 0.14em 0.32em;
+  border-radius: 6px;
+  background: #eef2ff;
+}
+
+main pre {
+  margin: 1.1rem 0;
+  padding: 0.95rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  overflow-x: auto;
+}
+
+main pre code {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+main table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+main th,
+main td {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+main th {
+  background: #f3f4f6;
 }
