@@ -1,6 +1,11 @@
-# Roadmap (MVP)
+# Roadmap
 
-For post-MVP execution, see [v0.4.0 checklist](./v0.4.0-checklist.md).
+MVP is complete.
+
+For historical post-MVP batch planning, see:
+
+- [v0.4.0 checklist](./v0.4.0-checklist.md)
+- [MVP checklist](./mvp-checklist.md) (includes current post-MVP follow-up note)
 
 ## Milestone 1: Foundation
 

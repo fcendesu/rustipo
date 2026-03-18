@@ -30,4 +30,5 @@
 - `static/custom.css` (optional): loaded after theme CSS when present for user overrides
 - `themes/`: theme files (templates + theme assets + metadata)
 - `config.toml`: site-level configuration
+- `config.toml` can define style knobs under `site.layout` and `site.typography` (for example `content_width`, `top_gap`, `vertical_align`, `line_height`)
 - `dist/`: generated static output (created by build step)

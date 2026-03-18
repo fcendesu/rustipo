@@ -41,6 +41,10 @@ These frontmatter fields are exposed to page templates under `frontmatter` and p
 - `slug` frontmatter overrides filename-derived slug
 - slugs are normalized to lowercase kebab-case
 
+Current limitation:
+
+- generic nested custom page routes outside top-level pages plus `blog/` and `projects/` are not yet supported.
+
 ## Draft behavior
 
 Entries with `draft: true` are excluded from production build output.
