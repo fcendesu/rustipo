@@ -54,3 +54,15 @@ Generator responsibilities:
 - Validate required templates across the full inheritance chain
 - Render content through merged templates (child overrides parent files by relative path)
 - Copy merged theme static assets to output (child overrides parent files by relative path)
+
+## Template context notes
+
+Rustipo injects common site variables into template contexts, including:
+
+- favicon helpers: `site_favicon`, `site_favicon_svg`, `site_favicon_ico`, `site_apple_touch_icon`
+- style helpers from config:
+  - `site_style.content_width`
+  - `site_style.top_gap`
+  - `site_style.vertical_align`
+  - `site_style.line_height`
+- `site_has_custom_css` (boolean, true when `static/custom.css` exists)

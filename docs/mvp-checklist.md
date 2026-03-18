@@ -14,6 +14,14 @@ This checklist is derived from the acceptance criteria in `rustipo_prd.md`.
 - [x] Invalid config/theme/content produces readable errors
 - [x] Repository is publishable as an open-source project
 
+## MVP status
+
+- [x] MVP acceptance criteria complete.
+
+## Post-MVP follow-up (tracked separately)
+
+- [ ] Default markdown prose style pack (typography scale, spacing rhythm, code/link/table/blockquote/list/hr styles)
+
 ## Foundation tasks
 
 - [x] Add minimal `README.md`

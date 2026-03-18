@@ -4,7 +4,10 @@ This file tracks known implementation debt that should be addressed after the re
 
 ## Debt register
 
-- No active items right now.
+- Default markdown prose style pack is not implemented yet:
+  - heading scale and spacing rhythm
+  - code/link/table/blockquote/list/hr polish
+  - currently left to browser defaults + theme-specific CSS
 
 ## Recently resolved
 
@@ -24,4 +27,4 @@ This file tracks known implementation debt that should be addressed after the re
   - added tests for empty/default theme-set behavior
 - Release workflow validation after merge-strategy change:
   - completed end-to-end on 2026-03-17 with successful Release Please run
-  - release flow has continued successfully through `rustipo-v0.3.1`
+  - release flow has continued successfully through `rustipo-v0.5.0`
