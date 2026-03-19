@@ -15,5 +15,5 @@ Checks run on push and pull request:
 
 ## Release cadence
 
-- Release Please is scheduled weekly (Monday 09:00 UTC).
-- Maintainers can run release automation manually via workflow dispatch when needed.
+- Release Please runs manually via workflow dispatch when maintainers want to prepare a release.
+- CI remains automatic for pushes and pull requests.
