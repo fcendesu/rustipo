@@ -6,7 +6,8 @@ use tera::{Context as TeraContext, Tera};
 use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::RenderedPage;
+use super::context::SharedTemplateData;
+use super::{CommonRenderContext, RenderedPage};
 
 #[derive(Clone, Serialize)]
 struct SectionItem {
@@ -20,6 +21,7 @@ pub(super) fn render_tag_pages(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    shared: &SharedTemplateData,
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
@@ -59,18 +61,22 @@ pub(super) fn render_tag_pages(
 
     let mut rendered = Vec::new();
     for (tag_slug, items) in tags {
+        let route = format!("/tags/{tag_slug}/");
         let mut context = TeraContext::new();
-        context.insert("route", &format!("/tags/{tag_slug}/"));
+        context.insert("route", &route);
         context.insert("section_name", "tags");
         context.insert("section_title", &format!("Tag: {tag_slug}"));
         context.insert("items", &items);
-        super::insert_common_site_context(
-            &mut context,
-            config,
+        let render_context = CommonRenderContext {
+            shared,
+            route: &route,
+            page_kind: "section",
+            current_section: "tags",
             favicon_links,
             site_style,
             site_has_custom_css,
-        );
+        };
+        super::insert_common_site_context(&mut context, config, &render_context);
         context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
         context.insert("content_html", "");
 
@@ -78,10 +84,7 @@ pub(super) fn render_tag_pages(
             .render("section.html", &context)
             .with_context(|| format!("failed to render tag section template for '{tag_slug}'"))?;
 
-        rendered.push(RenderedPage {
-            route: format!("/tags/{tag_slug}/"),
-            html,
-        });
+        rendered.push(RenderedPage { route, html });
     }
 
     Ok(rendered)

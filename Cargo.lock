@@ -1266,6 +1266,7 @@ version = "0.5.0"
 dependencies = [
  "anyhow",
  "axum",
+ "chrono",
  "clap",
  "gray_matter",
  "notify",

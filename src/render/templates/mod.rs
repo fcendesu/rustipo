@@ -9,6 +9,7 @@ use crate::content::pages::Page;
 use crate::theme::models::Theme;
 
 mod archive;
+mod context;
 mod helpers;
 mod page;
 mod section;
@@ -20,6 +21,16 @@ pub struct RenderedPage {
     pub html: String,
 }
 
+pub(super) struct CommonRenderContext<'a> {
+    shared: &'a context::SharedTemplateData,
+    route: &'a str,
+    page_kind: &'a str,
+    current_section: &'a str,
+    favicon_links: &'a FaviconLinks,
+    site_style: &'a SiteStyleOptions,
+    site_has_custom_css: bool,
+}
+
 pub fn render_pages(
     theme: &Theme,
     config: &SiteConfig,
@@ -29,11 +40,13 @@ pub fn render_pages(
     site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme, config)?;
+    let shared = context::build_shared_template_data(pages);
 
     let mut rendered = page::render_content_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -42,6 +55,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -50,6 +64,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -58,6 +73,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -69,21 +85,26 @@ pub fn render_pages(
 fn insert_common_site_context(
     context: &mut TeraContext,
     config: &SiteConfig,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    render_context: &CommonRenderContext<'_>,
 ) {
     context.insert("site_title", &config.title);
     context.insert("site_description", &config.description);
-    context.insert("site_favicon", &favicon_links.icon_href);
-    context.insert("site_favicon_svg", &favicon_links.svg_href);
-    context.insert("site_favicon_ico", &favicon_links.ico_href);
+    context.insert("site_favicon", &render_context.favicon_links.icon_href);
+    context.insert("site_favicon_svg", &render_context.favicon_links.svg_href);
+    context.insert("site_favicon_ico", &render_context.favicon_links.ico_href);
     context.insert(
         "site_apple_touch_icon",
-        &favicon_links.apple_touch_icon_href,
+        &render_context.favicon_links.apple_touch_icon_href,
     );
-    context.insert("site_style", site_style);
-    context.insert("site_has_custom_css", &site_has_custom_css);
+    context.insert("site_style", render_context.site_style);
+    context.insert("site_has_custom_css", &render_context.site_has_custom_css);
+    context::insert_page_context(
+        context,
+        render_context.shared,
+        render_context.route,
+        render_context.page_kind,
+        render_context.current_section,
+    );
 }
 
 fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {

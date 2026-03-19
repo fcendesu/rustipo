@@ -82,6 +82,12 @@ For example, every file under `content/blog/*.md` is rendered through the same `
 
 Rustipo injects common site variables into template contexts, including:
 
+- page-state helpers:
+  - `page_kind`
+  - `current_section`
+  - `site_nav`
+  - `previous_post`
+  - `next_post`
 - favicon helpers: `site_favicon`, `site_favicon_svg`, `site_favicon_ico`, `site_apple_touch_icon`
 - style helpers from config:
   - `site_style.content_width`
@@ -93,6 +99,39 @@ Rustipo injects common site variables into template contexts, including:
 Rustipo also registers small Tera helpers for theme authors:
 
 - `slugify` filter
+- `format_date(format="...")` filter
 - `abs_url(path="...")` function
+- `asset_url(path="...")` function
+- `tag_url(name="...")` function
+
+### Navigation and page-state details
+
+`site_nav` is an ordered list of objects with:
+
+- `title`
+- `route`
+- `active`
+
+Rustipo builds it from available content:
+
+- `Home` when `content/index.md` exists
+- standalone pages from `content/*.md`
+- `Blog` when blog posts exist
+- `Projects` when project pages exist
+
+`previous_post` and `next_post` are only populated for blog post pages.
+They include:
+
+- `title`
+- `route`
+- `summary`
+- `date`
+
+### Theme authoring conventions
+
+Theme authors are encouraged to keep reusable Tera pieces under:
+
+- `templates/partials/`
+- `templates/macros/`
 
 For a broader author guide, see [theme-tera.md](./theme-tera.md).

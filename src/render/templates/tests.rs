@@ -444,3 +444,144 @@ fn exposes_frontmatter_metadata_in_page_templates() {
     assert!(post.html.contains("2026-03-17"));
     assert!(post.html.contains("Example summary"));
 }
+
+#[test]
+fn exposes_navigation_adjacency_and_helper_context() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::create_dir_all(project_root.join("content/projects"))
+        .expect("projects dir should be created");
+
+    fs::write(project_root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        project_root.join("content/about.md"),
+        "---\ntitle: About\n---\n\n# About",
+    )
+    .expect("about should be written");
+    fs::write(
+        project_root.join("content/resume.md"),
+        "---\ntitle: Resume\n---\n\n# Resume",
+    )
+    .expect("resume should be written");
+    fs::write(
+        project_root.join("content/blog/older.md"),
+        "---\ntitle: Older\ndate: 2026-03-10\nsummary: Older summary\ntags: [\"Site Gen\"]\n---\n\n# Older",
+    )
+    .expect("older post should be written");
+    fs::write(
+        project_root.join("content/blog/newer.md"),
+        "---\ntitle: Newer\ndate: 2026-03-19\nsummary: Newer summary\ntags: [\"Rust Tips\"]\n---\n\n# Newer",
+    )
+    .expect("newer post should be written");
+    fs::write(
+        project_root.join("content/projects/tool.md"),
+        "---\ntitle: Tool\n---\n\n# Tool",
+    )
+    .expect("project should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}|{{ content_html | safe }}{% endblock body %}",
+    )
+    .expect("index template should be written");
+    fs::write(
+        theme_root.join("templates/page.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}{% endblock body %}",
+    )
+    .expect("page template should be written");
+    fs::write(
+        theme_root.join("templates/post.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}|{{ page_date | format_date(format=\"%B %d, %Y\") }}|{{ tag_url(name=page_tags[0]) }}|{{ asset_url(path=\"img/logo.svg\") }}|{% if previous_post %}prev={{ previous_post.title }}{% endif %}|{% if next_post %}next={{ next_post.title }}{% endif %}{% endblock body %}",
+    )
+    .expect("post template should be written");
+    fs::write(
+        theme_root.join("templates/project.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}{% endblock body %}",
+    )
+    .expect("project template should be written");
+    fs::write(
+        theme_root.join("templates/section.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}{% endblock body %}",
+    )
+    .expect("section template should be written");
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &favicon_links,
+        &site_style,
+        site_has_custom_css,
+    )
+    .expect("pages should render");
+
+    let newer = rendered
+        .iter()
+        .find(|page| page.route == "/blog/newer/")
+        .expect("newer post route should be rendered");
+    assert!(newer.html.contains("post|blog|"));
+    assert!(newer.html.contains("[Blog:&#x2F;blog&#x2F;:true]"));
+    assert!(newer.html.contains("[Projects:&#x2F;projects&#x2F;:false]"));
+    assert!(newer.html.contains("March 19, 2026"));
+    assert!(newer.html.contains("&#x2F;tags&#x2F;rust-tips&#x2F;"));
+    assert!(newer.html.contains("&#x2F;img&#x2F;logo.svg"));
+    assert!(newer.html.contains("prev=Older"));
+    assert!(!newer.html.contains("next="));
+
+    let older = rendered
+        .iter()
+        .find(|page| page.route == "/blog/older/")
+        .expect("older post route should be rendered");
+    assert!(older.html.contains("next=Newer"));
+
+    let about = rendered
+        .iter()
+        .find(|page| page.route == "/about/")
+        .expect("about route should be rendered");
+    assert!(about.html.contains("page|pages|"));
+    assert!(about.html.contains("[About:&#x2F;about&#x2F;:true]"));
+    assert!(about.html.contains("[Resume:&#x2F;resume&#x2F;:false]"));
+
+    let projects = rendered
+        .iter()
+        .find(|page| page.route == "/projects/")
+        .expect("projects route should be rendered");
+    assert!(projects.html.contains("section|projects|"));
+    assert!(
+        projects
+            .html
+            .contains("[Projects:&#x2F;projects&#x2F;:true]")
+    );
+}
