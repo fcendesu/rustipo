@@ -9,6 +9,7 @@ use crate::content::pages::Page;
 use crate::theme::models::Theme;
 
 mod archive;
+mod context;
 mod helpers;
 mod page;
 mod section;
@@ -29,11 +30,13 @@ pub fn render_pages(
     site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme, config)?;
+    let shared = context::build_shared_template_data(pages);
 
     let mut rendered = page::render_content_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -42,6 +45,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -50,6 +54,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -58,6 +63,7 @@ pub fn render_pages(
         &tera,
         config,
         pages,
+        &shared,
         favicon_links,
         site_style,
         site_has_custom_css,
@@ -69,6 +75,10 @@ pub fn render_pages(
 fn insert_common_site_context(
     context: &mut TeraContext,
     config: &SiteConfig,
+    shared: &context::SharedTemplateData,
+    route: &str,
+    page_kind: &str,
+    current_section: &str,
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
@@ -84,6 +94,7 @@ fn insert_common_site_context(
     );
     context.insert("site_style", site_style);
     context.insert("site_has_custom_css", &site_has_custom_css);
+    context::insert_page_context(context, shared, route, page_kind, current_section);
 }
 
 fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {

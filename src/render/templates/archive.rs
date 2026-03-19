@@ -8,6 +8,7 @@ use crate::content::date::ContentDate;
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
+use super::context::SharedTemplateData;
 
 #[derive(Clone, Serialize)]
 struct ArchiveItem {
@@ -28,6 +29,7 @@ pub(super) fn render_blog_archive_page(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    shared: &SharedTemplateData,
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
@@ -80,6 +82,10 @@ pub(super) fn render_blog_archive_page(
     super::insert_common_site_context(
         &mut context,
         config,
+        shared,
+        &route,
+        "section",
+        "archive",
         favicon_links,
         site_style,
         site_has_custom_css,

@@ -5,11 +5,13 @@ use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
+use super::context::SharedTemplateData;
 
 pub(super) fn render_content_pages(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    shared: &SharedTemplateData,
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
@@ -35,6 +37,10 @@ pub(super) fn render_content_pages(
         super::insert_common_site_context(
             &mut context,
             config,
+            shared,
+            &page.route,
+            page_kind_name(page.kind),
+            current_section_name(page.kind),
             favicon_links,
             site_style,
             site_has_custom_css,
@@ -70,5 +76,23 @@ fn template_for_kind(kind: PageKind) -> &'static str {
         PageKind::Page => "page.html",
         PageKind::BlogPost => "post.html",
         PageKind::Project => "project.html",
+    }
+}
+
+fn page_kind_name(kind: PageKind) -> &'static str {
+    match kind {
+        PageKind::Index => "index",
+        PageKind::Page => "page",
+        PageKind::BlogPost => "post",
+        PageKind::Project => "project",
+    }
+}
+
+fn current_section_name(kind: PageKind) -> &'static str {
+    match kind {
+        PageKind::Index => "home",
+        PageKind::Page => "pages",
+        PageKind::BlogPost => "blog",
+        PageKind::Project => "projects",
     }
 }

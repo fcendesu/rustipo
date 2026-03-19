@@ -7,6 +7,7 @@ use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
 use super::RenderedPage;
+use super::context::SharedTemplateData;
 
 #[derive(Clone, Serialize)]
 struct SectionItem {
@@ -20,6 +21,7 @@ pub(super) fn render_tag_pages(
     tera: &Tera,
     config: &SiteConfig,
     pages: &[Page],
+    shared: &SharedTemplateData,
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
@@ -67,6 +69,10 @@ pub(super) fn render_tag_pages(
         super::insert_common_site_context(
             &mut context,
             config,
+            shared,
+            &format!("/tags/{tag_slug}/"),
+            "section",
+            "tags",
             favicon_links,
             site_style,
             site_has_custom_css,
