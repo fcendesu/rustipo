@@ -17,6 +17,7 @@ This checklist is derived from the acceptance criteria in `rustipo_prd.md`.
 ## MVP status
 
 - [x] MVP acceptance criteria complete.
+- [x] Core authoring model established: Markdown content plus reusable Tera theme templates.
 
 ## Post-MVP follow-up (tracked separately)
 

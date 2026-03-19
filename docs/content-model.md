@@ -1,5 +1,8 @@
 # Content Model (MVP)
 
+Rustipo's content model is Markdown-first.
+Content lives in `content/`, while layout is provided separately by theme templates.
+
 ## Source structure
 
 ```text
@@ -27,6 +30,21 @@ Supported fields for MVP:
 - `links`
 
 These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_tags`).
+
+## Content vs layout
+
+Rustipo is designed so authors usually do not write page HTML.
+
+- Markdown files provide the page content
+- frontmatter provides page metadata
+- theme templates provide reusable layout
+
+For example:
+
+- `content/about.md` provides the body content for the about page
+- `templates/page.html` controls how standalone pages are laid out
+- `content/blog/*.md` supplies blog post content
+- `templates/post.html` controls the shared blog post layout
 
 ### Date format
 

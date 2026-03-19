@@ -2,6 +2,8 @@
 
 Rustipo is an open-source, themeable static site generator written in Rust for portfolio websites.
 
+Rustipo is Markdown-first for content authoring and uses Tera templates for reusable layout.
+
 ## Status
 
 MVP complete, active post-MVP development.
@@ -41,6 +43,7 @@ line_height = "1.5"
 ## Current Features
 
 - Markdown content pipeline with YAML frontmatter and draft filtering
+- Tera-based theme templates for reusable page layouts
 - Theme loading with inheritance support (`extends`) and contract validation
 - Pretty URL output in `dist/`
 - Section/tag/archive generation:
@@ -71,6 +74,13 @@ my-portfolio/
   themes/
   config.toml
 ```
+
+## Authoring Model
+
+- `content/` is where authors write Markdown content
+- `themes/<theme>/templates/` defines reusable layout with Tera templates
+- `themes/<theme>/static/` contains theme CSS and assets
+- `dist/` is generated output only
 
 ## Example Project
 
