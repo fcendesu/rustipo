@@ -89,3 +89,10 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.vertical_align`
   - `site_style.line_height`
 - `site_has_custom_css` (boolean, true when `static/custom.css` exists)
+
+Rustipo also registers small Tera helpers for theme authors:
+
+- `slugify` filter
+- `abs_url(path="...")` function
+
+For a broader author guide, see [theme-tera.md](./theme-tera.md).

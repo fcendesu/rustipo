@@ -91,6 +91,7 @@ my-portfolio/
 - [CLI reference](./docs/cli.md)
 - [Project structure](./docs/project-structure.md)
 - [Theme contract](./docs/theme-contract.md)
+- [Theme Tera guide](./docs/theme-tera.md)
 - [Content model](./docs/content-model.md)
 - [Roadmap](./docs/roadmap.md)
 - [MVP checklist](./docs/mvp-checklist.md)
