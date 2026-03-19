@@ -54,8 +54,40 @@ pub(super) fn derive_page_meta(
             slug,
             kind: PageKind::Project,
         }),
+        [section, ..] if section == "blog" => {
+            bail!(
+                "unsupported nested blog content path: {}",
+                rel_path.display()
+            )
+        }
+        [section, ..] if section == "projects" => {
+            bail!(
+                "unsupported nested project content path: {}",
+                rel_path.display()
+            )
+        }
+        [.., name] if name == "index.md" => Ok(PageMeta {
+            route: format!(
+                "/{}/",
+                join_path_segments(&components[..components.len() - 1])
+            ),
+            slug,
+            kind: PageKind::Page,
+        }),
+        [.., name] if name.ends_with(".md") => Ok(PageMeta {
+            route: format!(
+                "/{}/{slug}/",
+                join_path_segments(&components[..components.len() - 1])
+            ),
+            slug,
+            kind: PageKind::Page,
+        }),
         _ => bail!("unsupported content path structure: {}", rel_path.display()),
     }
+}
+
+fn join_path_segments(segments: &[String]) -> String {
+    segments.join("/")
 }
 
 fn normalize_slug(input: &str) -> String {
