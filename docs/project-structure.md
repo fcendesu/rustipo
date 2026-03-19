@@ -26,6 +26,9 @@
 ## Directory purpose
 
 - `content/`: Markdown source content for pages, blog posts, and projects
+  - generic custom pages can now be nested (for example `content/notes/rust/tips.md`)
+  - nested `index.md` works as a directory index (`content/notes/index.md` -> `/notes/`)
+  - `blog/` and `projects/` stay special one-level sections
 - `static/`: user-provided static assets copied to output
 - `static/custom.css` (optional): loaded after theme CSS when present for user overrides
 - `themes/`: theme files (templates + theme assets + metadata)

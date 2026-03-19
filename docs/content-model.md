@@ -10,6 +10,10 @@ content/
   index.md
   about.md
   resume.md
+  notes/
+    index.md
+    rust/
+      tips.md
   blog/
     *.md
   projects/
@@ -55,13 +59,14 @@ For example:
 
 - `content/index.md` -> `/`
 - standalone pages use pretty URLs (`/about/`, `/resume/`)
+- nested custom pages outside `blog/` and `projects/` preserve directory structure
+  - `content/notes/rust/tips.md` -> `/notes/rust/tips/`
+  - `content/notes/index.md` -> `/notes/`
 - blog/project items map to section routes (`/blog/<slug>/`, `/projects/<slug>/`)
 - `slug` frontmatter overrides filename-derived slug
+- nested directory indexes ignore `slug` for route derivation and keep directory-index routes
 - slugs are normalized to lowercase kebab-case
-
-Current limitation:
-
-- generic nested custom page routes outside top-level pages plus `blog/` and `projects/` are not yet supported.
+- nested content under `blog/` and `projects/` remains invalid; those sections stay one-level only
 
 ## Draft behavior
 
