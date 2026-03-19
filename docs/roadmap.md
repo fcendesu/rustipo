@@ -2,6 +2,11 @@
 
 MVP is complete.
 
+Core product direction:
+
+- authors write content in Markdown
+- themes provide reusable Tera templates for layout and repeated structure
+
 For historical post-MVP batch planning, see:
 
 - [v0.4.0 checklist](./v0.4.0-checklist.md)

@@ -9,6 +9,7 @@ use crate::content::pages::Page;
 use crate::theme::models::Theme;
 
 mod archive;
+mod helpers;
 mod page;
 mod section;
 mod tags;
@@ -27,7 +28,7 @@ pub fn render_pages(
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
 ) -> Result<Vec<RenderedPage>> {
-    let tera = load_theme_templates(theme)?;
+    let tera = load_theme_templates(theme, config)?;
 
     let mut rendered = page::render_content_pages(
         &tera,
@@ -85,7 +86,7 @@ fn insert_common_site_context(
     context.insert("site_has_custom_css", &site_has_custom_css);
 }
 
-fn load_theme_templates(theme: &Theme) -> Result<Tera> {
+fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {
     let mut template_map: BTreeMap<String, PathBuf> = BTreeMap::new();
 
     for dir in &theme.template_dirs {
@@ -117,6 +118,7 @@ fn load_theme_templates(theme: &Theme) -> Result<Tera> {
         tera.add_template_file(&path, Some(&name))
             .with_context(|| format!("failed to load template '{}': {}", name, path.display()))?;
     }
+    helpers::register(&mut tera, config);
 
     Ok(tera)
 }

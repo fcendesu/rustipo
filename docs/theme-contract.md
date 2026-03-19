@@ -1,6 +1,15 @@
 # Theme Contract
 
 Themes are filesystem-based and selected via site config.
+Rustipo uses Tera as its template engine for theme rendering.
+
+In practice, this means:
+
+- site authors primarily write content in Markdown under `content/`
+- theme authors define reusable page structure in `templates/*.html`
+- Rustipo renders Markdown into HTML first, then injects that result into Tera templates
+
+This separation is intentional. Markdown handles content authoring, while Tera templates handle layout and repeated page structure.
 
 ## Required files
 
@@ -55,6 +64,20 @@ Generator responsibilities:
 - Render content through merged templates (child overrides parent files by relative path)
 - Copy merged theme static assets to output (child overrides parent files by relative path)
 
+## How Tera fits the workflow
+
+A common pattern is:
+
+- `base.html` defines the outer shell
+- `index.html` defines homepage layout
+- `page.html` defines generic standalone pages
+- `post.html` defines blog post layout
+- `section.html` defines list/index pages such as blog and projects
+
+Rustipo then reuses those templates across all Markdown content.
+
+For example, every file under `content/blog/*.md` is rendered through the same `post.html` template. The Markdown content changes per file, but the layout stays consistent.
+
 ## Template context notes
 
 Rustipo injects common site variables into template contexts, including:
@@ -66,3 +89,10 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.vertical_align`
   - `site_style.line_height`
 - `site_has_custom_css` (boolean, true when `static/custom.css` exists)
+
+Rustipo also registers small Tera helpers for theme authors:
+
+- `slugify` filter
+- `abs_url(path="...")` function
+
+For a broader author guide, see [theme-tera.md](./theme-tera.md).

@@ -89,6 +89,117 @@ fn renders_pages_with_theme_templates() {
 }
 
 #[test]
+fn supports_tera_includes_inheritance_and_rustipo_helpers() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome Home")
+        .expect("index should be written");
+    fs::write(project_root.join("content/blog/post.md"), "# Blog Body")
+        .expect("post should be written");
+
+    let base_root = project_root.join("themes/base");
+    fs::create_dir_all(base_root.join("templates/partials"))
+        .expect("base partials should be created");
+    fs::create_dir_all(base_root.join("static")).expect("base static should be created");
+    fs::write(
+        base_root.join("templates/partials/header.html"),
+        "<header data-slug=\"{{ site_title | slugify }}\">{{ abs_url(path=\"/resume/\") }}</header>",
+    )
+    .expect("partial should be written");
+    fs::write(
+        base_root.join("templates/base.html"),
+        "{% include \"partials/header.html\" %}{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in ["page.html", "project.html", "section.html"] {
+        fs::write(
+            base_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("base child template should be written");
+    }
+    fs::write(
+        base_root.join("theme.toml"),
+        "name = \"base\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Base\"\n",
+    )
+    .expect("base metadata should be written");
+
+    let mid_root = project_root.join("themes/mid");
+    fs::create_dir_all(mid_root.join("templates")).expect("mid templates should be created");
+    fs::write(
+        mid_root.join("templates/post.html"),
+        "{% extends \"base.html\" %}{% block body %}<article>{{ content_html | safe }}</article>{% endblock body %}",
+    )
+    .expect("mid post template should be written");
+    fs::write(
+        mid_root.join("theme.toml"),
+        "name = \"mid\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Mid\"\nextends = \"base\"\n",
+    )
+    .expect("mid metadata should be written");
+
+    let child_root = project_root.join("themes/child");
+    fs::create_dir_all(child_root.join("templates")).expect("child templates should be created");
+    fs::write(
+        child_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}<main>{{ content_html | safe }}</main>{% endblock body %}",
+    )
+    .expect("child index template should be written");
+    fs::write(
+        child_root.join("theme.toml"),
+        "name = \"child\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Child\"\nextends = \"mid\"\n",
+    )
+    .expect("child metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "child".to_string(),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "child").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &favicon_links,
+        &site_style,
+        site_has_custom_css,
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index page should render");
+    assert!(
+        index
+            .html
+            .contains("https:&#x2F;&#x2F;example.com&#x2F;resume&#x2F;")
+    );
+    assert!(index.html.contains("data-slug=\"my-site\""));
+    assert!(index.html.contains("<main><h1>Welcome Home</h1>"));
+
+    let post = rendered
+        .iter()
+        .find(|page| page.route == "/blog/post/")
+        .expect("post page should render");
+    assert!(post.html.contains("<article><h1>Blog Body</h1>"));
+    assert!(post.html.contains("data-slug=\"my-site\""));
+}
+
+#[test]
 fn paginates_blog_section_when_posts_exceed_page_size() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();
