@@ -5,8 +5,8 @@ use tera::{Context as TeraContext, Tera};
 use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::RenderedPage;
 use super::context::SharedTemplateData;
+use super::{CommonRenderContext, RenderedPage};
 
 #[derive(Clone, Serialize)]
 struct SectionItem {
@@ -109,17 +109,16 @@ fn render_blog_section_pages(
         context.insert("section_name", "blog");
         context.insert("section_title", "Blog");
         context.insert("items", &paged_items);
-        super::insert_common_site_context(
-            &mut context,
-            config,
+        let render_context = CommonRenderContext {
             shared,
-            &route,
-            "section",
-            "blog",
+            route: &route,
+            page_kind: "section",
+            current_section: "blog",
             favicon_links,
             site_style,
             site_has_custom_css,
-        );
+        };
+        super::insert_common_site_context(&mut context, config, &render_context);
         context.insert("page_title", &format!("Blog | {}", config.title));
         context.insert("content_html", "");
         context.insert("current_page", &page_number);
@@ -166,17 +165,16 @@ fn render_projects_section_page(
     context.insert("section_name", "projects");
     context.insert("section_title", "Projects");
     context.insert("items", &items);
-    super::insert_common_site_context(
-        &mut context,
-        config,
+    let render_context = CommonRenderContext {
         shared,
-        "/projects/",
-        "section",
-        "projects",
+        route: "/projects/",
+        page_kind: "section",
+        current_section: "projects",
         favicon_links,
         site_style,
         site_has_custom_css,
-    );
+    };
+    super::insert_common_site_context(&mut context, config, &render_context);
     context.insert("page_title", &format!("Projects | {}", config.title));
     context.insert("content_html", "");
     context.insert("current_page", &1usize);

@@ -4,8 +4,8 @@ use tera::{Context as TeraContext, Tera};
 use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::RenderedPage;
 use super::context::SharedTemplateData;
+use super::{CommonRenderContext, RenderedPage};
 
 pub(super) fn render_content_pages(
     tera: &Tera,
@@ -34,17 +34,16 @@ pub(super) fn render_content_pages(
         context.insert("page_tags", &page.frontmatter.tags);
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
-        super::insert_common_site_context(
-            &mut context,
-            config,
+        let render_context = CommonRenderContext {
             shared,
-            &page.route,
-            page_kind_name(page.kind),
-            current_section_name(page.kind),
+            route: &page.route,
+            page_kind: page_kind_name(page.kind),
+            current_section: current_section_name(page.kind),
             favicon_links,
             site_style,
             site_has_custom_css,
-        );
+        };
+        super::insert_common_site_context(&mut context, config, &render_context);
         context.insert(
             "page_title",
             &page
