@@ -206,3 +206,7 @@ Example macro import:
 
 Keep templates focused on layout and repeated structure.
 Keep page-specific writing in Markdown whenever possible.
+
+The stable template API should grow additively over time. As Rustipo gains more theme use
+cases, new context values and helper functions may be added, but existing documented keys
+should remain the baseline contract for theme authors.

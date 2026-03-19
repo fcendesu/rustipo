@@ -48,3 +48,10 @@ For historical post-MVP batch planning, see:
 - [x] LICENSE
 - [x] CODE_OF_CONDUCT
 - [x] example project
+
+## Future improvements
+
+- expand Tera theme ergonomics as real theme-author needs emerge:
+  - more shared context fields
+  - more helper functions/filters
+  - stronger macro/partial conventions and examples
