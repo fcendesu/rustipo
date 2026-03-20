@@ -4,6 +4,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ThemeMetadata {
+    pub id: Option<String>,
     pub name: String,
     pub version: String,
     // Preserved from theme contract for listing and future template exposure.
@@ -15,6 +16,7 @@ pub struct ThemeMetadata {
 
 #[derive(Debug)]
 pub struct ThemeSummary {
+    pub theme_id: String,
     pub directory_name: String,
     pub metadata: ThemeMetadata,
 }
