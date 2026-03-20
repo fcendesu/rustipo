@@ -133,6 +133,42 @@ fn build_supports_builtin_palette_variants() {
 }
 
 #[test]
+fn palette_use_updates_config_toml() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    let output = run_cli(&project, &["palette", "use", "catppuccin-macchiato"]);
+    assert!(
+        output.status.success(),
+        "palette use failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let config = fs::read_to_string(project.join("config.toml")).expect("config should exist");
+    assert!(config.contains("palette = \"catppuccin-macchiato\""));
+
+    let build_output = run_cli(&project, &["build"]);
+    assert!(
+        build_output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build_output.stderr)
+    );
+
+    let palette_css = fs::read_to_string(project.join("dist/palette.css"))
+        .expect("palette css should be readable");
+    assert!(palette_css.contains("--rustipo-bg: #24273a;"));
+    assert!(palette_css.contains("--rustipo-token-lavender: #b7bdf8;"));
+}
+
+#[test]
 fn serve_fails_when_dist_is_missing() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();

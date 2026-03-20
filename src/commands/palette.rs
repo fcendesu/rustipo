@@ -20,3 +20,10 @@ pub fn list() -> Result<()> {
 
     Ok(())
 }
+
+pub fn use_palette(id: &str) -> Result<()> {
+    let palette = crate::palette::loader::load_palette(".", id)?;
+    crate::config::editor::set_top_level_string("config.toml", "palette", &palette.id)?;
+    println!("Updated palette in config.toml: {}", palette.id);
+    Ok(())
+}

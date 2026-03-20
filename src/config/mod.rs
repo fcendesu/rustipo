@@ -1,3 +1,5 @@
+pub mod editor;
+
 use std::fs;
 use std::path::Path;
 
