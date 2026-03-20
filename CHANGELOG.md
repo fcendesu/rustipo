@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.5.0...rustipo-v0.6.0) (2026-03-20)
+
+
+### Features
+
+* **content:** support generic nested custom pages for arbitrary directories ([76a8ddf](https://github.com/fcendesu/rustipo/commit/76a8ddfde5db1d962a9b407f9ad81fc1946fc32c))
+* **content:** add Mermaid fenced code support with page-scoped runtime injection ([efab30f](https://github.com/fcendesu/rustipo/commit/efab30ff558bf7b8620ddb5326944ad0ebf53e77))
+* **palette:** add palette selection, built-in Catppuccin/Tokyo Night/Gruvbox/Dracula palettes, and richer palette tokens ([285fbe0](https://github.com/fcendesu/rustipo/commit/285fbe00913296394999f2c066d055d053aae19a))
+* **cli:** add `rustipo dev` and `rustipo palette use` workflows ([d99f7a6](https://github.com/fcendesu/rustipo/commit/d99f7a621747abb4e9ec2bde6040353f7a47cc97))
+* **font:** add config-driven custom font support for themes and site config ([8622df0](https://github.com/fcendesu/rustipo/commit/8622df0e1d67184d79da8da189854e29160ea5c6))
+* **theme:** add markdown prose defaults, explicit theme IDs, and refined typography defaults ([0f89e75](https://github.com/fcendesu/rustipo/commit/0f89e75837366fc84a1e55319e1a1808b449e2cf))
+* **tera:** add helper functions, shared page context, and starter theme authoring patterns ([298415b](https://github.com/fcendesu/rustipo/commit/298415bbea5ec9265ad2e85fd83ee4c1ef5a7242))
+
+
+### Bug Fixes
+
+* **tera:** simplify shared render context ([45cc8e2](https://github.com/fcendesu/rustipo/commit/45cc8e20c590a08169a45df2aa96733b7d4bde47))
+
 ## [0.5.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.4.0...rustipo-v0.5.0) (2026-03-18)
 
 
