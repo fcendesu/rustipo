@@ -15,6 +15,13 @@ const BUILTIN_PALETTE_FILES: &[(&str, &str)] = &[
         )),
     ),
     (
+        "dracula",
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/palettes/dracula.toml"
+        )),
+    ),
+    (
         "catppuccin-frappe",
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
@@ -40,6 +47,13 @@ const BUILTIN_PALETTE_FILES: &[(&str, &str)] = &[
         include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
             "/assets/palettes/catppuccin-mocha.toml"
+        )),
+    ),
+    (
+        "gruvbox-dark",
+        include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/palettes/gruvbox-dark.toml"
         )),
     ),
     (
@@ -334,7 +348,9 @@ mod tests {
         let ids = palettes.into_iter().map(|item| item.id).collect::<Vec<_>>();
 
         assert!(ids.contains(&"default".to_string()));
+        assert!(ids.contains(&"dracula".to_string()));
         assert!(ids.contains(&"catppuccin-frappe".to_string()));
+        assert!(ids.contains(&"gruvbox-dark".to_string()));
         assert!(ids.contains(&"catppuccin-macchiato".to_string()));
         assert!(ids.contains(&"catppuccin-mocha".to_string()));
         assert!(ids.contains(&"tokyonight-storm".to_string()));
@@ -370,5 +386,17 @@ mod tests {
         assert!(css.contains("--rustipo-accent-strong: #cba6f7;"));
         assert!(css.contains("--rustipo-success: #a6e3a1;"));
         assert!(css.contains("--rustipo-surface-0: #313244;"));
+    }
+
+    #[test]
+    fn default_palette_emits_richer_aliases_from_generic_tokens() {
+        let dir = tempdir().expect("tempdir should be created");
+        let palette = load_palette(dir.path(), "default").expect("palette should load");
+
+        let css = render_palette_css(&palette);
+        assert!(css.contains("--rustipo-token-accent: #1d4ed8;"));
+        assert!(css.contains("--rustipo-accent: #1d4ed8;"));
+        assert!(css.contains("--rustipo-success: #15803d;"));
+        assert!(css.contains("--rustipo-danger: #b91c1c;"));
     }
 }

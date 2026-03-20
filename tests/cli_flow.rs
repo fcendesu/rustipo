@@ -89,11 +89,13 @@ fn new_scaffold_includes_builtin_palettes() {
     );
 
     let stdout = String::from_utf8_lossy(&list_output.stdout);
+    assert!(stdout.contains("dracula -> Dracula"));
     assert!(stdout.contains("default -> Default"));
     assert!(stdout.contains("catppuccin-frappe -> Catppuccin Frappe"));
     assert!(stdout.contains("catppuccin-latte -> Catppuccin Latte"));
     assert!(stdout.contains("catppuccin-macchiato -> Catppuccin Macchiato"));
     assert!(stdout.contains("catppuccin-mocha -> Catppuccin Mocha"));
+    assert!(stdout.contains("gruvbox-dark -> Gruvbox Dark"));
     assert!(stdout.contains("tokyonight-storm -> Tokyo Night Storm"));
     assert!(stdout.contains("tokyonight-moon -> Tokyo Night Moon"));
 }
