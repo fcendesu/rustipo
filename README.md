@@ -3,6 +3,8 @@
 Rustipo is an open-source, themeable static site generator written in Rust for portfolio websites.
 
 Rustipo is Markdown-first for content authoring and uses Tera templates for reusable layout.
+Rustipo separates layout from color selection: `theme` controls structure, while `palette`
+controls the generated color tokens.
 
 ## Status
 
@@ -14,6 +16,7 @@ MVP complete, active post-MVP development.
 - `rustipo build`
 - `rustipo serve`
 - `rustipo theme list`
+- `rustipo palette list`
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 
@@ -46,6 +49,14 @@ line_height = "1.5"
 - Tera-based theme templates for reusable page layouts
 - Theme loading with inheritance support (`extends`) and contract validation
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
+- Built-in palettes:
+  - `default`
+  - `catppuccin-frappe`
+  - `catppuccin-latte`
+  - `catppuccin-macchiato`
+  - `catppuccin-mocha`
+  - `tokyonight-storm`
+  - `tokyonight-moon`
 - Pretty URL output in `dist/`
 - Section/tag/archive generation:
   - `/blog/`, `/projects/`
@@ -81,8 +92,9 @@ my-portfolio/
 - `content/` is where authors write Markdown content
 - `themes/<theme>/templates/` defines reusable layout with Tera templates
 - `themes/<theme>/static/` contains theme CSS and assets
+- `palette = "..."` selects a built-in or local color palette
+- optional local palettes live under `palettes/<palette>.toml`
 - `dist/` is generated output only
-- `config.toml` `theme = "..."` can target a theme ID such as `catppuccin-mocha`
 
 ## Example Project
 

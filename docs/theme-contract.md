@@ -50,17 +50,31 @@ description = "Cyberpunk variant"
 extends = "default"
 ```
 
-Theme IDs should use lowercase kebab-case. Variant themes should prefer `family-variant`
-IDs such as:
-
-- `catppuccin-mocha`
-- `catppuccin-latte`
-- `tokyonight-storm`
-- `tokyonight-moon`
+Theme IDs should use lowercase kebab-case. Variant themes should prefer `family-variant`.
 
 When `id` is omitted, Rustipo falls back to the theme directory name for selection and listing.
 `config.toml` `theme = "..."` can reference either the explicit theme ID or the directory name,
 but explicit IDs are the recommended public interface.
+
+Color presets such as `catppuccin-mocha` and `tokyonight-storm` belong in the palette system, not
+in theme IDs. Themes define structure; palettes define color tokens.
+
+Generated `palette.css` always includes the stable semantic variables used by the default theme:
+
+- `--rustipo-bg`
+- `--rustipo-text`
+- `--rustipo-surface-muted`
+- `--rustipo-border`
+- `--rustipo-blockquote-border`
+- `--rustipo-link`
+- `--rustipo-link-hover`
+- `--rustipo-code-bg`
+- `--rustipo-code-text`
+- `--rustipo-table-header-bg`
+
+Palettes can also expose additional token variables. Rustipo writes those as
+`--rustipo-token-<name>`, which lets richer themes use full palette vocabularies such as the
+official Catppuccin flavor tokens.
 
 ## Rendering responsibilities
 

@@ -29,6 +29,7 @@ Current behavior:
 
 - Loads and validates `config.toml`
 - Loads active theme from `themes/<theme>/`
+- Loads selected palette from built-in palettes or local `palettes/<palette>.toml`
 - Resolves theme inheritance chain when `extends` is used in `theme.toml`
 - Validates required templates across the resolved theme chain
 - Discovers Markdown files from `content/`
@@ -48,6 +49,8 @@ Current behavior:
   - `site.typography.line_height`
 - Auto-includes `static/custom.css` in template context when present (`site_has_custom_css`)
 - Writes rendered pages to `dist/` using pretty URL output paths
+- Writes generated palette variables to `dist/palette.css`
+- Fails with a readable error if generated `palette.css` would collide with a user/theme asset
 - Fails with readable error on duplicate rendered output route collisions
 - Copies theme and user static assets into `dist/`
 - Applies child-over-parent precedence when inherited themes provide the same template/asset path
@@ -93,16 +96,35 @@ Current behavior:
 - Reads installed themes from `themes/*/theme.toml`
 - Prints selectable theme ID, name, version, description, and directory name
 - Theme IDs use lowercase kebab-case; variant themes should use `family-variant`
-  - `catppuccin-mocha`
-  - `catppuccin-latte`
-  - `tokyonight-storm`
-  - `tokyonight-moon`
 
 Config example:
 
 ```toml
-theme = "catppuccin-mocha"
+theme = "default"
 ```
+
+## `rustipo palette list`
+
+Lists available palettes.
+
+Current behavior:
+
+- Lists built-in palettes shipped with Rustipo
+- Lists local palettes from `palettes/*.toml` when present
+- Prints palette ID, name, description, and source (`built-in` or `local`)
+
+Config example:
+
+```toml
+palette = "catppuccin-mocha"
+```
+
+Current built-in Catppuccin flavors:
+
+- `catppuccin-latte`
+- `catppuccin-frappe`
+- `catppuccin-macchiato`
+- `catppuccin-mocha`
 
 ## `rustipo theme install <source>`
 
@@ -167,3 +189,10 @@ line_height = "1.5"
 
 - `vertical_align = "center"` keeps the classic vertically centered intro layout.
 - `vertical_align = "start"` aligns content to the top while keeping horizontal centering.
+
+Theme and palette example:
+
+```toml
+theme = "default"
+palette = "tokyonight-storm"
+```
