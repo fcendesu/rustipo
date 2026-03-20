@@ -67,6 +67,7 @@ style = "normal"
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
 - Rich palette token aliases for expressive theme styling with semantic fallbacks
 - Config-driven custom font families and local `@font-face` injection
+- Refined default typography scale and prose rhythm for the starter theme
 - Built-in palettes:
   - `dracula`
   - `default`

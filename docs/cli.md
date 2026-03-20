@@ -252,6 +252,7 @@ style = "normal"
 - `vertical_align = "start"` aligns content to the top while keeping horizontal centering.
 - `body_font`, `heading_font`, and `mono_font` let you swap font stacks without editing theme CSS.
 - `font_faces` lets you ship local fonts from `static/` or inherited theme assets.
+- The default theme now ships a fuller editor-like heading scale (`h1`-`h6`) and tighter prose spacing.
 
 Theme and palette example:
 
