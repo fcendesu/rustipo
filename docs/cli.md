@@ -91,7 +91,18 @@ Lists available themes.
 Current behavior:
 
 - Reads installed themes from `themes/*/theme.toml`
-- Prints theme name, version, description, and directory name
+- Prints selectable theme ID, name, version, description, and directory name
+- Theme IDs use lowercase kebab-case; variant themes should use `family-variant`
+  - `catppuccin-mocha`
+  - `catppuccin-latte`
+  - `tokyonight-storm`
+  - `tokyonight-moon`
+
+Config example:
+
+```toml
+theme = "catppuccin-mocha"
+```
 
 ## `rustipo theme install <source>`
 
