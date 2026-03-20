@@ -36,17 +36,31 @@ Minimum metadata fields:
 
 Optional field:
 
-- `extends` (parent theme directory name)
+- `id` (explicit selectable theme ID, recommended for variants)
+- `extends` (parent theme ID or directory name)
 
 Example:
 
 ```toml
+id = "cyberpunk-neon"
 name = "cyberpunk"
 version = "0.1.0"
 author = "Rustipo"
 description = "Cyberpunk variant"
 extends = "default"
 ```
+
+Theme IDs should use lowercase kebab-case. Variant themes should prefer `family-variant`
+IDs such as:
+
+- `catppuccin-mocha`
+- `catppuccin-latte`
+- `tokyonight-storm`
+- `tokyonight-moon`
+
+When `id` is omitted, Rustipo falls back to the theme directory name for selection and listing.
+`config.toml` `theme = "..."` can reference either the explicit theme ID or the directory name,
+but explicit IDs are the recommended public interface.
 
 ## Rendering responsibilities
 

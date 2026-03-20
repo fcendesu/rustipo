@@ -45,6 +45,7 @@ line_height = "1.5"
 - Markdown content pipeline with YAML frontmatter and draft filtering
 - Tera-based theme templates for reusable page layouts
 - Theme loading with inheritance support (`extends`) and contract validation
+- Explicit theme IDs for clearer selection and variant naming (`family-variant`)
 - Pretty URL output in `dist/`
 - Section/tag/archive generation:
   - `/blog/`, `/projects/`
@@ -81,6 +82,7 @@ my-portfolio/
 - `themes/<theme>/templates/` defines reusable layout with Tera templates
 - `themes/<theme>/static/` contains theme CSS and assets
 - `dist/` is generated output only
+- `config.toml` `theme = "..."` can target a theme ID such as `catppuccin-mocha`
 
 ## Example Project
 

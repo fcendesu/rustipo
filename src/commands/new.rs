@@ -56,7 +56,8 @@ Add your experience and skills here.
     )?;
     write_file(
         &root.join("themes/default/theme.toml"),
-        r#"name = "default"
+        r#"id = "default"
+name = "default"
 version = "0.1.0"
 author = "Rustipo"
 description = "Default Rustipo theme"
