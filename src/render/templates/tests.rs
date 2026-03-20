@@ -97,7 +97,7 @@ fn renders_pages_with_theme_templates() {
 }
 
 #[test]
-fn supports_tera_includes_inheritance_and_rustipo_helpers() {
+fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();
 
@@ -110,12 +110,18 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
     let base_root = project_root.join("themes/base");
     fs::create_dir_all(base_root.join("templates/partials"))
         .expect("base partials should be created");
+    fs::create_dir_all(base_root.join("templates/macros")).expect("base macros should be created");
     fs::create_dir_all(base_root.join("static")).expect("base static should be created");
     fs::write(
         base_root.join("templates/partials/header.html"),
         "<header data-slug=\"{{ site_title | slugify }}\">{{ abs_url(path=\"/resume/\") }}</header>",
     )
     .expect("partial should be written");
+    fs::write(
+        base_root.join("templates/macros/layout.html"),
+        "{% macro wrap(content_html) %}<main class=\"page-shell\">{{ content_html | safe }}</main>{% endmacro wrap %}",
+    )
+    .expect("macro should be written");
     fs::write(
         base_root.join("templates/base.html"),
         "{% include \"partials/header.html\" %}{% block body %}{% endblock body %}",
@@ -151,7 +157,7 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
     fs::create_dir_all(child_root.join("templates")).expect("child templates should be created");
     fs::write(
         child_root.join("templates/index.html"),
-        "{% extends \"base.html\" %}{% block body %}<main>{{ content_html | safe }}</main>{% endblock body %}",
+        "{% extends \"base.html\" %}{% import \"macros/layout.html\" as layout %}{% block body %}{{ layout::wrap(content_html=content_html) }}{% endblock body %}",
     )
     .expect("child index template should be written");
     fs::write(
@@ -204,7 +210,11 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
             .contains("https:&#x2F;&#x2F;example.com&#x2F;resume&#x2F;")
     );
     assert!(index.html.contains("data-slug=\"my-site\""));
-    assert!(index.html.contains("<main><h1>Welcome Home</h1>"));
+    assert!(
+        index
+            .html
+            .contains("<main class=\"page-shell\"><h1>Welcome Home</h1>")
+    );
 
     let post = rendered
         .iter()

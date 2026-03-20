@@ -90,9 +90,9 @@ Rustipo currently registers:
 
 - `slugify` filter
 - `format_date(format="...")` filter
-- `abs_url(path=\"...\")` function
-- `asset_url(path=\"...\")` function
-- `tag_url(name=\"...\")` function
+- `abs_url(path="...")` function
+- `asset_url(path="...")` function
+- `tag_url(name="...")` function
 
 ### `slugify`
 
@@ -186,21 +186,84 @@ Example:
 {% endif %}
 ```
 
-## Recommended theme structure
+## Starter theme structure
 
-Rustipo does not require a special Tera directory layout beyond `templates/`, but these
-conventions keep themes easier to maintain:
+Rustipo does not require a special Tera directory layout beyond `templates/`, but this structure keeps themes easier to maintain:
 
-- `templates/base.html` for the outer shell
-- `templates/partials/` for shared includes like nav, footer, metadata
-- `templates/macros/` for reusable Tera macros
+```text
+themes/<theme>/
+  theme.toml
+  templates/
+    base.html
+    index.html
+    page.html
+    post.html
+    project.html
+    section.html
+    partials/
+      head_assets.html
+    macros/
+      layout.html
+  static/
+    style.css
+```
 
-Example macro import:
+Recommended conventions:
+
+- put reusable head, nav, footer, and metadata fragments in `templates/partials/`
+- put reusable layout wrappers and helper rendering logic in `templates/macros/`
+- keep page templates small and focused on composition
+- keep page-specific writing in Markdown whenever possible
+
+## Starter pattern example
+
+A simple starter theme can use one shared include plus one macro import.
+
+`base.html`:
 
 ```html
-{% import "macros/meta.html" as meta %}
-{{ meta::page_header(title=page_title, summary=page_summary) }}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    {% include "partials/head_assets.html" %}
+  </head>
+  <body>
+    {% block body %}{% endblock body %}
+  </body>
+</html>
 ```
+
+`partials/head_assets.html`:
+
+```html
+<link rel="stylesheet" href="/style.css" />
+<link rel="stylesheet" href="/palette.css" />
+```
+
+`macros/layout.html`:
+
+```html
+{% macro page_shell(content_html) %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endmacro page_shell %}
+```
+
+`page.html`:
+
+```html
+{% extends "base.html" %}
+{% import "macros/layout.html" as layout %}
+{% block body %}
+{{ layout::page_shell(content_html=content_html) }}
+{% endblock body %}
+```
+
+This pattern keeps the reusable shell in Tera while leaving the actual page writing in Markdown.
 
 ## Recommendation
 

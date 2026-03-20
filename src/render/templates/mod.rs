@@ -132,11 +132,14 @@ fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {
         }
     }
 
+    let template_files = template_map
+        .iter()
+        .map(|(name, path)| (path.as_path(), Some(name.as_str())))
+        .collect::<Vec<_>>();
+
     let mut tera = Tera::default();
-    for (name, path) in template_map {
-        tera.add_template_file(&path, Some(&name))
-            .with_context(|| format!("failed to load template '{}': {}", name, path.display()))?;
-    }
+    tera.add_template_files(template_files)
+        .context("failed to load theme templates into Tera")?;
     helpers::register(&mut tera, config);
 
     Ok(tera)

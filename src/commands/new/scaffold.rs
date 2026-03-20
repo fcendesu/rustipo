@@ -1,11 +1,6 @@
-use std::fs;
-use std::path::Path;
+pub const PAGE_TEMPLATE_NAMES: &[&str] = &["index.html", "page.html", "post.html", "project.html"];
 
-use anyhow::{Context, Result, bail};
-
-const PAGE_TEMPLATE_NAMES: &[&str] = &["index.html", "page.html", "post.html", "project.html"];
-
-const INDEX_CONTENT: &str = r#"---
+pub const INDEX_CONTENT: &str = r#"---
 title: Home
 ---
 
@@ -14,7 +9,7 @@ title: Home
 This is your portfolio homepage.
 "#;
 
-const ABOUT_CONTENT: &str = r#"---
+pub const ABOUT_CONTENT: &str = r#"---
 title: About
 ---
 
@@ -23,7 +18,7 @@ title: About
 Write about yourself here.
 "#;
 
-const RESUME_CONTENT: &str = r#"---
+pub const RESUME_CONTENT: &str = r#"---
 title: Resume
 ---
 
@@ -32,7 +27,7 @@ title: Resume
 Add your experience and skills here.
 "#;
 
-const CONFIG_TOML: &str = r#"title = "My Portfolio"
+pub const CONFIG_TOML: &str = r#"title = "My Portfolio"
 base_url = "https://example.com"
 theme = "default"
 palette = "default"
@@ -71,43 +66,19 @@ line_height = "1.5"
 # style = "normal"
 "#;
 
-const FAVICON_SVG: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+pub const FAVICON_SVG: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="12" fill="#111827"/>
   <text x="50%" y="54%" text-anchor="middle" font-size="30" font-family="Arial, sans-serif" fill="#ffffff">R</text>
 </svg>
 "##;
 
-const BASE_TEMPLATE: &str = r#"<!doctype html>
+pub const BASE_TEMPLATE: &str = r#"<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page_title }}</title>
-    {% if site_favicon_svg %}<link rel="icon" href="{{ site_favicon_svg }}" type="image/svg+xml" />{% endif %}
-    {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
-    {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
-    {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
-    <style>
-      :root {
-        --rustipo-content-width: {{ site_style.content_width | default(value="98%") }};
-        --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
-        --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
-        --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
-        --rustipo-font-body: {{ site_style.body_font }};
-        --rustipo-font-heading: {{ site_style.heading_font }};
-        --rustipo-font-mono: {{ site_style.mono_font }};
-      }
-    </style>
-    {% if site_font_faces_css %}
-    <style>
-      {{ site_font_faces_css | safe }}
-    </style>
-    {% endif %}
-    <link rel="stylesheet" href="/style.css" />
-    <link rel="stylesheet" href="/palette.css" />
-    {% if site_has_custom_css %}
-    <link rel="stylesheet" href="/custom.css" />
-    {% endif %}
+    {% include "partials/head_assets.html" %}
   </head>
   <body>
     {% block body %}{% endblock body %}
@@ -115,35 +86,73 @@ const BASE_TEMPLATE: &str = r#"<!doctype html>
 </html>
 "#;
 
-const CONTENT_TEMPLATE: &str = r#"{% extends "base.html" %}
-{% block body %}
+pub const HEAD_ASSETS_PARTIAL: &str = r#"{% if site_favicon_svg %}<link rel="icon" href="{{ site_favicon_svg }}" type="image/svg+xml" />{% endif %}
+{% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
+{% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
+{% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
+<style>
+  :root {
+    --rustipo-content-width: {{ site_style.content_width | default(value="98%") }};
+    --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
+    --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
+    --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
+    --rustipo-font-body: {{ site_style.body_font }};
+    --rustipo-font-heading: {{ site_style.heading_font }};
+    --rustipo-font-mono: {{ site_style.mono_font }};
+  }
+</style>
+{% if site_font_faces_css %}
+<style>
+  {{ site_font_faces_css | safe }}
+</style>
+{% endif %}
+<link rel="stylesheet" href="/style.css" />
+<link rel="stylesheet" href="/palette.css" />
+{% if site_has_custom_css %}
+<link rel="stylesheet" href="/custom.css" />
+{% endif %}
+"#;
+
+pub const LAYOUT_MACROS: &str = r#"{% macro page_shell(content_html) %}
 <main>
   {{ content_html | safe }}
 </main>
-{% endblock body %}
-"#;
+{% endmacro page_shell %}
 
-const SECTION_TEMPLATE: &str = r#"{% extends "base.html" %}
-{% block body %}
+{% macro section_list(title, items) %}
 <main>
-  <h1>{{ section_title }}</h1>
+  <h1>{{ title }}</h1>
   <ul>
     {% for item in items %}
     <li><a href="{{ item.route }}">{{ item.title }}</a></li>
     {% endfor %}
   </ul>
 </main>
+{% endmacro section_list %}
+"#;
+
+pub const CONTENT_TEMPLATE: &str = r#"{% extends "base.html" %}
+{% import "macros/layout.html" as layout %}
+{% block body %}
+{{ layout::page_shell(content_html=content_html) }}
 {% endblock body %}
 "#;
 
-const DEFAULT_THEME_TOML: &str = r#"id = "default"
+pub const SECTION_TEMPLATE: &str = r#"{% extends "base.html" %}
+{% import "macros/layout.html" as layout %}
+{% block body %}
+{{ layout::section_list(title=section_title, items=items) }}
+{% endblock body %}
+"#;
+
+pub const DEFAULT_THEME_TOML: &str = r#"id = "default"
 name = "default"
 version = "0.1.0"
 author = "Rustipo"
 description = "Default Rustipo theme"
 "#;
 
-const THEME_STYLE_CSS: &str = r#"body {
+pub const THEME_STYLE_CSS: &str = r#"body {
   font-family: var(--rustipo-font-body, sans-serif);
   margin: 0;
   min-height: 100vh;
@@ -333,59 +342,3 @@ main th {
   background: var(--rustipo-surface-0, var(--rustipo-table-header-bg));
 }
 "#;
-
-pub fn run(site_name: &str) -> Result<()> {
-    if site_name.trim().is_empty() {
-        bail!("site name cannot be empty");
-    }
-
-    let root = Path::new(site_name);
-    if root.exists() {
-        bail!("target directory already exists: {}", root.display());
-    }
-
-    create_dir(root)?;
-    create_dir(&root.join("content"))?;
-    create_dir(&root.join("content/blog"))?;
-    create_dir(&root.join("content/projects"))?;
-    create_dir(&root.join("static"))?;
-    create_dir(&root.join("themes/default/templates"))?;
-    create_dir(&root.join("themes/default/static"))?;
-
-    write_file(&root.join("content/index.md"), INDEX_CONTENT)?;
-    write_file(&root.join("content/about.md"), ABOUT_CONTENT)?;
-    write_file(&root.join("content/resume.md"), RESUME_CONTENT)?;
-    write_file(&root.join("config.toml"), CONFIG_TOML)?;
-    write_file(&root.join("static/favicon.svg"), FAVICON_SVG)?;
-    write_file(&root.join("themes/default/theme.toml"), DEFAULT_THEME_TOML)?;
-    write_file(
-        &root.join("themes/default/templates/base.html"),
-        BASE_TEMPLATE,
-    )?;
-    for template_name in PAGE_TEMPLATE_NAMES {
-        write_file(
-            &root.join("themes/default/templates").join(template_name),
-            CONTENT_TEMPLATE,
-        )?;
-    }
-    write_file(
-        &root.join("themes/default/templates/section.html"),
-        SECTION_TEMPLATE,
-    )?;
-    write_file(
-        &root.join("themes/default/static/style.css"),
-        THEME_STYLE_CSS,
-    )?;
-
-    println!("Created new Rustipo site: {}", root.display());
-    Ok(())
-}
-
-fn create_dir(path: &Path) -> Result<()> {
-    fs::create_dir_all(path)
-        .with_context(|| format!("failed to create directory: {}", path.display()))
-}
-
-fn write_file(path: &Path, contents: &str) -> Result<()> {
-    fs::write(path, contents).with_context(|| format!("failed to write file: {}", path.display()))
-}

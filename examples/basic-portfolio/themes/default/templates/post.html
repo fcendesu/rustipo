@@ -1,6 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/layout.html" as layout %}
 {% block body %}
-<main>
-  {{ content_html | safe }}
-</main>
+{{ layout::page_shell(content_html=content_html) }}
 {% endblock body %}
