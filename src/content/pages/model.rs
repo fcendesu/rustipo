@@ -18,6 +18,7 @@ pub struct Page {
     pub route: String,
     pub slug: String,
     pub kind: PageKind,
+    pub has_mermaid: bool,
     pub frontmatter: Frontmatter,
     pub markdown: String,
     pub html: String,

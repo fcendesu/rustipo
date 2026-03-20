@@ -585,3 +585,88 @@ fn exposes_navigation_adjacency_and_helper_context() {
             .contains("[Projects:&#x2F;projects&#x2F;:true]")
     );
 }
+
+#[test]
+fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(
+        project_root.join("content/index.md"),
+        "---\ntitle: Diagram\n---\n\n```mermaid\ngraph TD\n  A --> B\n```",
+    )
+    .expect("index should be written");
+    fs::write(project_root.join("content/about.md"), "# About").expect("about should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<html><body>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ page_has_mermaid }}|{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &favicon_links,
+        &site_style,
+        site_has_custom_css,
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index should render");
+    assert!(index.html.contains("true|<pre class=\"mermaid\">"));
+    assert!(index.html.contains("data-rustipo-mermaid"));
+    assert!(index.html.contains("mermaid.run"));
+    assert_eq!(index.html.matches("data-rustipo-mermaid").count(), 1);
+
+    let about = rendered
+        .iter()
+        .find(|page| page.route == "/about/")
+        .expect("about should render");
+    assert!(about.html.contains("false|"));
+    assert!(!about.html.contains("data-rustipo-mermaid"));
+}

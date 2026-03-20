@@ -34,16 +34,17 @@ pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
             .to_path_buf();
 
         let page_meta = derive_page_meta(&rel_path, parsed.frontmatter.slug.as_deref())?;
-        let html = crate::content::markdown::render_html(&parsed.content);
+        let rendered = crate::content::markdown::render_html(&parsed.content);
 
         pages.push(Page {
             source_path: file,
             route: page_meta.route,
             slug: page_meta.slug,
             kind: page_meta.kind,
+            has_mermaid: rendered.has_mermaid,
             frontmatter: parsed.frontmatter,
             markdown: parsed.content,
-            html,
+            html: rendered.html,
         });
     }
 

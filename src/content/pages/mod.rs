@@ -175,4 +175,31 @@ mod tests {
         );
         assert!(pages.iter().all(|page| page.kind == PageKind::Page));
     }
+
+    #[test]
+    fn builds_pages_with_mermaid_flag() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+
+        fs::write(
+            content_dir.join("diagram.md"),
+            "---\ntitle: Diagram\n---\n\n```mermaid\ngraph TD\n  A --> B\n```",
+        )
+        .expect("diagram page should be written");
+        fs::write(content_dir.join("plain.md"), "# Plain").expect("plain page should be written");
+
+        let pages = build_pages(&content_dir).expect("build_pages should succeed");
+        let diagram = pages
+            .iter()
+            .find(|page| page.route == "/diagram/")
+            .expect("diagram page should exist");
+        let plain = pages
+            .iter()
+            .find(|page| page.route == "/plain/")
+            .expect("plain page should exist");
+
+        assert!(diagram.has_mermaid);
+        assert!(!plain.has_mermaid);
+    }
 }

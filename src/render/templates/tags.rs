@@ -79,6 +79,7 @@ pub(super) fn render_tag_pages(
         super::insert_common_site_context(&mut context, config, &render_context);
         context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
         context.insert("content_html", "");
+        context.insert("page_has_mermaid", &false);
 
         let html = tera
             .render("section.html", &context)

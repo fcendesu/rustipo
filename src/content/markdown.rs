@@ -5,7 +5,13 @@ use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
 
-pub fn render_html(markdown: &str) -> String {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RenderedMarkdown {
+    pub html: String,
+    pub has_mermaid: bool,
+}
+
+pub fn render_html(markdown: &str) -> RenderedMarkdown {
     let markdown = crate::content::shortcodes::preprocess(markdown);
 
     let mut options = Options::empty();
@@ -13,26 +19,38 @@ pub fn render_html(markdown: &str) -> String {
     options.insert(Options::ENABLE_TABLES);
 
     let parser = Parser::new_ext(&markdown, options);
-    let parser = replace_code_blocks_with_highlighted_html(parser);
+    let rendered = replace_code_blocks_with_highlighted_html(parser);
     let mut output = String::new();
-    html::push_html(&mut output, parser);
-    output
+    html::push_html(&mut output, rendered.events.into_iter());
+    RenderedMarkdown {
+        html: output,
+        has_mermaid: rendered.has_mermaid,
+    }
 }
 
-fn replace_code_blocks_with_highlighted_html<'a>(
-    parser: Parser<'a>,
-) -> impl Iterator<Item = Event<'a>> {
+struct CodeBlockRenderResult<'a> {
+    events: Vec<Event<'a>>,
+    has_mermaid: bool,
+}
+
+fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBlockRenderResult<'a> {
     let mut events = Vec::new();
     let mut in_code_block = false;
     let mut code_language: Option<String> = None;
     let mut code_content = String::new();
+    let mut has_mermaid = false;
 
     for event in parser {
         if in_code_block {
             match event {
                 Event::End(TagEnd::CodeBlock) => {
-                    let highlighted = highlight_code(&code_content, code_language.as_deref());
-                    events.push(Event::Html(CowStr::Boxed(highlighted.into_boxed_str())));
+                    let rendered = if code_language.as_deref() == Some("mermaid") {
+                        has_mermaid = true;
+                        render_mermaid_block(&code_content)
+                    } else {
+                        highlight_code(&code_content, code_language.as_deref())
+                    };
+                    events.push(Event::Html(CowStr::Boxed(rendered.into_boxed_str())));
                     in_code_block = false;
                     code_language = None;
                     code_content.clear();
@@ -63,7 +81,10 @@ fn replace_code_blocks_with_highlighted_html<'a>(
         }
     }
 
-    events.into_iter()
+    CodeBlockRenderResult {
+        events,
+        has_mermaid,
+    }
 }
 
 fn highlight_code(code: &str, language: Option<&str>) -> String {
@@ -101,6 +122,10 @@ fn fallback_code_html(code: &str) -> String {
     format!("<pre><code>{}</code></pre>", escape_html(code))
 }
 
+fn render_mermaid_block(code: &str) -> String {
+    format!("<pre class=\"mermaid\">{}</pre>", escape_html(code))
+}
+
 fn escape_html(input: &str) -> String {
     input
         .replace('&', "&amp;")
@@ -116,16 +141,33 @@ mod tests {
 
     #[test]
     fn renders_basic_markdown() {
-        let html = render_html("# Hello\n\nThis is **Rustipo**.");
-        assert!(html.contains("<h1>Hello</h1>"));
-        assert!(html.contains("<strong>Rustipo</strong>"));
+        let rendered = render_html("# Hello\n\nThis is **Rustipo**.");
+        assert!(rendered.html.contains("<h1>Hello</h1>"));
+        assert!(rendered.html.contains("<strong>Rustipo</strong>"));
+        assert!(!rendered.has_mermaid);
     }
 
     #[test]
     fn renders_highlighted_code_block() {
-        let html = render_html("```rust\nfn main() {}\n```");
-        assert!(html.contains("<pre"));
-        assert!(html.contains("<span"));
+        let rendered = render_html("```rust\nfn main() {}\n```");
+        assert!(rendered.html.contains("<pre"));
+        assert!(rendered.html.contains("<span"));
+        assert!(!rendered.has_mermaid);
+    }
+
+    #[test]
+    fn renders_mermaid_code_block_without_highlighting() {
+        let rendered = render_html("```mermaid\ngraph TD\n  A --> B\n```");
+        assert!(rendered.has_mermaid);
+        assert!(rendered.html.contains("<pre class=\"mermaid\">"));
+        assert!(rendered.html.contains("graph TD"));
+        assert!(!rendered.html.contains("<span"));
+    }
+
+    #[test]
+    fn escapes_html_inside_mermaid_code_block() {
+        let rendered = render_html("```mermaid\ngraph TD\n  A[<b>x</b>] --> B\n```");
+        assert!(rendered.html.contains("&lt;b&gt;x&lt;/b&gt;"));
     }
 
     #[test]
