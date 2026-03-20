@@ -55,6 +55,16 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/palette.css").is_file());
     assert!(project.join("dist/favicon.svg").is_file());
     assert!(project.join("dist/search-index.json").is_file());
+    assert!(
+        project
+            .join("themes/default/templates/partials/head_assets.html")
+            .is_file()
+    );
+    assert!(
+        project
+            .join("themes/default/templates/macros/layout.html")
+            .is_file()
+    );
 
     let index_html =
         fs::read_to_string(project.join("dist/index.html")).expect("index html should be readable");
@@ -69,6 +79,15 @@ fn new_and_build_generate_expected_output() {
     assert!(style_css.contains("main h4"));
     assert!(style_css.contains("font-size: clamp(2.4rem, 5vw, 3.25rem);"));
     assert!(style_css.contains("max-width: 68ch;"));
+
+    let base_template = fs::read_to_string(project.join("themes/default/templates/base.html"))
+        .expect("base template should be readable");
+    assert!(base_template.contains("{% include \"partials/head_assets.html\" %}"));
+
+    let page_template = fs::read_to_string(project.join("themes/default/templates/page.html"))
+        .expect("page template should be readable");
+    assert!(page_template.contains("{% import \"macros/layout.html\" as layout %}"));
+    assert!(page_template.contains("layout::page_shell(content_html=content_html)"));
 }
 
 #[test]

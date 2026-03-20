@@ -1,0 +1,16 @@
+{% macro page_shell(content_html) %}
+<main>
+  {{ content_html | safe }}
+</main>
+{% endmacro page_shell %}
+
+{% macro section_list(title, items) %}
+<main>
+  <h1>{{ title }}</h1>
+  <ul>
+    {% for item in items %}
+    <li><a href="{{ item.route }}">{{ item.title }}</a></li>
+    {% endfor %}
+  </ul>
+</main>
+{% endmacro section_list %}
