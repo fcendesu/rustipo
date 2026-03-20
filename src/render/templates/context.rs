@@ -21,7 +21,7 @@ pub(super) struct AdjacentPost {
 }
 
 #[derive(Default)]
-pub(super) struct SharedTemplateData {
+pub(in crate::render) struct SharedTemplateData {
     nav_entries: Vec<NavEntry>,
     adjacent_posts: BTreeMap<String, AdjacentPosts>,
 }

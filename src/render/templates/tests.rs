@@ -4,6 +4,7 @@ use tempfile::tempdir;
 
 use crate::config::SiteConfig;
 use crate::content::pages::build_pages;
+use crate::palette::loader::load_palette;
 use crate::theme::loader::load_active_theme;
 
 use super::render_pages;
@@ -54,6 +55,7 @@ fn renders_pages_with_theme_templates() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -66,6 +68,8 @@ fn renders_pages_with_theme_templates() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
 
     let rendered = render_pages(
         &theme,
@@ -74,6 +78,7 @@ fn renders_pages_with_theme_templates() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
     assert_eq!(rendered.len(), 8);
@@ -156,6 +161,7 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "child".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -168,6 +174,8 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
 
     let rendered = render_pages(
         &theme,
@@ -176,6 +184,7 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
 
@@ -244,6 +253,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: Some(crate::config::SiteOptions {
@@ -261,6 +271,8 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
 
     let rendered = render_pages(
         &theme,
@@ -269,6 +281,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
@@ -325,6 +338,7 @@ fn renders_archive_groups_for_dated_posts() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -337,6 +351,8 @@ fn renders_archive_groups_for_dated_posts() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
     let rendered = render_pages(
         &theme,
         &config,
@@ -344,6 +360,7 @@ fn renders_archive_groups_for_dated_posts() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
 
@@ -415,6 +432,7 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -427,6 +445,8 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
     let rendered = render_pages(
         &theme,
         &config,
@@ -434,6 +454,7 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
     let post = rendered
@@ -525,6 +546,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -537,6 +559,8 @@ fn exposes_navigation_adjacency_and_helper_context() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
     let rendered = render_pages(
         &theme,
         &config,
@@ -544,6 +568,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
 
@@ -631,6 +656,7 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         title: "My Site".to_string(),
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
+        palette: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -643,6 +669,8 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         .expect("favicon links should resolve");
     let site_style = config.style_options();
     let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
 
     let rendered = render_pages(
         &theme,
@@ -651,6 +679,7 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         &favicon_links,
         &site_style,
         site_has_custom_css,
+        &palette,
     )
     .expect("pages should render");
 

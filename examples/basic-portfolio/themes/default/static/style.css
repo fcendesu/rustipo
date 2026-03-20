@@ -3,9 +3,11 @@ body {
   margin: 0;
   min-height: 100vh;
   padding: var(--rustipo-top-gap) 0 2rem;
+  line-height: var(--rustipo-line-height);
   display: grid;
   place-items: var(--rustipo-vertical-align) center;
-  line-height: var(--rustipo-line-height);
+  background: var(--rustipo-bg);
+  color: var(--rustipo-text);
 }
 
 main {
@@ -68,24 +70,24 @@ main li + li {
 main blockquote {
   margin: 1.2rem 0;
   padding: 0.2rem 1rem;
-  border-left: 4px solid #cbd5e1;
-  background: #f8fafc;
+  border-left: 4px solid var(--rustipo-blockquote-border);
+  background: var(--rustipo-surface-muted);
 }
 
 main hr {
   border: 0;
-  border-top: 1px solid #d1d5db;
+  border-top: 1px solid var(--rustipo-border);
   margin: 1.8rem 0;
 }
 
 main a {
-  color: #1d4ed8;
+  color: var(--rustipo-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 main a:hover {
-  color: #1e40af;
+  color: var(--rustipo-link-hover);
 }
 
 main :not(pre) > code {
@@ -94,15 +96,16 @@ main :not(pre) > code {
   font-size: 0.95em;
   padding: 0.14em 0.32em;
   border-radius: 6px;
-  background: #eef2ff;
+  background: var(--rustipo-code-bg);
+  color: var(--rustipo-code-text);
 }
 
 main pre {
   margin: 1.1rem 0;
   padding: 0.95rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--rustipo-border);
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--rustipo-surface-muted);
   overflow-x: auto;
 }
 
@@ -110,6 +113,7 @@ main pre code {
   padding: 0;
   border-radius: 0;
   background: transparent;
+  color: inherit;
 }
 
 main table {
@@ -122,12 +126,12 @@ main table {
 
 main th,
 main td {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--rustipo-border);
   padding: 0.5rem 0.7rem;
   text-align: left;
   white-space: nowrap;
 }
 
 main th {
-  background: #f3f4f6;
+  background: var(--rustipo-table-header-bg);
 }

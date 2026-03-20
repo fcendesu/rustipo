@@ -3,6 +3,7 @@ mod commands;
 mod config;
 mod content;
 mod output;
+mod palette;
 mod render;
 mod server;
 mod theme;
@@ -22,6 +23,9 @@ fn main() -> Result<()> {
             cli::ThemeCommands::Install { source, name } => {
                 commands::theme::install(&source, name.as_deref())
             }
+        },
+        cli::Commands::Palette { command } => match command {
+            cli::PaletteCommands::List => commands::palette::list(),
         },
         cli::Commands::Deploy { command } => match command {
             cli::DeployCommands::GithubPages { force } => commands::deploy::github_pages(force),

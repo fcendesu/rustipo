@@ -3,71 +3,39 @@ use std::path::Path;
 
 use anyhow::{Context, Result, bail};
 
-pub fn run(site_name: &str) -> Result<()> {
-    if site_name.trim().is_empty() {
-        bail!("site name cannot be empty");
-    }
+const PAGE_TEMPLATE_NAMES: &[&str] = &["index.html", "page.html", "post.html", "project.html"];
 
-    let root = Path::new(site_name);
-    if root.exists() {
-        bail!("target directory already exists: {}", root.display());
-    }
-
-    create_dir(root)?;
-    create_dir(&root.join("content"))?;
-    create_dir(&root.join("content/blog"))?;
-    create_dir(&root.join("content/projects"))?;
-    create_dir(&root.join("static"))?;
-    create_dir(&root.join("themes/default/templates"))?;
-    create_dir(&root.join("themes/default/static"))?;
-
-    write_file(
-        &root.join("content/index.md"),
-        r#"---
+const INDEX_CONTENT: &str = r#"---
 title: Home
 ---
 
 # Welcome to Rustipo
 
 This is your portfolio homepage.
-"#,
-    )?;
-    write_file(
-        &root.join("content/about.md"),
-        r#"---
+"#;
+
+const ABOUT_CONTENT: &str = r#"---
 title: About
 ---
 
 # About
 
 Write about yourself here.
-"#,
-    )?;
-    write_file(
-        &root.join("content/resume.md"),
-        r#"---
+"#;
+
+const RESUME_CONTENT: &str = r#"---
 title: Resume
 ---
 
 # Resume
 
 Add your experience and skills here.
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/theme.toml"),
-        r#"id = "default"
-name = "default"
-version = "0.1.0"
-author = "Rustipo"
-description = "Default Rustipo theme"
-"#,
-    )?;
-    write_file(
-        &root.join("config.toml"),
-        r#"title = "My Portfolio"
+"#;
+
+const CONFIG_TOML: &str = r#"title = "My Portfolio"
 base_url = "https://example.com"
 theme = "default"
+palette = "default"
 description = "My personal portfolio site"
 
 [site]
@@ -75,6 +43,14 @@ favicon = "/favicon.svg"
 
 # Basic design controls (applied by theme CSS variables).
 # You can tune layout/typography here without editing CSS files.
+# Built-in palettes:
+# - default
+# - catppuccin-frappe
+# - catppuccin-latte
+# - catppuccin-macchiato
+# - catppuccin-mocha
+# - tokyonight-storm
+# - tokyonight-moon
 [site.layout]
 content_width = "98%"
 top_gap = "2rem"
@@ -82,19 +58,15 @@ vertical_align = "center"
 
 [site.typography]
 line_height = "1.5"
-"#,
-    )?;
-    write_file(
-        &root.join("static/favicon.svg"),
-        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+"#;
+
+const FAVICON_SVG: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="12" fill="#111827"/>
   <text x="50%" y="54%" text-anchor="middle" font-size="30" font-family="Arial, sans-serif" fill="#ffffff">R</text>
 </svg>
-"##,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/base.html"),
-        r#"<!doctype html>
+"##;
+
+const BASE_TEMPLATE: &str = r#"<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -113,6 +85,7 @@ line_height = "1.5"
       }
     </style>
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/palette.css" />
     {% if site_has_custom_css %}
     <link rel="stylesheet" href="/custom.css" />
     {% endif %}
@@ -121,51 +94,17 @@ line_height = "1.5"
     {% block body %}{% endblock body %}
   </body>
 </html>
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/index.html"),
-        r#"{% extends "base.html" %}
+"#;
+
+const CONTENT_TEMPLATE: &str = r#"{% extends "base.html" %}
 {% block body %}
 <main>
   {{ content_html | safe }}
 </main>
 {% endblock body %}
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/page.html"),
-        r#"{% extends "base.html" %}
-{% block body %}
-<main>
-  {{ content_html | safe }}
-</main>
-{% endblock body %}
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/post.html"),
-        r#"{% extends "base.html" %}
-{% block body %}
-<main>
-  {{ content_html | safe }}
-</main>
-{% endblock body %}
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/project.html"),
-        r#"{% extends "base.html" %}
-{% block body %}
-<main>
-  {{ content_html | safe }}
-</main>
-{% endblock body %}
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/templates/section.html"),
-        r#"{% extends "base.html" %}
+"#;
+
+const SECTION_TEMPLATE: &str = r#"{% extends "base.html" %}
 {% block body %}
 <main>
   <h1>{{ section_title }}</h1>
@@ -176,11 +115,16 @@ line_height = "1.5"
   </ul>
 </main>
 {% endblock body %}
-"#,
-    )?;
-    write_file(
-        &root.join("themes/default/static/style.css"),
-        r#"body {
+"#;
+
+const DEFAULT_THEME_TOML: &str = r#"id = "default"
+name = "default"
+version = "0.1.0"
+author = "Rustipo"
+description = "Default Rustipo theme"
+"#;
+
+const THEME_STYLE_CSS: &str = r#"body {
   font-family: sans-serif;
   margin: 0;
   min-height: 100vh;
@@ -188,6 +132,8 @@ line_height = "1.5"
   line-height: var(--rustipo-line-height);
   display: grid;
   place-items: var(--rustipo-vertical-align) center;
+  background: var(--rustipo-bg);
+  color: var(--rustipo-text);
 }
 
 main {
@@ -250,24 +196,24 @@ main li + li {
 main blockquote {
   margin: 1.2rem 0;
   padding: 0.2rem 1rem;
-  border-left: 4px solid #cbd5e1;
-  background: #f8fafc;
+  border-left: 4px solid var(--rustipo-blockquote-border);
+  background: var(--rustipo-surface-muted);
 }
 
 main hr {
   border: 0;
-  border-top: 1px solid #d1d5db;
+  border-top: 1px solid var(--rustipo-border);
   margin: 1.8rem 0;
 }
 
 main a {
-  color: #1d4ed8;
+  color: var(--rustipo-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 main a:hover {
-  color: #1e40af;
+  color: var(--rustipo-link-hover);
 }
 
 main :not(pre) > code {
@@ -276,15 +222,16 @@ main :not(pre) > code {
   font-size: 0.95em;
   padding: 0.14em 0.32em;
   border-radius: 6px;
-  background: #eef2ff;
+  background: var(--rustipo-code-bg);
+  color: var(--rustipo-code-text);
 }
 
 main pre {
   margin: 1.1rem 0;
   padding: 0.95rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--rustipo-border);
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--rustipo-surface-muted);
   overflow-x: auto;
 }
 
@@ -292,6 +239,7 @@ main pre code {
   padding: 0;
   border-radius: 0;
   background: transparent;
+  color: inherit;
 }
 
 main table {
@@ -304,16 +252,58 @@ main table {
 
 main th,
 main td {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--rustipo-border);
   padding: 0.5rem 0.7rem;
   text-align: left;
   white-space: nowrap;
 }
 
 main th {
-  background: #f3f4f6;
+  background: var(--rustipo-table-header-bg);
 }
-"#,
+"#;
+
+pub fn run(site_name: &str) -> Result<()> {
+    if site_name.trim().is_empty() {
+        bail!("site name cannot be empty");
+    }
+
+    let root = Path::new(site_name);
+    if root.exists() {
+        bail!("target directory already exists: {}", root.display());
+    }
+
+    create_dir(root)?;
+    create_dir(&root.join("content"))?;
+    create_dir(&root.join("content/blog"))?;
+    create_dir(&root.join("content/projects"))?;
+    create_dir(&root.join("static"))?;
+    create_dir(&root.join("themes/default/templates"))?;
+    create_dir(&root.join("themes/default/static"))?;
+
+    write_file(&root.join("content/index.md"), INDEX_CONTENT)?;
+    write_file(&root.join("content/about.md"), ABOUT_CONTENT)?;
+    write_file(&root.join("content/resume.md"), RESUME_CONTENT)?;
+    write_file(&root.join("config.toml"), CONFIG_TOML)?;
+    write_file(&root.join("static/favicon.svg"), FAVICON_SVG)?;
+    write_file(&root.join("themes/default/theme.toml"), DEFAULT_THEME_TOML)?;
+    write_file(
+        &root.join("themes/default/templates/base.html"),
+        BASE_TEMPLATE,
+    )?;
+    for template_name in PAGE_TEMPLATE_NAMES {
+        write_file(
+            &root.join("themes/default/templates").join(template_name),
+            CONTENT_TEMPLATE,
+        )?;
+    }
+    write_file(
+        &root.join("themes/default/templates/section.html"),
+        SECTION_TEMPLATE,
+    )?;
+    write_file(
+        &root.join("themes/default/static/style.css"),
+        THEME_STYLE_CSS,
     )?;
 
     println!("Created new Rustipo site: {}", root.display());

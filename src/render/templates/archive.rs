@@ -3,12 +3,10 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::date::ContentDate;
 use crate::content::pages::{Page, PageKind};
 
-use super::context::SharedTemplateData;
-use super::{CommonRenderContext, RenderedPage};
+use super::{CommonRenderContext, RenderEnvironment, RenderedPage};
 
 #[derive(Clone, Serialize)]
 struct ArchiveItem {
@@ -27,12 +25,8 @@ struct ArchiveGroup {
 
 pub(super) fn render_blog_archive_page(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let mut grouped: BTreeMap<String, Vec<ArchiveItem>> = BTreeMap::new();
     let mut all_items = Vec::new();
@@ -80,16 +74,17 @@ pub(super) fn render_blog_archive_page(
     context.insert("items", &all_items);
     context.insert("archive_groups", &archive_groups);
     let render_context = CommonRenderContext {
-        shared,
+        shared: env.shared,
         route: &route,
         page_kind: "section",
         current_section: "archive",
-        favicon_links,
-        site_style,
-        site_has_custom_css,
+        favicon_links: env.favicon_links,
+        site_style: env.site_style,
+        site_has_custom_css: env.site_has_custom_css,
+        palette: env.palette,
     };
-    super::insert_common_site_context(&mut context, config, &render_context);
-    context.insert("page_title", &format!("Archive | {}", config.title));
+    super::insert_common_site_context(&mut context, env.config, &render_context);
+    context.insert("page_title", &format!("Archive | {}", env.config.title));
     context.insert("content_html", "");
     context.insert("page_has_mermaid", &false);
     context.insert("current_page", &1usize);

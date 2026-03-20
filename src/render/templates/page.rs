@@ -1,11 +1,9 @@
 use anyhow::{Context, Result};
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::context::SharedTemplateData;
-use super::{CommonRenderContext, RenderedPage};
+use super::{CommonRenderContext, RenderEnvironment, RenderedPage};
 
 const MERMAID_SNIPPET_MARKER: &str = "data-rustipo-mermaid";
 const MERMAID_SNIPPET: &str = r#"<script type="module" data-rustipo-mermaid>
@@ -16,12 +14,8 @@ await mermaid.run({ querySelector: ".mermaid" });
 
 pub(super) fn render_content_pages(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let mut rendered = Vec::with_capacity(pages.len());
 
@@ -43,22 +37,23 @@ pub(super) fn render_content_pages(
         context.insert("page_order", &page.frontmatter.order);
         context.insert("page_has_mermaid", &page.has_mermaid);
         let render_context = CommonRenderContext {
-            shared,
+            shared: env.shared,
             route: &page.route,
             page_kind: page_kind_name(page.kind),
             current_section: current_section_name(page.kind),
-            favicon_links,
-            site_style,
-            site_has_custom_css,
+            favicon_links: env.favicon_links,
+            site_style: env.site_style,
+            site_has_custom_css: env.site_has_custom_css,
+            palette: env.palette,
         };
-        super::insert_common_site_context(&mut context, config, &render_context);
+        super::insert_common_site_context(&mut context, env.config, &render_context);
         context.insert(
             "page_title",
             &page
                 .frontmatter
                 .title
                 .clone()
-                .unwrap_or_else(|| config.title.clone()),
+                .unwrap_or_else(|| env.config.title.clone()),
         );
 
         let html = tera.render(template, &context).with_context(|| {

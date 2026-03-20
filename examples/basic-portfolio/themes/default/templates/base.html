@@ -4,15 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page_title }}</title>
+    {% if site_favicon_svg %}<link rel="icon" href="{{ site_favicon_svg }}" type="image/svg+xml" />{% endif %}
+    {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
+    {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
+    {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
     <style>
       :root {
-        --rustipo-content-width: {{ site_style.content_width | default(value="90%") }};
+        --rustipo-content-width: {{ site_style.content_width | default(value="98%") }};
         --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
         --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
         --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
       }
     </style>
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/palette.css" />
     {% if site_has_custom_css %}
     <link rel="stylesheet" href="/custom.css" />
     {% endif %}

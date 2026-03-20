@@ -34,6 +34,11 @@ pub enum Commands {
         #[command(subcommand)]
         command: ThemeCommands,
     },
+    /// Palette-related commands
+    Palette {
+        #[command(subcommand)]
+        command: PaletteCommands,
+    },
     /// Deployment helper commands
     Deploy {
         #[command(subcommand)]
@@ -53,6 +58,12 @@ pub enum ThemeCommands {
         #[arg(long)]
         name: Option<String>,
     },
+}
+
+#[derive(Debug, Subcommand)]
+pub enum PaletteCommands {
+    /// List available palettes
+    List,
 }
 
 #[derive(Debug, Subcommand)]

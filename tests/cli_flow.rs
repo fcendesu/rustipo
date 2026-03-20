@@ -52,6 +52,7 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/blog/index.html").is_file());
     assert!(project.join("dist/projects/index.html").is_file());
     assert!(project.join("dist/style.css").is_file());
+    assert!(project.join("dist/palette.css").is_file());
     assert!(project.join("dist/favicon.svg").is_file());
     assert!(project.join("dist/search-index.json").is_file());
 
@@ -65,6 +66,70 @@ fn new_and_build_generate_expected_output() {
     assert!(style_css.contains("main blockquote"));
     assert!(style_css.contains("main pre"));
     assert!(style_css.contains("main table"));
+}
+
+#[test]
+fn new_scaffold_includes_builtin_palettes() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    let list_output = run_cli(&project, &["palette", "list"]);
+    assert!(
+        list_output.status.success(),
+        "palette list failed: {}",
+        String::from_utf8_lossy(&list_output.stderr)
+    );
+
+    let stdout = String::from_utf8_lossy(&list_output.stdout);
+    assert!(stdout.contains("default -> Default"));
+    assert!(stdout.contains("catppuccin-frappe -> Catppuccin Frappe"));
+    assert!(stdout.contains("catppuccin-latte -> Catppuccin Latte"));
+    assert!(stdout.contains("catppuccin-macchiato -> Catppuccin Macchiato"));
+    assert!(stdout.contains("catppuccin-mocha -> Catppuccin Mocha"));
+    assert!(stdout.contains("tokyonight-storm -> Tokyo Night Storm"));
+    assert!(stdout.contains("tokyonight-moon -> Tokyo Night Moon"));
+}
+
+#[test]
+fn build_supports_builtin_palette_variants() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    fs::write(
+        project.join("config.toml"),
+        "title = \"My Portfolio\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"catppuccin-mocha\"\ndescription = \"My personal portfolio site\"\n",
+    )
+    .expect("config should be updated");
+
+    let build_output = run_cli(&project, &["build"]);
+    assert!(
+        build_output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build_output.stderr)
+    );
+
+    let palette_css = fs::read_to_string(project.join("dist/palette.css"))
+        .expect("palette css should be readable");
+    assert!(palette_css.contains("--rustipo-bg: #1e1e2e;"));
+    assert!(palette_css.contains("--rustipo-link: #89b4fa;"));
+    assert!(palette_css.contains("--rustipo-token-rosewater: #f5e0dc;"));
+    assert!(palette_css.contains("--rustipo-token-surface0: #313244;"));
 }
 
 #[test]

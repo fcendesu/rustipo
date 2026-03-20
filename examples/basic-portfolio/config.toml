@@ -1,10 +1,19 @@
 title = "Basic Portfolio"
 base_url = "https://example.com"
 theme = "default"
+palette = "default"
 description = "A starter Rustipo example site"
 
 # Basic design controls (applied by theme CSS variables).
 # You can tune layout/typography here without editing CSS files.
+# Built-in palettes:
+# - default
+# - catppuccin-frappe
+# - catppuccin-latte
+# - catppuccin-macchiato
+# - catppuccin-mocha
+# - tokyonight-storm
+# - tokyonight-moon
 [site.layout]
 content_width = "98%"
 top_gap = "2rem"

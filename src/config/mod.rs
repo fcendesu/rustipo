@@ -9,6 +9,7 @@ pub struct SiteConfig {
     pub title: String,
     pub base_url: String,
     pub theme: String,
+    pub palette: Option<String>,
     pub description: String,
     // Reserved for template contexts and future metadata outputs.
     #[allow(dead_code)]
@@ -101,6 +102,14 @@ impl SiteConfig {
         }
 
         Ok(links)
+    }
+
+    pub fn selected_palette(&self) -> &str {
+        self.palette
+            .as_deref()
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .unwrap_or("default")
     }
 
     pub fn style_options(&self) -> SiteStyleOptions {
@@ -200,6 +209,7 @@ mod tests {
             title: "Rustipo".to_string(),
             base_url: "https://example.com".to_string(),
             theme: "default".to_string(),
+            palette: None,
             description: "Portfolio".to_string(),
             author: None,
             site: None,
@@ -278,6 +288,12 @@ mod tests {
         assert_eq!(style.top_gap, "3rem");
         assert_eq!(style.vertical_align, "start");
         assert_eq!(style.line_height, "1.7");
+    }
+
+    #[test]
+    fn falls_back_to_default_palette_when_missing() {
+        let config = base_config();
+        assert_eq!(config.selected_palette(), "default");
     }
 
     #[test]

@@ -6,6 +6,7 @@ use walkdir::WalkDir;
 
 use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::Page;
+use crate::palette::models::Palette;
 use crate::theme::models::Theme;
 
 mod archive;
@@ -29,6 +30,16 @@ pub(super) struct CommonRenderContext<'a> {
     favicon_links: &'a FaviconLinks,
     site_style: &'a SiteStyleOptions,
     site_has_custom_css: bool,
+    palette: &'a Palette,
+}
+
+pub(super) struct RenderEnvironment<'a> {
+    pub(super) config: &'a SiteConfig,
+    pub(super) shared: &'a context::SharedTemplateData,
+    pub(super) favicon_links: &'a FaviconLinks,
+    pub(super) site_style: &'a SiteStyleOptions,
+    pub(super) site_has_custom_css: bool,
+    pub(super) palette: &'a Palette,
 }
 
 pub fn render_pages(
@@ -38,46 +49,23 @@ pub fn render_pages(
     favicon_links: &FaviconLinks,
     site_style: &SiteStyleOptions,
     site_has_custom_css: bool,
+    palette: &Palette,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme, config)?;
     let shared = context::build_shared_template_data(pages);
+    let env = RenderEnvironment {
+        config,
+        shared: &shared,
+        favicon_links,
+        site_style,
+        site_has_custom_css,
+        palette,
+    };
 
-    let mut rendered = page::render_content_pages(
-        &tera,
-        config,
-        pages,
-        &shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?;
-    rendered.extend(section::render_sections(
-        &tera,
-        config,
-        pages,
-        &shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?);
-    rendered.extend(archive::render_blog_archive_page(
-        &tera,
-        config,
-        pages,
-        &shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?);
-    rendered.extend(tags::render_tag_pages(
-        &tera,
-        config,
-        pages,
-        &shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?);
+    let mut rendered = page::render_content_pages(&tera, pages, &env)?;
+    rendered.extend(section::render_sections(&tera, pages, &env)?);
+    rendered.extend(archive::render_blog_archive_page(&tera, pages, &env)?);
+    rendered.extend(tags::render_tag_pages(&tera, pages, &env)?);
 
     Ok(rendered)
 }
@@ -97,6 +85,7 @@ fn insert_common_site_context(
         &render_context.favicon_links.apple_touch_icon_href,
     );
     context.insert("site_style", render_context.site_style);
+    context.insert("site_palette", render_context.palette);
     context.insert("site_has_custom_css", &render_context.site_has_custom_css);
     context::insert_page_context(
         context,
