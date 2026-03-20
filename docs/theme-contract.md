@@ -158,7 +158,11 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.top_gap`
   - `site_style.vertical_align`
   - `site_style.line_height`
+  - `site_style.body_font`
+  - `site_style.heading_font`
+  - `site_style.mono_font`
 - `site_has_custom_css` (boolean, true when `static/custom.css` exists)
+- `site_font_faces_css` (optional rendered `@font-face` rules for configured local fonts)
 
 Rustipo also registers small Tera helpers for theme authors:
 

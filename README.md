@@ -48,6 +48,15 @@ vertical_align = "center" # or "start"
 
 [site.typography]
 line_height = "1.5"
+body_font = "\"Inter\", sans-serif"
+heading_font = "\"Fraunces\", serif"
+mono_font = "\"JetBrains Mono\", monospace"
+
+[[site.typography.font_faces]]
+family = "Inter"
+source = "/fonts/inter.woff2"
+weight = "400"
+style = "normal"
 ```
 
 ## Current Features
@@ -57,6 +66,7 @@ line_height = "1.5"
 - Theme loading with inheritance support (`extends`) and contract validation
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
 - Rich palette token aliases for expressive theme styling with semantic fallbacks
+- Config-driven custom font families and local `@font-face` injection
 - Built-in palettes:
   - `dracula`
   - `default`
@@ -93,6 +103,7 @@ my-portfolio/
     blog/
     projects/
   static/
+    fonts/
   themes/
   config.toml
 ```

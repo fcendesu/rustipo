@@ -46,5 +46,6 @@
   - `tokyonight-storm`
   - `tokyonight-moon`
 - `config.toml`: site-level configuration
-- `config.toml` can define style knobs under `site.layout` and `site.typography` (for example `content_width`, `top_gap`, `vertical_align`, `line_height`)
+- `config.toml` can define style knobs under `site.layout` and `site.typography` (for example `content_width`, `top_gap`, `vertical_align`, `line_height`, `body_font`, `heading_font`, `mono_font`)
+- local font files can live under `static/fonts/` and be referenced from `[[site.typography.font_faces]]`
 - `dist/`: generated static output (created by build step)

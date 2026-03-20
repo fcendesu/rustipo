@@ -63,11 +63,18 @@ Current behavior:
 - Renders pages through theme templates
 - Resolves favicon links for template context (`site_favicon*` variables)
 - Fails with a readable error when configured favicon path is missing in `static/`
+- Resolves custom font families from `site.typography`
+- Validates configured local font-face assets from `static/` or inherited theme `static/` directories
+- Injects `@font-face` CSS only when configured font faces are present
 - Exposes style context from `config.toml` to templates (`site_style.*`):
   - `site.layout.content_width`
   - `site.layout.top_gap`
   - `site.layout.vertical_align` (`center` or `start`, default: `center`)
   - `site.typography.line_height`
+  - `site.typography.body_font`
+  - `site.typography.heading_font`
+  - `site.typography.mono_font`
+- Exposes `site_font_faces_css` to templates for optional font-face injection
 - Auto-includes `static/custom.css` in template context when present (`site_has_custom_css`)
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Writes generated palette variables to `dist/palette.css`
@@ -230,10 +237,21 @@ vertical_align = "center" # "center" (default) or "start"
 
 [site.typography]
 line_height = "1.5"
+body_font = "\"Inter\", sans-serif"
+heading_font = "\"Fraunces\", serif"
+mono_font = "\"JetBrains Mono\", monospace"
+
+[[site.typography.font_faces]]
+family = "Inter"
+source = "/fonts/inter.woff2"
+weight = "400"
+style = "normal"
 ```
 
 - `vertical_align = "center"` keeps the classic vertically centered intro layout.
 - `vertical_align = "start"` aligns content to the top while keeping horizontal centering.
+- `body_font`, `heading_font`, and `mono_font` let you swap font stacks without editing theme CSS.
+- `font_faces` lets you ship local fonts from `static/` or inherited theme assets.
 
 Theme and palette example:
 
