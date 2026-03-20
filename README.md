@@ -13,10 +13,12 @@ MVP complete, active post-MVP development.
 ## CLI
 
 - `rustipo new <site-name>`
+- `rustipo dev`
 - `rustipo build`
 - `rustipo serve`
 - `rustipo theme list`
 - `rustipo palette list`
+- `rustipo palette use <id>`
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 
@@ -25,8 +27,13 @@ MVP complete, active post-MVP development.
 ```bash
 cargo run -- new my-portfolio
 cd my-portfolio
+cargo run -- dev
+```
+
+Production build:
+
+```bash
 cargo run -- build
-cargo run -- serve
 ```
 
 ## Layout Without CSS Editing

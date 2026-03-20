@@ -21,6 +21,27 @@ Current behavior:
 - Starter CSS includes default markdown prose styling (headings, spacing, code, links, tables, blockquotes)
 - Fails if target directory already exists
 
+## `rustipo dev`
+
+Builds once, starts the local server, and watches for changes.
+
+Example:
+
+```bash
+rustipo dev
+```
+
+```bash
+rustipo dev --host 0.0.0.0 --port 4000
+```
+
+Current behavior:
+
+- Runs the same local workflow as `rustipo serve --watch`
+- Performs an initial build before serving
+- Rebuilds on file changes and triggers live reload after successful rebuilds
+- Uses the same default address as `serve`: `127.0.0.1:3000`
+
 ## `rustipo build`
 
 Builds site content into static output (`dist/`).
@@ -125,6 +146,22 @@ Current built-in Catppuccin flavors:
 - `catppuccin-frappe`
 - `catppuccin-macchiato`
 - `catppuccin-mocha`
+
+## `rustipo palette use <id>`
+
+Updates `config.toml` to use the selected palette.
+
+Example:
+
+```bash
+rustipo palette use catppuccin-mocha
+```
+
+Current behavior:
+
+- Validates the palette exists before updating config
+- Writes or updates the top-level `palette = "..."` key in `config.toml`
+- Prints the selected palette ID after updating
 
 ## `rustipo theme install <source>`
 
