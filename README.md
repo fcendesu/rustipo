@@ -58,11 +58,13 @@ line_height = "1.5"
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
 - Rich palette token aliases for expressive theme styling with semantic fallbacks
 - Built-in palettes:
+  - `dracula`
   - `default`
   - `catppuccin-frappe`
   - `catppuccin-latte`
   - `catppuccin-macchiato`
   - `catppuccin-mocha`
+  - `gruvbox-dark`
   - `tokyonight-storm`
   - `tokyonight-moon`
 - Pretty URL output in `dist/`

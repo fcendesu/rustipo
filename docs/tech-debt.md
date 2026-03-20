@@ -4,13 +4,13 @@ This file tracks known implementation debt that should be addressed after the re
 
 ## Debt register
 
-- Default markdown prose style pack is not implemented yet:
-  - heading scale and spacing rhythm
-  - code/link/table/blockquote/list/hr polish
-  - currently left to browser defaults + theme-specific CSS
+- No active debt items currently tracked.
 
 ## Recently resolved
 
+- Default markdown prose style pack:
+  - implemented heading rhythm, code/link/table/blockquote/list/hr styling in the default theme
+  - scaffolded new projects now inherit the same prose defaults
 - Frontmatter date typing/validation:
   - introduced shared `ContentDate` wrapper with strict `YYYY-MM-DD` validation
   - moved validation to frontmatter decode stage (invalid dates now fail fast)

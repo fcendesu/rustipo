@@ -44,11 +44,13 @@ favicon = "/favicon.svg"
 # Basic design controls (applied by theme CSS variables).
 # You can tune layout/typography here without editing CSS files.
 # Built-in palettes:
+# - dracula
 # - default
 # - catppuccin-frappe
 # - catppuccin-latte
 # - catppuccin-macchiato
 # - catppuccin-mocha
+# - gruvbox-dark
 # - tokyonight-storm
 # - tokyonight-moon
 [site.layout]

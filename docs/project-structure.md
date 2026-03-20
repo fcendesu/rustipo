@@ -36,11 +36,13 @@
 - `themes/`: theme files (templates + theme assets + metadata)
 - `palettes/` (optional): local palette overrides and custom color schemes (`*.toml`)
 - built-in palettes are embedded in Rustipo and selectable without copying files into the project:
+  - `dracula`
   - `default`
   - `catppuccin-frappe`
   - `catppuccin-latte`
   - `catppuccin-macchiato`
   - `catppuccin-mocha`
+  - `gruvbox-dark`
   - `tokyonight-storm`
   - `tokyonight-moon`
 - `config.toml`: site-level configuration

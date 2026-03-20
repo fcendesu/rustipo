@@ -147,6 +147,14 @@ Current built-in Catppuccin flavors:
 - `catppuccin-macchiato`
 - `catppuccin-mocha`
 
+Additional built-in palettes:
+
+- `default`
+- `dracula`
+- `gruvbox-dark`
+- `tokyonight-storm`
+- `tokyonight-moon`
+
 ## `rustipo palette use <id>`
 
 Updates `config.toml` to use the selected palette.
