@@ -6,6 +6,17 @@ Core product direction:
 
 - authors write content in Markdown
 - themes provide reusable Tera templates for layout and repeated structure
+- palettes provide color tokens independently from layout themes
+
+Current shipped post-MVP capabilities:
+
+- `rustipo dev` for one-command local development
+- palette selection and built-in presets
+- custom font configuration and local `@font-face` support
+- Mermaid fenced-code rendering
+- nested custom pages outside special sections
+- richer Tera helpers/context for theme authors
+- refined default typography scale and prose rhythm
 
 For historical post-MVP batch planning, see:
 
@@ -55,3 +66,4 @@ For historical post-MVP batch planning, see:
   - more shared context fields
   - more helper functions/filters
   - stronger macro/partial conventions and examples
+- continue growing the layout theme ecosystem now that palette/font foundations are in place

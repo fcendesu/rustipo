@@ -21,7 +21,10 @@ This checklist is derived from the acceptance criteria in `rustipo_prd.md`.
 
 ## Post-MVP follow-up (tracked separately)
 
-- [ ] Default markdown prose style pack (typography scale, spacing rhythm, code/link/table/blockquote/list/hr styles)
+- [x] Default markdown prose style pack (typography scale, spacing rhythm, code/link/table/blockquote/list/hr styles)
+- [x] Palette system split from layout themes
+- [x] Custom font support for theme/layout typography
+- [x] Default typography refinement after font support
 
 ## Foundation tasks
 
