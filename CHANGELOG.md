@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.5.0...rustipo-v0.6.0) (2026-03-20)
+
+
+### Features
+
+* add palettes, dev workflow, and custom font support ([2383642](https://github.com/fcendesu/rustipo/commit/2383642aac883b06cd3aff0b8192d33f8e5c9f68))
+* **cli:** add dev and palette use commands ([d99f7a6](https://github.com/fcendesu/rustipo/commit/d99f7a621747abb4e9ec2bde6040353f7a47cc97))
+* **content:** add mermaid fenced code support ([ad87793](https://github.com/fcendesu/rustipo/commit/ad87793e064f0c78ce02b98d982a6b285ef34826))
+* **content:** add mermaid fenced code support ([efab30f](https://github.com/fcendesu/rustipo/commit/efab30ff558bf7b8620ddb5326944ad0ebf53e77))
+* **content:** support generic nested custom pages ([48d6df2](https://github.com/fcendesu/rustipo/commit/48d6df2e1397ee66d69f43e224b674ed14cddb69))
+* **content:** support generic nested custom pages ([76a8ddf](https://github.com/fcendesu/rustipo/commit/76a8ddfde5db1d962a9b407f9ad81fc1946fc32c))
+* **font:** add config-driven custom font support ([8622df0](https://github.com/fcendesu/rustipo/commit/8622df0e1d67184d79da8da189854e29160ea5c6))
+* **palette:** add dracula and gruvbox built-ins ([5b7d6d2](https://github.com/fcendesu/rustipo/commit/5b7d6d2bbdc5e17e5c09bbed81ff3467130e0049))
+* **palette:** add palette selection and built-in palettes ([285fbe0](https://github.com/fcendesu/rustipo/commit/285fbe00913296394999f2c066d055d053aae19a))
+* **tera:** add shared template context helpers ([ca0cc51](https://github.com/fcendesu/rustipo/commit/ca0cc51584bc91502e5a02ab71270873931d8b32))
+* **tera:** add shared template context helpers ([01ba662](https://github.com/fcendesu/rustipo/commit/01ba6626165d0abaf96a1d9ac763cba573fbdb71))
+* **tera:** add theme helper functions and coverage ([298415b](https://github.com/fcendesu/rustipo/commit/298415bbea5ec9265ad2e85fd83ee4c1ef5a7242))
+* **tera:** add theme helpers and guide ([71880ce](https://github.com/fcendesu/rustipo/commit/71880ce541a07f918cf4ca00a3fc1a6992d5dcb5))
+* **theme:** add config-driven layout controls and custom css hook ([c0ba646](https://github.com/fcendesu/rustipo/commit/c0ba6460d794ee3d1e5777c8b126462aedd3b4ca))
+* **theme:** add default markdown prose style pack ([8b337ff](https://github.com/fcendesu/rustipo/commit/8b337ff08e6a96cce64423848e701bd4a71ff574))
+* **theme:** add default markdown prose style pack ([0f89e75](https://github.com/fcendesu/rustipo/commit/0f89e75837366fc84a1e55319e1a1808b449e2cf))
+* **theme:** add starter tera authoring patterns ([b05fddb](https://github.com/fcendesu/rustipo/commit/b05fddbb6c26f0a630272d19fa364c7a8fbbb376))
+* **theme:** add starter tera partial and macro patterns ([c1817f5](https://github.com/fcendesu/rustipo/commit/c1817f5a6f57379e638c36e6898d38374d344aff))
+* **theme:** config-driven layout controls and docs ([106dc05](https://github.com/fcendesu/rustipo/commit/106dc054c5e1386370ea1590e265731d7956e491))
+* **theme:** refine default typography scale ([f3dad32](https://github.com/fcendesu/rustipo/commit/f3dad324ff6a1c18795545aa7b5f4f88015a3d96))
+* **theme:** refine default typography scale ([0eb5210](https://github.com/fcendesu/rustipo/commit/0eb5210a832749666f088072f881b1b5024334b0))
+* **theme:** support explicit theme ids ([7a42a0b](https://github.com/fcendesu/rustipo/commit/7a42a0bc5f55481f1730a2d542dc9754936fb9ba))
+* **theme:** support explicit theme ids ([e765b89](https://github.com/fcendesu/rustipo/commit/e765b899d4bf2038d5ff82e5b2a1c02fcc0e20b7))
+* **theme:** use richer palette token aliases ([ab96cf6](https://github.com/fcendesu/rustipo/commit/ab96cf6321683f4729159cbd8563fca115215351))
+
+
+### Bug Fixes
+
+* **tera:** simplify shared render context ([45cc8e2](https://github.com/fcendesu/rustipo/commit/45cc8e20c590a08169a45df2aa96733b7d4bde47))
+
 ## [0.5.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.4.0...rustipo-v0.5.0) (2026-03-18)
 
 
