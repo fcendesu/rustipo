@@ -33,6 +33,9 @@ fn build_site_with_logging(verbose: bool) -> Result<()> {
     }
     let favicon_links = config.resolve_favicon_links(".")?;
     let site_style = config.style_options();
+    let (_site_fonts, font_faces) = config.resolve_fonts(".", &theme.static_dirs)?;
+    let site_font_faces_css =
+        (!font_faces.is_empty()).then(|| crate::config::fonts::render_font_faces_css(&font_faces));
     let site_has_custom_css = config.has_custom_css(".");
     let pages = crate::content::pages::build_pages("content")?;
     if verbose {
@@ -42,10 +45,13 @@ fn build_site_with_logging(verbose: bool) -> Result<()> {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &crate::render::templates::SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: site_font_faces_css.as_deref(),
+            palette: &palette,
+        },
     )?;
     if verbose {
         println!("Rendered pages with templates: {}", rendered_pages.len());

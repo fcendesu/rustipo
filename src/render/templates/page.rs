@@ -41,10 +41,7 @@ pub(super) fn render_content_pages(
             route: &page.route,
             page_kind: page_kind_name(page.kind),
             current_section: current_section_name(page.kind),
-            favicon_links: env.favicon_links,
-            site_style: env.site_style,
-            site_has_custom_css: env.site_has_custom_css,
-            palette: env.palette,
+            site: env.site,
         };
         super::insert_common_site_context(&mut context, env.config, &render_context);
         context.insert(

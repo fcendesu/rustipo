@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family: var(--rustipo-font-body, sans-serif);
   margin: 0;
   min-height: 100vh;
   padding: var(--rustipo-top-gap) 0 2rem;
@@ -36,6 +36,15 @@ main p,
 main li {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5,
+main h6 {
+  font-family: var(--rustipo-font-heading, var(--rustipo-font-body, sans-serif));
 }
 
 main h1 {
@@ -97,8 +106,8 @@ main strong {
 }
 
 main :not(pre) > code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace);
   font-size: 0.95em;
   padding: 0.14em 0.32em;
   border-radius: 6px;
@@ -107,6 +116,8 @@ main :not(pre) > code {
 }
 
 main pre {
+  font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace);
   margin: 1.1rem 0;
   padding: 0.95rem;
   border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));

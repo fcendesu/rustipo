@@ -7,7 +7,7 @@ use crate::content::pages::build_pages;
 use crate::palette::loader::load_palette;
 use crate::theme::loader::load_active_theme;
 
-use super::render_pages;
+use super::{SiteRenderContext, render_pages};
 
 #[test]
 fn renders_pages_with_theme_templates() {
@@ -75,10 +75,13 @@ fn renders_pages_with_theme_templates() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
     assert_eq!(rendered.len(), 8);
@@ -181,10 +184,13 @@ fn supports_tera_includes_inheritance_and_rustipo_helpers() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
 
@@ -278,10 +284,13 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
@@ -357,10 +366,13 @@ fn renders_archive_groups_for_dated_posts() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
 
@@ -451,10 +463,13 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
     let post = rendered
@@ -565,10 +580,13 @@ fn exposes_navigation_adjacency_and_helper_context() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
 
@@ -676,10 +694,13 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         &theme,
         &config,
         &pages,
-        &favicon_links,
-        &site_style,
-        site_has_custom_css,
-        &palette,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
     )
     .expect("pages should render");
 

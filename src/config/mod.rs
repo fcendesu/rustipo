@@ -1,10 +1,13 @@
 pub mod editor;
+pub mod fonts;
 
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
+
+pub use fonts::{ResolvedFontFace, SiteFontOptions, TypographyOptions};
 
 #[derive(Debug, Deserialize)]
 pub struct SiteConfig {
@@ -42,11 +45,6 @@ pub struct LayoutOptions {
     pub content_width: Option<String>,
     pub top_gap: Option<String>,
     pub vertical_align: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct TypographyOptions {
-    pub line_height: Option<String>,
 }
 
 impl SiteConfig {
@@ -114,9 +112,22 @@ impl SiteConfig {
             .unwrap_or("default")
     }
 
+    pub fn resolve_fonts(
+        &self,
+        project_root: impl AsRef<Path>,
+        theme_static_dirs: &[PathBuf],
+    ) -> Result<(SiteFontOptions, Vec<ResolvedFontFace>)> {
+        fonts::resolve_font_options(
+            self.site.as_ref().and_then(|site| site.typography.as_ref()),
+            project_root.as_ref(),
+            theme_static_dirs,
+        )
+    }
+
     pub fn style_options(&self) -> SiteStyleOptions {
         let layout = self.site.as_ref().and_then(|site| site.layout.as_ref());
         let typography = self.site.as_ref().and_then(|site| site.typography.as_ref());
+        let site_fonts = fonts::site_font_options(typography);
 
         SiteStyleOptions {
             content_width: css_value_or_default(
@@ -132,6 +143,9 @@ impl SiteConfig {
                 typography.and_then(|t| t.line_height.as_deref()),
                 "1.5",
             ),
+            body_font: site_fonts.body_font,
+            heading_font: site_fonts.heading_font,
+            mono_font: site_fonts.mono_font,
         }
     }
 
@@ -155,6 +169,9 @@ pub struct SiteStyleOptions {
     pub top_gap: String,
     pub vertical_align: String,
     pub line_height: String,
+    pub body_font: String,
+    pub heading_font: String,
+    pub mono_font: String,
 }
 
 fn normalize_favicon_href(value: &str) -> String {
@@ -267,6 +284,9 @@ mod tests {
         assert_eq!(style.top_gap, "2rem");
         assert_eq!(style.vertical_align, "center");
         assert_eq!(style.line_height, "1.5");
+        assert_eq!(style.body_font, "sans-serif");
+        assert_eq!(style.heading_font, "sans-serif");
+        assert!(style.mono_font.contains("ui-monospace"));
     }
 
     #[test]
@@ -282,6 +302,10 @@ mod tests {
             }),
             typography: Some(TypographyOptions {
                 line_height: Some("1.7".to_string()),
+                body_font: Some("\"Inter\", sans-serif".to_string()),
+                heading_font: Some("\"Fraunces\", serif".to_string()),
+                mono_font: Some("\"JetBrains Mono\", monospace".to_string()),
+                font_faces: Vec::new(),
             }),
         });
 
@@ -290,6 +314,9 @@ mod tests {
         assert_eq!(style.top_gap, "3rem");
         assert_eq!(style.vertical_align, "start");
         assert_eq!(style.line_height, "1.7");
+        assert_eq!(style.body_font, "\"Inter\", sans-serif");
+        assert_eq!(style.heading_font, "\"Fraunces\", serif");
+        assert_eq!(style.mono_font, "\"JetBrains Mono\", monospace");
     }
 
     #[test]

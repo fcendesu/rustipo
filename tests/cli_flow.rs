@@ -173,6 +173,72 @@ fn palette_use_updates_config_toml() {
 }
 
 #[test]
+fn build_supports_custom_font_config_and_assets() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    fs::create_dir_all(project.join("static/fonts")).expect("font dir should be created");
+    fs::write(project.join("static/fonts/inter.woff2"), "font-bytes")
+        .expect("font should be written");
+
+    fs::write(
+        project.join("config.toml"),
+        r#"title = "My Portfolio"
+base_url = "https://example.com"
+theme = "default"
+palette = "default"
+description = "My personal portfolio site"
+
+[site]
+favicon = "/favicon.svg"
+
+[site.layout]
+content_width = "98%"
+top_gap = "2rem"
+vertical_align = "center"
+
+[site.typography]
+line_height = "1.5"
+body_font = "\"Inter\", sans-serif"
+heading_font = "\"Fraunces\", serif"
+mono_font = "\"JetBrains Mono\", monospace"
+
+[[site.typography.font_faces]]
+family = "Inter"
+source = "/fonts/inter.woff2"
+weight = "400"
+style = "normal"
+"#,
+    )
+    .expect("config should be updated");
+
+    let build_output = run_cli(&project, &["build"]);
+    assert!(
+        build_output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build_output.stderr)
+    );
+
+    assert!(project.join("dist/fonts/inter.woff2").is_file());
+
+    let index_html =
+        fs::read_to_string(project.join("dist/index.html")).expect("index html should be readable");
+    assert!(index_html.contains("@font-face"));
+    assert!(index_html.contains("font-family: \"Inter\";"));
+    assert!(index_html.contains("--rustipo-font-body: &quot;Inter&quot;, sans-serif;"));
+    assert!(index_html.contains("--rustipo-font-heading: &quot;Fraunces&quot;, serif;"));
+    assert!(index_html.contains("--rustipo-font-mono: &quot;JetBrains Mono&quot;, monospace;"));
+}
+
+#[test]
 fn serve_fails_when_dist_is_missing() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();

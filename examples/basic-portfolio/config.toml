@@ -23,3 +23,12 @@ vertical_align = "center"
 
 [site.typography]
 line_height = "1.5"
+# body_font = "\"Inter\", sans-serif"
+# heading_font = "\"Fraunces\", serif"
+# mono_font = "\"JetBrains Mono\", monospace"
+#
+# [[site.typography.font_faces]]
+# family = "Inter"
+# source = "/fonts/inter.woff2"
+# weight = "400"
+# style = "normal"

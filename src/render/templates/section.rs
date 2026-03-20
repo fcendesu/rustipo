@@ -88,10 +88,7 @@ fn render_blog_section_pages(
             route: &route,
             page_kind: "section",
             current_section: "blog",
-            favicon_links: env.favicon_links,
-            site_style: env.site_style,
-            site_has_custom_css: env.site_has_custom_css,
-            palette: env.palette,
+            site: env.site,
         };
         super::insert_common_site_context(&mut context, env.config, &render_context);
         context.insert("page_title", &format!("Blog | {}", env.config.title));
@@ -142,10 +139,7 @@ fn render_projects_section_page(
         route: "/projects/",
         page_kind: "section",
         current_section: "projects",
-        favicon_links: env.favicon_links,
-        site_style: env.site_style,
-        site_has_custom_css: env.site_has_custom_css,
-        palette: env.palette,
+        site: env.site,
     };
     super::insert_common_site_context(&mut context, env.config, &render_context);
     context.insert("page_title", &format!("Projects | {}", env.config.title));

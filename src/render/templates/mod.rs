@@ -22,44 +22,40 @@ pub struct RenderedPage {
     pub html: String,
 }
 
+pub struct SiteRenderContext<'a> {
+    pub favicon_links: &'a FaviconLinks,
+    pub site_style: &'a SiteStyleOptions,
+    pub site_has_custom_css: bool,
+    pub site_font_faces_css: Option<&'a str>,
+    pub palette: &'a Palette,
+}
+
 pub(super) struct CommonRenderContext<'a> {
     shared: &'a context::SharedTemplateData,
     route: &'a str,
     page_kind: &'a str,
     current_section: &'a str,
-    favicon_links: &'a FaviconLinks,
-    site_style: &'a SiteStyleOptions,
-    site_has_custom_css: bool,
-    palette: &'a Palette,
+    site: &'a SiteRenderContext<'a>,
 }
 
 pub(super) struct RenderEnvironment<'a> {
     pub(super) config: &'a SiteConfig,
     pub(super) shared: &'a context::SharedTemplateData,
-    pub(super) favicon_links: &'a FaviconLinks,
-    pub(super) site_style: &'a SiteStyleOptions,
-    pub(super) site_has_custom_css: bool,
-    pub(super) palette: &'a Palette,
+    pub(super) site: &'a SiteRenderContext<'a>,
 }
 
 pub fn render_pages(
     theme: &Theme,
     config: &SiteConfig,
     pages: &[Page],
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
-    palette: &Palette,
+    site: &SiteRenderContext<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme, config)?;
     let shared = context::build_shared_template_data(pages);
     let env = RenderEnvironment {
         config,
         shared: &shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-        palette,
+        site,
     };
 
     let mut rendered = page::render_content_pages(&tera, pages, &env)?;
@@ -77,16 +73,29 @@ fn insert_common_site_context(
 ) {
     context.insert("site_title", &config.title);
     context.insert("site_description", &config.description);
-    context.insert("site_favicon", &render_context.favicon_links.icon_href);
-    context.insert("site_favicon_svg", &render_context.favicon_links.svg_href);
-    context.insert("site_favicon_ico", &render_context.favicon_links.ico_href);
+    context.insert("site_favicon", &render_context.site.favicon_links.icon_href);
+    context.insert(
+        "site_favicon_svg",
+        &render_context.site.favicon_links.svg_href,
+    );
+    context.insert(
+        "site_favicon_ico",
+        &render_context.site.favicon_links.ico_href,
+    );
     context.insert(
         "site_apple_touch_icon",
-        &render_context.favicon_links.apple_touch_icon_href,
+        &render_context.site.favicon_links.apple_touch_icon_href,
     );
-    context.insert("site_style", render_context.site_style);
-    context.insert("site_palette", render_context.palette);
-    context.insert("site_has_custom_css", &render_context.site_has_custom_css);
+    context.insert("site_style", render_context.site.site_style);
+    context.insert("site_palette", render_context.site.palette);
+    context.insert(
+        "site_has_custom_css",
+        &render_context.site.site_has_custom_css,
+    );
+    context.insert(
+        "site_font_faces_css",
+        &render_context.site.site_font_faces_css,
+    );
     context::insert_page_context(
         context,
         render_context.shared,

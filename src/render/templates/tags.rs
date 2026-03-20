@@ -66,10 +66,7 @@ pub(super) fn render_tag_pages(
             route: &route,
             page_kind: "section",
             current_section: "tags",
-            favicon_links: env.favicon_links,
-            site_style: env.site_style,
-            site_has_custom_css: env.site_has_custom_css,
-            palette: env.palette,
+            site: env.site,
         };
         super::insert_common_site_context(&mut context, env.config, &render_context);
         context.insert(

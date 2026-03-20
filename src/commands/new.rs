@@ -60,6 +60,15 @@ vertical_align = "center"
 
 [site.typography]
 line_height = "1.5"
+# body_font = "\"Inter\", sans-serif"
+# heading_font = "\"Fraunces\", serif"
+# mono_font = "\"JetBrains Mono\", monospace"
+#
+# [[site.typography.font_faces]]
+# family = "Inter"
+# source = "/fonts/inter.woff2"
+# weight = "400"
+# style = "normal"
 "#;
 
 const FAVICON_SVG: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -84,8 +93,16 @@ const BASE_TEMPLATE: &str = r#"<!doctype html>
         --rustipo-top-gap: {{ site_style.top_gap | default(value="2rem") }};
         --rustipo-vertical-align: {{ site_style.vertical_align | default(value="center") }};
         --rustipo-line-height: {{ site_style.line_height | default(value="1.5") }};
+        --rustipo-font-body: {{ site_style.body_font }};
+        --rustipo-font-heading: {{ site_style.heading_font }};
+        --rustipo-font-mono: {{ site_style.mono_font }};
       }
     </style>
+    {% if site_font_faces_css %}
+    <style>
+      {{ site_font_faces_css | safe }}
+    </style>
+    {% endif %}
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/palette.css" />
     {% if site_has_custom_css %}
@@ -127,7 +144,7 @@ description = "Default Rustipo theme"
 "#;
 
 const THEME_STYLE_CSS: &str = r#"body {
-  font-family: sans-serif;
+  font-family: var(--rustipo-font-body, sans-serif);
   margin: 0;
   min-height: 100vh;
   padding: var(--rustipo-top-gap) 0 2rem;
@@ -164,6 +181,15 @@ main p,
 main li {
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+main h1,
+main h2,
+main h3,
+main h4,
+main h5,
+main h6 {
+  font-family: var(--rustipo-font-heading, var(--rustipo-font-body, sans-serif));
 }
 
 main h1 {
@@ -225,8 +251,8 @@ main strong {
 }
 
 main :not(pre) > code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace);
   font-size: 0.95em;
   padding: 0.14em 0.32em;
   border-radius: 6px;
@@ -235,6 +261,8 @@ main :not(pre) > code {
 }
 
 main pre {
+  font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace);
   margin: 1.1rem 0;
   padding: 0.95rem;
   border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
