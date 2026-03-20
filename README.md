@@ -56,6 +56,7 @@ line_height = "1.5"
 - Tera-based theme templates for reusable page layouts
 - Theme loading with inheritance support (`extends`) and contract validation
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
+- Rich palette token aliases for expressive theme styling with semantic fallbacks
 - Built-in palettes:
   - `default`
   - `catppuccin-frappe`

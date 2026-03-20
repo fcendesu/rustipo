@@ -76,6 +76,42 @@ Palettes can also expose additional token variables. Rustipo writes those as
 `--rustipo-token-<name>`, which lets richer themes use full palette vocabularies such as the
 official Catppuccin flavor tokens.
 
+Rustipo also derives a small richer theme contract from those tokens so themes can style more
+expressively without depending on palette-family-specific names:
+
+- `--rustipo-base`
+- `--rustipo-mantle`
+- `--rustipo-crust`
+- `--rustipo-surface-0`
+- `--rustipo-surface-1`
+- `--rustipo-surface-2`
+- `--rustipo-overlay-0`
+- `--rustipo-overlay-1`
+- `--rustipo-overlay-2`
+- `--rustipo-subtext-0`
+- `--rustipo-subtext-1`
+- `--rustipo-accent`
+- `--rustipo-accent-strong`
+- `--rustipo-success`
+- `--rustipo-warning`
+- `--rustipo-danger`
+
+Theme authors should prefer these richer variables with fallbacks to the stable semantic ones.
+
+Example:
+
+```css
+.card {
+  background: var(--rustipo-surface-0, var(--rustipo-surface-muted));
+  border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
+}
+
+.button-primary {
+  background: var(--rustipo-accent, var(--rustipo-link));
+  color: var(--rustipo-base, var(--rustipo-bg));
+}
+```
+
 ## Rendering responsibilities
 
 Theme defines presentation:
