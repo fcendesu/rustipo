@@ -148,6 +148,7 @@ const THEME_STYLE_CSS: &str = r#"body {
   margin: 0;
   min-height: 100vh;
   padding: var(--rustipo-top-gap) 0 2rem;
+  font-size: 17px;
   line-height: var(--rustipo-line-height);
   display: grid;
   place-items: var(--rustipo-vertical-align) center;
@@ -161,6 +162,10 @@ main {
   margin: 0 auto;
   padding-inline: 1rem;
   box-sizing: border-box;
+}
+
+main > * {
+  max-width: 68ch;
 }
 
 main > :first-child {
@@ -190,50 +195,79 @@ main h4,
 main h5,
 main h6 {
   font-family: var(--rustipo-font-heading, var(--rustipo-font-body, sans-serif));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 main h1 {
-  margin: 0 0 1rem;
-  line-height: 1.2;
+  margin: 0 0 1.15rem;
+  font-size: clamp(2.4rem, 5vw, 3.25rem);
+  line-height: 1.05;
+  font-weight: 800;
 }
 
 main h2 {
-  margin: 1.8rem 0 0.85rem;
-  line-height: 1.25;
+  margin: 2.4rem 0 0.95rem;
+  font-size: clamp(1.85rem, 3.5vw, 2.35rem);
+  line-height: 1.1;
+  font-weight: 775;
   color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
 main h3 {
-  margin: 1.45rem 0 0.7rem;
-  line-height: 1.3;
+  margin: 1.85rem 0 0.75rem;
+  font-size: clamp(1.45rem, 2.2vw, 1.7rem);
+  line-height: 1.18;
   color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
+main h4 {
+  margin: 1.55rem 0 0.65rem;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+main h5 {
+  margin: 1.35rem 0 0.55rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+main h6 {
+  margin: 1.2rem 0 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--rustipo-subtext-0, var(--rustipo-text));
+}
+
 main p {
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
+  text-wrap: pretty;
 }
 
 main ul,
 main ol {
-  margin: 0 0 1rem 1.35rem;
+  margin: 0 0 1.15rem 1.35rem;
   padding: 0;
 }
 
 main li + li {
-  margin-top: 0.35rem;
+  margin-top: 0.45rem;
 }
 
 main blockquote {
-  margin: 1.2rem 0;
-  padding: 0.2rem 1rem;
+  margin: 1.5rem 0;
+  padding: 0.5rem 1rem;
   border-left: 4px solid var(--rustipo-accent, var(--rustipo-blockquote-border));
   background: var(--rustipo-surface-0, var(--rustipo-surface-muted));
+  color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
 main hr {
   border: 0;
   border-top: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
-  margin: 1.8rem 0;
+  margin: 2.25rem 0;
 }
 
 main a {
@@ -253,8 +287,8 @@ main strong {
 main :not(pre) > code {
   font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace);
-  font-size: 0.95em;
-  padding: 0.14em 0.32em;
+  font-size: 0.92em;
+  padding: 0.16em 0.38em;
   border-radius: 6px;
   background: var(--rustipo-surface-0, var(--rustipo-code-bg));
   color: var(--rustipo-code-text);
@@ -263,12 +297,13 @@ main :not(pre) > code {
 main pre {
   font-family: var(--rustipo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace);
-  margin: 1.1rem 0;
-  padding: 0.95rem;
+  margin: 1.4rem 0;
+  padding: 1rem 1.05rem;
   border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   border-radius: 10px;
   background: var(--rustipo-mantle, var(--rustipo-surface-muted));
   overflow-x: auto;
+  font-size: 0.94rem;
 }
 
 main pre code {
@@ -283,13 +318,13 @@ main table {
   width: 100%;
   overflow-x: auto;
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin: 1.35rem 0;
 }
 
 main th,
 main td {
   border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
-  padding: 0.5rem 0.7rem;
+  padding: 0.6rem 0.8rem;
   text-align: left;
   white-space: nowrap;
 }

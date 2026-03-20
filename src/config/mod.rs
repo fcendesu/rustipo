@@ -284,8 +284,12 @@ mod tests {
         assert_eq!(style.top_gap, "2rem");
         assert_eq!(style.vertical_align, "center");
         assert_eq!(style.line_height, "1.5");
-        assert_eq!(style.body_font, "sans-serif");
-        assert_eq!(style.heading_font, "sans-serif");
+        assert!(
+            style.body_font.contains("ui-sans-serif"),
+            "unexpected body font: {}",
+            style.body_font
+        );
+        assert_eq!(style.heading_font, style.body_font);
         assert!(style.mono_font.contains("ui-monospace"));
     }
 

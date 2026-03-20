@@ -62,7 +62,7 @@ pub fn resolve_font_options(
 pub fn site_font_options(typography: Option<&TypographyOptions>) -> SiteFontOptions {
     let body_font = css_font_value_or_default(
         typography.and_then(|t| t.body_font.as_deref()),
-        "sans-serif",
+        "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
     );
     let heading_font = css_font_value_or_default(
         typography.and_then(|t| t.heading_font.as_deref()),
@@ -229,8 +229,8 @@ mod tests {
         let (fonts, font_faces) =
             resolve_font_options(None, dir.path(), &[]).expect("default fonts should resolve");
 
-        assert_eq!(fonts.body_font, "sans-serif");
-        assert_eq!(fonts.heading_font, "sans-serif");
+        assert!(fonts.body_font.contains("ui-sans-serif"));
+        assert_eq!(fonts.heading_font, fonts.body_font);
         assert!(fonts.mono_font.contains("ui-monospace"));
         assert!(font_faces.is_empty());
     }
