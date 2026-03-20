@@ -20,6 +20,8 @@
       templates/
       static/
       theme.toml
+  palettes/ (optional)
+    dracula.toml
   config.toml
 ```
 
@@ -32,6 +34,18 @@
 - `static/`: user-provided static assets copied to output
 - `static/custom.css` (optional): loaded after theme CSS when present for user overrides
 - `themes/`: theme files (templates + theme assets + metadata)
+- `palettes/` (optional): local palette overrides and custom color schemes (`*.toml`)
+- built-in palettes are embedded in Rustipo and selectable without copying files into the project:
+  - `dracula`
+  - `default`
+  - `catppuccin-frappe`
+  - `catppuccin-latte`
+  - `catppuccin-macchiato`
+  - `catppuccin-mocha`
+  - `gruvbox-dark`
+  - `tokyonight-storm`
+  - `tokyonight-moon`
 - `config.toml`: site-level configuration
-- `config.toml` can define style knobs under `site.layout` and `site.typography` (for example `content_width`, `top_gap`, `vertical_align`, `line_height`)
+- `config.toml` can define style knobs under `site.layout` and `site.typography` (for example `content_width`, `top_gap`, `vertical_align`, `line_height`, `body_font`, `heading_font`, `mono_font`)
+- local font files can live under `static/fonts/` and be referenced from `[[site.typography.font_faces]]`
 - `dist/`: generated static output (created by build step)

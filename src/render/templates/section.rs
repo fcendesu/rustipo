@@ -2,11 +2,9 @@ use anyhow::{Context, Result};
 use serde::Serialize;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::context::SharedTemplateData;
-use super::{CommonRenderContext, RenderedPage};
+use super::{CommonRenderContext, RenderEnvironment, RenderedPage};
 
 #[derive(Clone, Serialize)]
 struct SectionItem {
@@ -18,44 +16,20 @@ struct SectionItem {
 
 pub(super) fn render_sections(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let mut rendered = Vec::new();
-    rendered.extend(render_blog_section_pages(
-        tera,
-        config,
-        pages,
-        shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?);
-    rendered.push(render_projects_section_page(
-        tera,
-        config,
-        pages,
-        shared,
-        favicon_links,
-        site_style,
-        site_has_custom_css,
-    )?);
+    rendered.extend(render_blog_section_pages(tera, pages, env)?);
+    rendered.push(render_projects_section_page(tera, pages, env)?);
 
     Ok(rendered)
 }
 
 fn render_blog_section_pages(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let items = pages
         .iter()
@@ -72,7 +46,7 @@ fn render_blog_section_pages(
         })
         .collect::<Vec<_>>();
 
-    let per_page = config.posts_per_page();
+    let per_page = env.config.posts_per_page();
     let total_pages = usize::max(1, items.len().div_ceil(per_page));
     let mut rendered = Vec::with_capacity(total_pages);
 
@@ -110,16 +84,14 @@ fn render_blog_section_pages(
         context.insert("section_title", "Blog");
         context.insert("items", &paged_items);
         let render_context = CommonRenderContext {
-            shared,
+            shared: env.shared,
             route: &route,
             page_kind: "section",
             current_section: "blog",
-            favicon_links,
-            site_style,
-            site_has_custom_css,
+            site: env.site,
         };
-        super::insert_common_site_context(&mut context, config, &render_context);
-        context.insert("page_title", &format!("Blog | {}", config.title));
+        super::insert_common_site_context(&mut context, env.config, &render_context);
+        context.insert("page_title", &format!("Blog | {}", env.config.title));
         context.insert("content_html", "");
         context.insert("page_has_mermaid", &false);
         context.insert("current_page", &page_number);
@@ -139,12 +111,8 @@ fn render_blog_section_pages(
 
 fn render_projects_section_page(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<RenderedPage> {
     let items = pages
         .iter()
@@ -167,16 +135,14 @@ fn render_projects_section_page(
     context.insert("section_title", "Projects");
     context.insert("items", &items);
     let render_context = CommonRenderContext {
-        shared,
+        shared: env.shared,
         route: "/projects/",
         page_kind: "section",
         current_section: "projects",
-        favicon_links,
-        site_style,
-        site_has_custom_css,
+        site: env.site,
     };
-    super::insert_common_site_context(&mut context, config, &render_context);
-    context.insert("page_title", &format!("Projects | {}", config.title));
+    super::insert_common_site_context(&mut context, env.config, &render_context);
+    context.insert("page_title", &format!("Projects | {}", env.config.title));
     context.insert("content_html", "");
     context.insert("page_has_mermaid", &false);
     context.insert("current_page", &1usize);

@@ -64,6 +64,7 @@ mod tests {
             title: "Rustipo".to_string(),
             base_url: "https://example.com".to_string(),
             theme: "default".to_string(),
+            palette: None,
             description: "Portfolio".to_string(),
             author: None,
             site: None,

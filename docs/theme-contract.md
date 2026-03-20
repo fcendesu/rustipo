@@ -50,17 +50,67 @@ description = "Cyberpunk variant"
 extends = "default"
 ```
 
-Theme IDs should use lowercase kebab-case. Variant themes should prefer `family-variant`
-IDs such as:
-
-- `catppuccin-mocha`
-- `catppuccin-latte`
-- `tokyonight-storm`
-- `tokyonight-moon`
+Theme IDs should use lowercase kebab-case. Variant themes should prefer `family-variant`.
 
 When `id` is omitted, Rustipo falls back to the theme directory name for selection and listing.
 `config.toml` `theme = "..."` can reference either the explicit theme ID or the directory name,
 but explicit IDs are the recommended public interface.
+
+Color presets such as `catppuccin-mocha` and `tokyonight-storm` belong in the palette system, not
+in theme IDs. Themes define structure; palettes define color tokens.
+
+Generated `palette.css` always includes the stable semantic variables used by the default theme:
+
+- `--rustipo-bg`
+- `--rustipo-text`
+- `--rustipo-surface-muted`
+- `--rustipo-border`
+- `--rustipo-blockquote-border`
+- `--rustipo-link`
+- `--rustipo-link-hover`
+- `--rustipo-code-bg`
+- `--rustipo-code-text`
+- `--rustipo-table-header-bg`
+
+Palettes can also expose additional token variables. Rustipo writes those as
+`--rustipo-token-<name>`, which lets richer themes use full palette vocabularies such as the
+official Catppuccin flavor tokens.
+
+Rustipo also derives a small richer theme contract from those tokens so themes can style more
+expressively without depending on palette-family-specific names:
+
+- `--rustipo-base`
+- `--rustipo-mantle`
+- `--rustipo-crust`
+- `--rustipo-surface-0`
+- `--rustipo-surface-1`
+- `--rustipo-surface-2`
+- `--rustipo-overlay-0`
+- `--rustipo-overlay-1`
+- `--rustipo-overlay-2`
+- `--rustipo-subtext-0`
+- `--rustipo-subtext-1`
+- `--rustipo-accent`
+- `--rustipo-accent-strong`
+- `--rustipo-success`
+- `--rustipo-warning`
+- `--rustipo-danger`
+
+Theme authors should prefer these richer variables with fallbacks to the stable semantic ones.
+
+Example:
+
+```css
+.card {
+  background: var(--rustipo-surface-0, var(--rustipo-surface-muted));
+  border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
+}
+
+.button-primary {
+  background: var(--rustipo-accent, var(--rustipo-link));
+  color: var(--rustipo-base, var(--rustipo-bg));
+}
+```
 
 ## Rendering responsibilities
 
@@ -108,7 +158,11 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.top_gap`
   - `site_style.vertical_align`
   - `site_style.line_height`
+  - `site_style.body_font`
+  - `site_style.heading_font`
+  - `site_style.mono_font`
 - `site_has_custom_css` (boolean, true when `static/custom.css` exists)
+- `site_font_faces_css` (optional rendered `@font-face` rules for configured local fonts)
 
 Rustipo also registers small Tera helpers for theme authors:
 

@@ -3,11 +3,9 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use tera::{Context as TeraContext, Tera};
 
-use crate::config::{FaviconLinks, SiteConfig, SiteStyleOptions};
 use crate::content::pages::{Page, PageKind};
 
-use super::context::SharedTemplateData;
-use super::{CommonRenderContext, RenderedPage};
+use super::{CommonRenderContext, RenderEnvironment, RenderedPage};
 
 #[derive(Clone, Serialize)]
 struct SectionItem {
@@ -19,12 +17,8 @@ struct SectionItem {
 
 pub(super) fn render_tag_pages(
     tera: &Tera,
-    config: &SiteConfig,
     pages: &[Page],
-    shared: &SharedTemplateData,
-    favicon_links: &FaviconLinks,
-    site_style: &SiteStyleOptions,
-    site_has_custom_css: bool,
+    env: &RenderEnvironment<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let mut tags: BTreeMap<String, Vec<SectionItem>> = BTreeMap::new();
 
@@ -68,16 +62,17 @@ pub(super) fn render_tag_pages(
         context.insert("section_title", &format!("Tag: {tag_slug}"));
         context.insert("items", &items);
         let render_context = CommonRenderContext {
-            shared,
+            shared: env.shared,
             route: &route,
             page_kind: "section",
             current_section: "tags",
-            favicon_links,
-            site_style,
-            site_has_custom_css,
+            site: env.site,
         };
-        super::insert_common_site_context(&mut context, config, &render_context);
-        context.insert("page_title", &format!("Tag: {tag_slug} | {}", config.title));
+        super::insert_common_site_context(&mut context, env.config, &render_context);
+        context.insert(
+            "page_title",
+            &format!("Tag: {tag_slug} | {}", env.config.title),
+        );
         context.insert("content_html", "");
         context.insert("page_has_mermaid", &false);
 

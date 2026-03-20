@@ -3,6 +3,8 @@
 Rustipo is an open-source, themeable static site generator written in Rust for portfolio websites.
 
 Rustipo is Markdown-first for content authoring and uses Tera templates for reusable layout.
+Rustipo separates layout from color selection: `theme` controls structure, while `palette`
+controls the generated color tokens.
 
 ## Status
 
@@ -11,9 +13,12 @@ MVP complete, active post-MVP development.
 ## CLI
 
 - `rustipo new <site-name>`
+- `rustipo dev`
 - `rustipo build`
 - `rustipo serve`
 - `rustipo theme list`
+- `rustipo palette list`
+- `rustipo palette use <id>`
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 
@@ -22,8 +27,13 @@ MVP complete, active post-MVP development.
 ```bash
 cargo run -- new my-portfolio
 cd my-portfolio
+cargo run -- dev
+```
+
+Production build:
+
+```bash
 cargo run -- build
-cargo run -- serve
 ```
 
 ## Layout Without CSS Editing
@@ -38,6 +48,15 @@ vertical_align = "center" # or "start"
 
 [site.typography]
 line_height = "1.5"
+body_font = "\"Inter\", sans-serif"
+heading_font = "\"Fraunces\", serif"
+mono_font = "\"JetBrains Mono\", monospace"
+
+[[site.typography.font_faces]]
+family = "Inter"
+source = "/fonts/inter.woff2"
+weight = "400"
+style = "normal"
 ```
 
 ## Current Features
@@ -46,6 +65,18 @@ line_height = "1.5"
 - Tera-based theme templates for reusable page layouts
 - Theme loading with inheritance support (`extends`) and contract validation
 - Explicit theme IDs for clearer selection and variant naming (`family-variant`)
+- Rich palette token aliases for expressive theme styling with semantic fallbacks
+- Config-driven custom font families and local `@font-face` injection
+- Built-in palettes:
+  - `dracula`
+  - `default`
+  - `catppuccin-frappe`
+  - `catppuccin-latte`
+  - `catppuccin-macchiato`
+  - `catppuccin-mocha`
+  - `gruvbox-dark`
+  - `tokyonight-storm`
+  - `tokyonight-moon`
 - Pretty URL output in `dist/`
 - Section/tag/archive generation:
   - `/blog/`, `/projects/`
@@ -72,6 +103,7 @@ my-portfolio/
     blog/
     projects/
   static/
+    fonts/
   themes/
   config.toml
 ```
@@ -81,8 +113,9 @@ my-portfolio/
 - `content/` is where authors write Markdown content
 - `themes/<theme>/templates/` defines reusable layout with Tera templates
 - `themes/<theme>/static/` contains theme CSS and assets
+- `palette = "..."` selects a built-in or local color palette
+- optional local palettes live under `palettes/<palette>.toml`
 - `dist/` is generated output only
-- `config.toml` `theme = "..."` can target a theme ID such as `catppuccin-mocha`
 
 ## Example Project
 

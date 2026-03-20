@@ -1,10 +1,21 @@
 title = "Basic Portfolio"
 base_url = "https://example.com"
 theme = "default"
+palette = "default"
 description = "A starter Rustipo example site"
 
 # Basic design controls (applied by theme CSS variables).
 # You can tune layout/typography here without editing CSS files.
+# Built-in palettes:
+# - dracula
+# - default
+# - catppuccin-frappe
+# - catppuccin-latte
+# - catppuccin-macchiato
+# - catppuccin-mocha
+# - gruvbox-dark
+# - tokyonight-storm
+# - tokyonight-moon
 [site.layout]
 content_width = "98%"
 top_gap = "2rem"
@@ -12,3 +23,12 @@ vertical_align = "center"
 
 [site.typography]
 line_height = "1.5"
+# body_font = "\"Inter\", sans-serif"
+# heading_font = "\"Fraunces\", serif"
+# mono_font = "\"JetBrains Mono\", monospace"
+#
+# [[site.typography.font_faces]]
+# family = "Inter"
+# source = "/fonts/inter.woff2"
+# weight = "400"
+# style = "normal"
