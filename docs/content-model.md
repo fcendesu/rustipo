@@ -76,6 +76,18 @@ Entries with `draft: true` are excluded from production build output.
 
 Fenced code blocks are syntax-highlighted in rendered HTML output.
 
+Mermaid fences are also supported:
+
+```md
+```mermaid
+graph TD
+  A --> B
+```
+```
+
+Rustipo renders Mermaid fences as diagram containers and injects the Mermaid runtime only on
+pages that contain Mermaid blocks.
+
 ## Shortcodes
 
 Supported shortcodes:

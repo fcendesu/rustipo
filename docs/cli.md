@@ -36,6 +36,8 @@ Current behavior:
 - Converts Markdown to HTML
 - Renders supported shortcodes in Markdown content
 - Applies syntax highlighting to fenced code blocks
+- Renders `mermaid` fenced blocks as diagrams
+- Injects Mermaid runtime only on pages that contain Mermaid blocks
 - Renders pages through theme templates
 - Resolves favicon links for template context (`site_favicon*` variables)
 - Fails with a readable error when configured favicon path is missing in `static/`
@@ -55,6 +57,7 @@ Current behavior:
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
 - Generates search index at `dist/search-index.json` from site content
+- Uses a CDN-backed Mermaid ESM runtime in v1
 
 ## `rustipo serve`
 
