@@ -130,6 +130,8 @@ fn build_supports_builtin_palette_variants() {
     assert!(palette_css.contains("--rustipo-link: #89b4fa;"));
     assert!(palette_css.contains("--rustipo-token-rosewater: #f5e0dc;"));
     assert!(palette_css.contains("--rustipo-token-surface0: #313244;"));
+    assert!(palette_css.contains("--rustipo-accent: #89b4fa;"));
+    assert!(palette_css.contains("--rustipo-surface-0: #313244;"));
 }
 
 #[test]

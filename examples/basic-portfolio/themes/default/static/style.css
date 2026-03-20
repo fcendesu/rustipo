@@ -6,7 +6,7 @@ body {
   line-height: var(--rustipo-line-height);
   display: grid;
   place-items: var(--rustipo-vertical-align) center;
-  background: var(--rustipo-bg);
+  background: var(--rustipo-base, var(--rustipo-bg));
   color: var(--rustipo-text);
 }
 
@@ -46,11 +46,13 @@ main h1 {
 main h2 {
   margin: 1.8rem 0 0.85rem;
   line-height: 1.25;
+  color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
 main h3 {
   margin: 1.45rem 0 0.7rem;
   line-height: 1.3;
+  color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
 main p {
@@ -70,24 +72,28 @@ main li + li {
 main blockquote {
   margin: 1.2rem 0;
   padding: 0.2rem 1rem;
-  border-left: 4px solid var(--rustipo-blockquote-border);
-  background: var(--rustipo-surface-muted);
+  border-left: 4px solid var(--rustipo-accent, var(--rustipo-blockquote-border));
+  background: var(--rustipo-surface-0, var(--rustipo-surface-muted));
 }
 
 main hr {
   border: 0;
-  border-top: 1px solid var(--rustipo-border);
+  border-top: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   margin: 1.8rem 0;
 }
 
 main a {
-  color: var(--rustipo-link);
+  color: var(--rustipo-accent, var(--rustipo-link));
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 main a:hover {
-  color: var(--rustipo-link-hover);
+  color: var(--rustipo-accent-strong, var(--rustipo-link-hover));
+}
+
+main strong {
+  color: var(--rustipo-accent-strong, var(--rustipo-text));
 }
 
 main :not(pre) > code {
@@ -96,16 +102,16 @@ main :not(pre) > code {
   font-size: 0.95em;
   padding: 0.14em 0.32em;
   border-radius: 6px;
-  background: var(--rustipo-code-bg);
+  background: var(--rustipo-surface-0, var(--rustipo-code-bg));
   color: var(--rustipo-code-text);
 }
 
 main pre {
   margin: 1.1rem 0;
   padding: 0.95rem;
-  border: 1px solid var(--rustipo-border);
+  border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   border-radius: 10px;
-  background: var(--rustipo-surface-muted);
+  background: var(--rustipo-mantle, var(--rustipo-surface-muted));
   overflow-x: auto;
 }
 
@@ -126,12 +132,12 @@ main table {
 
 main th,
 main td {
-  border: 1px solid var(--rustipo-border);
+  border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   padding: 0.5rem 0.7rem;
   text-align: left;
   white-space: nowrap;
 }
 
 main th {
-  background: var(--rustipo-table-header-bg);
+  background: var(--rustipo-surface-0, var(--rustipo-table-header-bg));
 }

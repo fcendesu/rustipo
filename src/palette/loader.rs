@@ -211,33 +211,111 @@ struct PaletteEntry {
 }
 
 pub fn render_palette_css(palette: &Palette) -> String {
-    let mut css = format!(
-        ":root {{\n  color-scheme: {};\n  --rustipo-bg: {};\n  --rustipo-text: {};\n  --rustipo-surface-muted: {};\n  --rustipo-border: {};\n  --rustipo-blockquote-border: {};\n  --rustipo-link: {};\n  --rustipo-link-hover: {};\n  --rustipo-code-bg: {};\n  --rustipo-code-text: {};\n  --rustipo-table-header-bg: {};\n}}\n",
-        palette.color_scheme,
-        palette.bg,
-        palette.text,
-        palette.surface_muted,
-        palette.border,
-        palette.blockquote_border,
-        palette.link,
-        palette.link_hover,
-        palette.code_bg,
-        palette.code_text,
-        palette.table_header_bg
-    );
+    let mut lines = vec![
+        format!("  color-scheme: {};", palette.color_scheme),
+        format!("  --rustipo-bg: {};", palette.bg),
+        format!("  --rustipo-text: {};", palette.text),
+        format!("  --rustipo-surface-muted: {};", palette.surface_muted),
+        format!("  --rustipo-border: {};", palette.border),
+        format!(
+            "  --rustipo-blockquote-border: {};",
+            palette.blockquote_border
+        ),
+        format!("  --rustipo-link: {};", palette.link),
+        format!("  --rustipo-link-hover: {};", palette.link_hover),
+        format!("  --rustipo-code-bg: {};", palette.code_bg),
+        format!("  --rustipo-code-text: {};", palette.code_text),
+        format!("  --rustipo-table-header-bg: {};", palette.table_header_bg),
+    ];
 
     if !palette.extra_tokens.is_empty() {
-        let insert_at = css
-            .rfind("}\n")
-            .expect("palette css root block should end with closing brace");
-        let mut token_css = String::new();
         for (token_name, value) in &palette.extra_tokens {
-            token_css.push_str(&format!("  --rustipo-token-{}: {};\n", token_name, value));
+            lines.push(format!("  --rustipo-token-{}: {};", token_name, value));
         }
-        css.insert_str(insert_at, &token_css);
     }
 
-    css
+    let derived_aliases = [
+        ("rustipo-base", token_or(palette, &["base"], &palette.bg)),
+        (
+            "rustipo-mantle",
+            token_or(palette, &["mantle"], &palette.surface_muted),
+        ),
+        (
+            "rustipo-crust",
+            token_or(palette, &["crust"], &palette.code_bg),
+        ),
+        (
+            "rustipo-surface-0",
+            token_or(palette, &["surface0"], &palette.surface_muted),
+        ),
+        (
+            "rustipo-surface-1",
+            token_or(palette, &["surface1"], &palette.table_header_bg),
+        ),
+        (
+            "rustipo-surface-2",
+            token_or(palette, &["surface2"], &palette.border),
+        ),
+        (
+            "rustipo-overlay-0",
+            token_or(palette, &["overlay0"], &palette.border),
+        ),
+        (
+            "rustipo-overlay-1",
+            token_or(palette, &["overlay1"], &palette.code_text),
+        ),
+        (
+            "rustipo-overlay-2",
+            token_or(palette, &["overlay2"], &palette.code_text),
+        ),
+        (
+            "rustipo-subtext-0",
+            token_or(palette, &["subtext0"], &palette.code_text),
+        ),
+        (
+            "rustipo-subtext-1",
+            token_or(palette, &["subtext1"], &palette.code_text),
+        ),
+        (
+            "rustipo-accent",
+            token_or(palette, &["accent", "blue"], &palette.link),
+        ),
+        (
+            "rustipo-accent-strong",
+            token_or(
+                palette,
+                &["accent-strong", "mauve", "lavender"],
+                &palette.link_hover,
+            ),
+        ),
+        (
+            "rustipo-success",
+            token_or(palette, &["success", "green"], &palette.link),
+        ),
+        (
+            "rustipo-warning",
+            token_or(palette, &["warning", "yellow"], &palette.link_hover),
+        ),
+        (
+            "rustipo-danger",
+            token_or(palette, &["danger", "red"], &palette.blockquote_border),
+        ),
+    ];
+
+    for (name, value) in derived_aliases {
+        lines.push(format!("  --{}: {};", name, value));
+    }
+
+    format!(":root {{\n{}\n}}\n", lines.join("\n"))
+}
+
+fn token_or<'a>(palette: &'a Palette, names: &[&str], fallback: &'a str) -> &'a str {
+    for name in names {
+        if let Some(value) = palette.extra_tokens.get(*name) {
+            return value;
+        }
+    }
+    fallback
 }
 
 #[cfg(test)]
@@ -288,5 +366,9 @@ mod tests {
         assert!(css.contains("color-scheme: dark;"));
         assert!(css.contains("--rustipo-token-rosewater: #f5e0dc;"));
         assert!(css.contains("--rustipo-token-crust: #11111b;"));
+        assert!(css.contains("--rustipo-accent: #89b4fa;"));
+        assert!(css.contains("--rustipo-accent-strong: #cba6f7;"));
+        assert!(css.contains("--rustipo-success: #a6e3a1;"));
+        assert!(css.contains("--rustipo-surface-0: #313244;"));
     }
 }
