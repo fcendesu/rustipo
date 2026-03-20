@@ -91,6 +91,7 @@ pub(super) fn render_blog_archive_page(
     super::insert_common_site_context(&mut context, config, &render_context);
     context.insert("page_title", &format!("Archive | {}", config.title));
     context.insert("content_html", "");
+    context.insert("page_has_mermaid", &false);
     context.insert("current_page", &1usize);
     context.insert("total_pages", &1usize);
     context.insert("prev_url", &Option::<String>::None);
