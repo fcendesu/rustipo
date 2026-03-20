@@ -66,6 +66,9 @@ fn new_and_build_generate_expected_output() {
     assert!(style_css.contains("main blockquote"));
     assert!(style_css.contains("main pre"));
     assert!(style_css.contains("main table"));
+    assert!(style_css.contains("main h4"));
+    assert!(style_css.contains("font-size: clamp(2.4rem, 5vw, 3.25rem);"));
+    assert!(style_css.contains("max-width: 68ch;"));
 }
 
 #[test]
