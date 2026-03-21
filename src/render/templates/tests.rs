@@ -861,6 +861,121 @@ fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
 }
 
 #[test]
+fn exposes_breadcrumbs_for_top_level_and_nested_pages() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/notes/rust"))
+        .expect("nested content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        project_root.join("content/about.md"),
+        "---\ntitle: About\n---\n\n# About",
+    )
+    .expect("about page should be written");
+    fs::write(
+        project_root.join("content/notes/rust/tips.md"),
+        "---\ntitle: Quick Start\n---\n\n# Tips",
+    )
+    .expect("nested page should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{% for item in breadcrumbs %}[{{ item.title }}:{{ item.route }}:{{ item.active }}:{{ item.linkable }}]{% endfor %}{% endblock body %}",
+    )
+    .expect("index template should be written");
+    fs::write(
+        theme_root.join("templates/page.html"),
+        "{% extends \"base.html\" %}{% block body %}{% for item in breadcrumbs %}[{{ item.title }}:{{ item.route }}:{{ item.active }}:{{ item.linkable }}]{% endfor %}{% endblock body %}",
+    )
+    .expect("page template should be written");
+    for template in ["post.html", "project.html", "section.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let about = rendered
+        .iter()
+        .find(|page| page.route == "/about/")
+        .expect("about route should be rendered");
+    assert!(about.html.contains("[Home:&#x2F;:false:true]"));
+    assert!(about.html.contains("[About:&#x2F;about&#x2F;:true:true]"));
+
+    let nested = rendered
+        .iter()
+        .find(|page| page.route == "/notes/rust/tips/")
+        .expect("nested route should be rendered");
+    assert!(nested.html.contains("[Home:&#x2F;:false:true]"));
+    assert!(
+        nested
+            .html
+            .contains("[Notes:&#x2F;notes&#x2F;:false:false]")
+    );
+    assert!(
+        nested
+            .html
+            .contains("[Rust:&#x2F;notes&#x2F;rust&#x2F;:false:false]")
+    );
+    assert!(
+        nested
+            .html
+            .contains("[Quick Start:&#x2F;notes&#x2F;rust&#x2F;tips&#x2F;:true:true]")
+    );
+}
+
+#[test]
 fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();

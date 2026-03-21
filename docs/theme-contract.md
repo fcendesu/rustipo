@@ -151,6 +151,7 @@ Rustipo injects common site variables into template contexts, including:
   - `current_section`
   - `site_nav`
   - `site_menus`
+  - `breadcrumbs`
   - `page_has_math`
   - `page_toc`
   - `previous_post`
@@ -229,6 +230,18 @@ Generated `site_nav` includes:
 - `active`
 
 External menu links are exposed normally, but their `active` value stays `false`.
+
+`breadcrumbs` is an ordered list of breadcrumb items for the current route. Each item includes:
+
+- `title`
+- `route`
+- `active`
+- `linkable`
+
+Rustipo derives breadcrumb routes from the final rendered route. When an exact page or generated
+section route is known, Rustipo uses its title; otherwise it falls back to a humanized route
+segment label. Intermediate segments without a real page are still included with `linkable =
+false` so themes can show location context without rendering broken links.
 
 `previous_post` and `next_post` are only populated for blog post pages.
 They include:
