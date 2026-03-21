@@ -97,6 +97,8 @@
 - nested custom page route generation
 - nested directory-index route generation
 - syntax highlighting for fenced code blocks
+- heading anchor ID generation
+- page table of contents extraction
 - Mermaid fenced code blocks
 - page-scoped Mermaid runtime injection
 - shortcodes
@@ -193,6 +195,7 @@
 - `page_date`
 - `page_summary`
 - `page_tags`
+- `page_toc`
 - `page_kind`
 - `current_section`
 - `site_nav`
