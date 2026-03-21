@@ -120,6 +120,7 @@ Current behavior:
 - Applies syntax highlighting to fenced code blocks
 - Parses inline and block math nodes in Markdown
 - Parses GitHub-style alert blockquotes in Markdown
+- Wraps standalone Markdown images in responsive figure markup
 - Renders `mermaid` fenced blocks as diagrams
 - Injects Mermaid runtime only on pages that contain Mermaid blocks
 - Injects KaTeX runtime only on pages that contain math content

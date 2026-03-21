@@ -187,6 +187,22 @@ classes:
 
 This keeps admonitions theme-styleable without requiring raw HTML in content.
 
+### Standalone Markdown images
+
+Rustipo renders standalone Markdown images as figures with stable classes:
+
+- `markdown-image`
+- `markdown-image-wide`
+- `markdown-image-full`
+- `markdown-image-left`
+- `markdown-image-center`
+- `markdown-image-right`
+- `markdown-image-img`
+- `markdown-image-caption`
+
+This keeps image captions, sizing, and alignment theme-styleable without requiring raw HTML in
+content.
+
 ### Navigation and page-state details
 
 `site_nav` is an ordered list of objects with:

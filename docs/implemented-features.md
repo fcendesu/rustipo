@@ -109,6 +109,14 @@
   - `markdown-alert-important`
   - `markdown-alert-warning`
   - `markdown-alert-caution`
+- standalone Markdown image figure rendering
+- standalone image caption extraction from Markdown image titles
+- standalone image size and alignment directives
+  - `wide`
+  - `full`
+  - `left`
+  - `center`
+  - `right`
 - Mermaid fenced code blocks
 - page-scoped Mermaid runtime injection
 - shortcodes

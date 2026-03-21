@@ -143,6 +143,36 @@ Supported alert types in v1:
 Supported alerts render as blockquotes with stable `markdown-alert-*` classes for theme styling.
 Unsupported variants degrade to normal blockquotes.
 
+## Images
+
+Rustipo improves standalone Markdown images without requiring raw HTML.
+
+Basic standalone images render as responsive figure wrappers:
+
+```md
+![A lighthouse](/img/lighthouse.jpg "Lighthouse at dusk")
+```
+
+Standalone image titles become captions.
+
+Rustipo also supports an optional leading directive block in the image title for alignment and
+size:
+
+```md
+![JPEG pipeline](/img/jpeg.png "{wide right} JPEG pipeline overview")
+```
+
+Supported image directives in v1:
+
+- `left`
+- `center`
+- `right`
+- `wide`
+- `full`
+
+Supported standalone images render with stable `markdown-image*` classes for theme styling.
+Unknown directives degrade safely by leaving the full title text as the caption.
+
 ## Shortcodes
 
 Supported shortcodes:
