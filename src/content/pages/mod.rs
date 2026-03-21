@@ -2,18 +2,27 @@ mod builder;
 mod model;
 mod routing;
 
-pub use builder::build_pages;
+use std::path::Path;
+
+use anyhow::Result;
+
+pub use builder::{PublicationMode, build_pages_for_mode};
 pub use model::{Page, PageKind};
+
+pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
+    build_pages_for_mode(content_dir, PublicationMode::Production)
+}
 
 #[cfg(test)]
 mod tests {
+    use chrono::NaiveDate;
     use std::fs;
     use std::path::Path;
-
     use tempfile::tempdir;
 
+    use super::builder::build_pages_for_test_date;
     use super::routing::derive_page_meta;
-    use super::{PageKind, build_pages};
+    use super::{PageKind, PublicationMode, build_pages};
 
     #[test]
     fn derives_routes_for_supported_paths() {
@@ -125,6 +134,57 @@ mod tests {
         let pages = build_pages(&content_dir).expect("build_pages should succeed");
         assert_eq!(pages.len(), 1);
         assert_eq!(pages[0].route, "/");
+    }
+
+    #[test]
+    fn excludes_future_dated_pages_in_production() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+
+        fs::write(
+            content_dir.join("planned.md"),
+            "---\ndate: 2026-03-25\n---\n\n# Planned",
+        )
+        .expect("planned page should be written");
+        fs::write(
+            content_dir.join("today.md"),
+            "---\ndate: 2026-03-21\n---\n\n# Today",
+        )
+        .expect("today page should be written");
+
+        let today = NaiveDate::from_ymd_opt(2026, 3, 21).expect("test date should be valid");
+        let pages = build_pages_for_test_date(&content_dir, PublicationMode::Production, today)
+            .expect("build_pages should succeed");
+
+        assert_eq!(pages.len(), 1);
+        assert_eq!(pages[0].route, "/today/");
+    }
+
+    #[test]
+    fn includes_drafts_and_future_dated_pages_in_preview() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+
+        fs::write(
+            content_dir.join("draft.md"),
+            "---\ndraft: true\n---\n\n# Draft",
+        )
+        .expect("draft page should be written");
+        fs::write(
+            content_dir.join("planned.md"),
+            "---\ndate: 2026-03-25\n---\n\n# Planned",
+        )
+        .expect("planned page should be written");
+
+        let today = NaiveDate::from_ymd_opt(2026, 3, 21).expect("test date should be valid");
+        let pages = build_pages_for_test_date(&content_dir, PublicationMode::Preview, today)
+            .expect("preview build should succeed");
+
+        assert_eq!(pages.len(), 2);
+        assert!(pages.iter().any(|page| page.route == "/draft/"));
+        assert!(pages.iter().any(|page| page.route == "/planned/"));
     }
 
     #[test]

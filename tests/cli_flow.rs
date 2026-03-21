@@ -187,6 +187,38 @@ fn check_fails_for_broken_internal_deep_link() {
 }
 
 #[test]
+fn build_excludes_future_dated_content_from_production_output() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::write(
+        project.join("content/planned.md"),
+        "---\ndate: 2099-01-01\n---\n\n# Planned",
+    )
+    .expect("planned page should be written");
+
+    let output = run_cli(&project, &["build"]);
+    assert!(
+        output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(
+        !project.join("dist/planned/index.html").exists(),
+        "future-dated content should be excluded from production build output"
+    );
+}
+
+#[test]
 fn new_scaffold_includes_builtin_palettes() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();

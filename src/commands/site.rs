@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::config::SiteConfig;
-use crate::content::pages::Page;
+use crate::content::pages::{Page, PublicationMode, build_pages, build_pages_for_mode};
 use crate::palette::models::Palette;
 use crate::render::templates::RenderedPage;
 use crate::theme::models::Theme;
@@ -14,7 +14,10 @@ pub(crate) struct PreparedSite {
     pub rendered_pages: Vec<RenderedPage>,
 }
 
-pub(crate) fn prepare_site(verbose: bool) -> Result<PreparedSite> {
+pub(crate) fn prepare_site(
+    verbose: bool,
+    publication_mode: PublicationMode,
+) -> Result<PreparedSite> {
     let config = crate::config::load("config.toml")?;
     if verbose {
         println!(
@@ -41,7 +44,10 @@ pub(crate) fn prepare_site(verbose: bool) -> Result<PreparedSite> {
     let site_font_faces_css =
         (!font_faces.is_empty()).then(|| crate::config::fonts::render_font_faces_css(&font_faces));
     let site_has_custom_css = config.has_custom_css(".");
-    let pages = crate::content::pages::build_pages("content")?;
+    let pages = match publication_mode {
+        PublicationMode::Production => build_pages("content")?,
+        PublicationMode::Preview => build_pages_for_mode("content", PublicationMode::Preview)?,
+    };
     if verbose {
         println!("Built pages from content: {}", pages.len());
     }

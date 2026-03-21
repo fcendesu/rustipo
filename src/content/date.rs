@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize, de::Error as DeError};
 use std::fmt;
 
@@ -16,6 +17,11 @@ impl ContentDate {
 
     pub fn month_key(&self) -> String {
         self.0[..7].to_string()
+    }
+
+    pub fn as_naive_date(&self) -> NaiveDate {
+        NaiveDate::parse_from_str(&self.0, "%Y-%m-%d")
+            .expect("validated content dates should always parse")
     }
 }
 
@@ -105,6 +111,8 @@ fn is_leap_year(year: u32) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use chrono::NaiveDate;
+
     use super::ContentDate;
 
     #[test]
@@ -112,6 +120,10 @@ mod tests {
         let date = ContentDate::parse("2026-03-17").expect("date should parse");
         assert_eq!(date.as_str(), "2026-03-17");
         assert_eq!(date.month_key(), "2026-03");
+        assert_eq!(
+            date.as_naive_date(),
+            NaiveDate::from_ymd_opt(2026, 3, 17).expect("test date should be valid")
+        );
     }
 
     #[test]

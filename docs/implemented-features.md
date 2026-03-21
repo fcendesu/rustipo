@@ -89,6 +89,8 @@
 - Markdown to HTML
 - strict `YYYY-MM-DD` date parsing
 - draft exclusion
+- future-dated content exclusion in production output
+- preview-mode inclusion for drafts and future-dated content
 - slug normalization
 - homepage route generation
 - standalone page route generation

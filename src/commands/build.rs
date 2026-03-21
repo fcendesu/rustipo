@@ -1,3 +1,4 @@
+use crate::content::pages::PublicationMode;
 use anyhow::Result;
 
 pub fn run() -> Result<()> {
@@ -5,15 +6,19 @@ pub fn run() -> Result<()> {
 }
 
 pub fn build_site() -> Result<()> {
-    build_site_with_logging(true)
+    build_site_with_logging(true, PublicationMode::Production)
 }
 
-pub fn build_site_quiet() -> Result<()> {
-    build_site_with_logging(false)
+pub(crate) fn build_site_for_preview() -> Result<()> {
+    build_site_with_logging(true, PublicationMode::Preview)
 }
 
-fn build_site_with_logging(verbose: bool) -> Result<()> {
-    let prepared = crate::commands::site::prepare_site(verbose)?;
+pub(crate) fn build_site_for_preview_quiet() -> Result<()> {
+    build_site_with_logging(false, PublicationMode::Preview)
+}
+
+fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> Result<()> {
+    let prepared = crate::commands::site::prepare_site(verbose, publication_mode)?;
     crate::output::writer::write_rendered_pages("dist", &prepared.rendered_pages)?;
     crate::output::palette::ensure_palette_output_path_available(
         "static",

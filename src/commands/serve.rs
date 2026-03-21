@@ -23,7 +23,7 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
     if watch {
         println!("Watch mode enabled");
         let start = Instant::now();
-        crate::commands::build::build_site()?;
+        crate::commands::build::build_site_for_preview()?;
         println!(
             "Initial build completed in {}",
             format_duration(start.elapsed())
@@ -101,7 +101,7 @@ fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
 
                     println!("Change detected. Rebuilding...");
                     let start = Instant::now();
-                    match crate::commands::build::build_site_quiet() {
+                    match crate::commands::build::build_site_for_preview_quiet() {
                         Ok(_) => {
                             last_fingerprint = Some(current_fingerprint);
                             live_reload_version.fetch_add(1, Ordering::SeqCst);
