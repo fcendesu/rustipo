@@ -144,7 +144,7 @@ mod tests {
         assert_eq!(pages[0].kind, PageKind::BlogPost);
         assert_eq!(pages[0].route, "/blog/post/");
         assert_eq!(pages[0].frontmatter.title.as_deref(), Some("Post"));
-        assert!(pages[0].html.contains("<h1>Hello</h1>"));
+        assert!(pages[0].html.contains("<h1 id=\"hello\">Hello</h1>"));
     }
 
     #[test]
@@ -201,5 +201,30 @@ mod tests {
 
         assert!(diagram.has_mermaid);
         assert!(!plain.has_mermaid);
+    }
+
+    #[test]
+    fn builds_pages_with_toc_data() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+
+        fs::write(
+            content_dir.join("guide.md"),
+            "# Guide\n\n## Install\n\n### Cargo\n\n## Next",
+        )
+        .expect("guide page should be written");
+
+        let pages = build_pages(&content_dir).expect("build_pages should succeed");
+        let guide = pages
+            .iter()
+            .find(|page| page.route == "/guide/")
+            .expect("guide page should exist");
+
+        assert_eq!(guide.toc.len(), 1);
+        assert_eq!(guide.toc[0].title, "Guide");
+        assert_eq!(guide.toc[0].children[0].title, "Install");
+        assert_eq!(guide.toc[0].children[0].children[0].title, "Cargo");
+        assert_eq!(guide.toc[0].children[1].title, "Next");
     }
 }

@@ -1,14 +1,22 @@
+use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
-use pulldown_cmark::{CodeBlockKind, CowStr, Event, Options, Parser, Tag, TagEnd, html};
+use pulldown_cmark::{
+    CodeBlockKind, CowStr, Event, HeadingLevel, Options, Parser, Tag, TagEnd, html,
+};
 use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
+
+use crate::content::toc::{
+    FlatTocItem, TocItem, build_nested_toc, normalize_heading_title, unique_heading_id,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RenderedMarkdown {
     pub html: String,
     pub has_mermaid: bool,
+    pub toc: Vec<TocItem>,
 }
 
 pub fn render_html(markdown: &str) -> RenderedMarkdown {
@@ -25,12 +33,30 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
     RenderedMarkdown {
         html: output,
         has_mermaid: rendered.has_mermaid,
+        toc: rendered.toc,
     }
 }
 
 struct CodeBlockRenderResult<'a> {
     events: Vec<Event<'a>>,
     has_mermaid: bool,
+    toc: Vec<TocItem>,
+}
+
+struct PendingHeading<'a> {
+    level: HeadingLevel,
+    events: Vec<Event<'a>>,
+    plain_text: String,
+}
+
+impl<'a> PendingHeading<'a> {
+    fn new(level: HeadingLevel) -> Self {
+        Self {
+            level,
+            events: Vec::new(),
+            plain_text: String::new(),
+        }
+    }
 }
 
 fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBlockRenderResult<'a> {
@@ -39,8 +65,29 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
     let mut code_language: Option<String> = None;
     let mut code_content = String::new();
     let mut has_mermaid = false;
+    let mut pending_heading: Option<PendingHeading<'a>> = None;
+    let mut heading_ids = BTreeMap::new();
+    let mut toc_entries = Vec::new();
 
     for event in parser {
+        if let Some(heading) = pending_heading.as_mut() {
+            match event {
+                Event::End(TagEnd::Heading(_)) => {
+                    let heading = pending_heading
+                        .take()
+                        .expect("pending heading should exist");
+                    let rendered = render_heading(heading, &mut heading_ids);
+                    toc_entries.push(rendered.toc_item);
+                    events.push(Event::Html(CowStr::Boxed(rendered.html.into_boxed_str())));
+                }
+                _ => {
+                    append_heading_text(&mut heading.plain_text, &event);
+                    heading.events.push(event);
+                }
+            }
+            continue;
+        }
+
         if in_code_block {
             match event {
                 Event::End(TagEnd::CodeBlock) => {
@@ -77,6 +124,9 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
                     CodeBlockKind::Indented => None,
                 };
             }
+            Event::Start(Tag::Heading { level, .. }) => {
+                pending_heading = Some(PendingHeading::new(level));
+            }
             _ => events.push(event),
         }
     }
@@ -84,6 +134,53 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
     CodeBlockRenderResult {
         events,
         has_mermaid,
+        toc: build_nested_toc(toc_entries),
+    }
+}
+
+struct RenderedHeading {
+    html: String,
+    toc_item: FlatTocItem,
+}
+
+fn render_heading(
+    heading: PendingHeading<'_>,
+    heading_ids: &mut BTreeMap<String, usize>,
+) -> RenderedHeading {
+    let title = normalize_heading_title(&heading.plain_text);
+    let id = unique_heading_id(&title, heading_ids);
+    let level = heading_level_number(heading.level);
+    let title = if title.is_empty() { id.clone() } else { title };
+
+    let mut inner_html = String::new();
+    html::push_html(&mut inner_html, heading.events.into_iter());
+
+    RenderedHeading {
+        html: format!("<h{level} id=\"{id}\">{inner_html}</h{level}>"),
+        toc_item: FlatTocItem { level, id, title },
+    }
+}
+
+fn append_heading_text(buffer: &mut String, event: &Event<'_>) {
+    match event {
+        Event::Text(text)
+        | Event::Code(text)
+        | Event::InlineMath(text)
+        | Event::DisplayMath(text)
+        | Event::FootnoteReference(text) => buffer.push_str(text),
+        Event::SoftBreak | Event::HardBreak => buffer.push(' '),
+        _ => {}
+    }
+}
+
+fn heading_level_number(level: HeadingLevel) -> u8 {
+    match level {
+        HeadingLevel::H1 => 1,
+        HeadingLevel::H2 => 2,
+        HeadingLevel::H3 => 3,
+        HeadingLevel::H4 => 4,
+        HeadingLevel::H5 => 5,
+        HeadingLevel::H6 => 6,
     }
 }
 
@@ -142,9 +239,12 @@ mod tests {
     #[test]
     fn renders_basic_markdown() {
         let rendered = render_html("# Hello\n\nThis is **Rustipo**.");
-        assert!(rendered.html.contains("<h1>Hello</h1>"));
+        assert!(rendered.html.contains("<h1 id=\"hello\">Hello</h1>"));
         assert!(rendered.html.contains("<strong>Rustipo</strong>"));
         assert!(!rendered.has_mermaid);
+        assert_eq!(rendered.toc.len(), 1);
+        assert_eq!(rendered.toc[0].id, "hello");
+        assert_eq!(rendered.toc[0].title, "Hello");
     }
 
     #[test]
@@ -168,6 +268,47 @@ mod tests {
     fn escapes_html_inside_mermaid_code_block() {
         let rendered = render_html("```mermaid\ngraph TD\n  A[<b>x</b>] --> B\n```");
         assert!(rendered.html.contains("&lt;b&gt;x&lt;/b&gt;"));
+    }
+
+    #[test]
+    fn builds_nested_toc_and_heading_ids() {
+        let rendered = render_html("# Intro\n\n## Install\n\n### Cargo\n\n## Next");
+
+        assert!(rendered.html.contains("<h1 id=\"intro\">Intro</h1>"));
+        assert!(rendered.html.contains("<h2 id=\"install\">Install</h2>"));
+        assert!(rendered.html.contains("<h3 id=\"cargo\">Cargo</h3>"));
+        assert!(rendered.html.contains("<h2 id=\"next\">Next</h2>"));
+
+        assert_eq!(rendered.toc.len(), 1);
+        assert_eq!(rendered.toc[0].title, "Intro");
+        assert_eq!(rendered.toc[0].children.len(), 2);
+        assert_eq!(rendered.toc[0].children[0].title, "Install");
+        assert_eq!(rendered.toc[0].children[0].children[0].title, "Cargo");
+        assert_eq!(rendered.toc[0].children[1].title, "Next");
+    }
+
+    #[test]
+    fn de_duplicates_duplicate_heading_ids() {
+        let rendered = render_html("## Repeat\n\n## Repeat\n\n## Repeat");
+
+        assert!(rendered.html.contains("<h2 id=\"repeat\">Repeat</h2>"));
+        assert!(rendered.html.contains("<h2 id=\"repeat-2\">Repeat</h2>"));
+        assert!(rendered.html.contains("<h2 id=\"repeat-3\">Repeat</h2>"));
+        assert_eq!(rendered.toc[0].id, "repeat");
+        assert_eq!(rendered.toc[1].id, "repeat-2");
+        assert_eq!(rendered.toc[2].id, "repeat-3");
+    }
+
+    #[test]
+    fn keeps_inline_heading_markup_and_plain_toc_title() {
+        let rendered = render_html("## Intro to `Rustipo`");
+
+        assert!(
+            rendered
+                .html
+                .contains("<h2 id=\"intro-to-rustipo\">Intro to <code>Rustipo</code></h2>")
+        );
+        assert_eq!(rendered.toc[0].title, "Intro to Rustipo");
     }
 
     #[test]

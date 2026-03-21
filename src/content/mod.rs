@@ -4,3 +4,4 @@ pub mod loader;
 pub mod markdown;
 pub mod pages;
 pub mod shortcodes;
+pub mod toc;
