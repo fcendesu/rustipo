@@ -16,6 +16,7 @@ use crate::content::toc::{
 pub struct RenderedMarkdown {
     pub html: String,
     pub has_mermaid: bool,
+    pub has_math: bool,
     pub toc: Vec<TocItem>,
 }
 
@@ -25,6 +26,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
     options.insert(Options::ENABLE_TABLES);
+    options.insert(Options::ENABLE_MATH);
 
     let parser = Parser::new_ext(&markdown, options);
     let rendered = replace_code_blocks_with_highlighted_html(parser);
@@ -33,6 +35,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
     RenderedMarkdown {
         html: output,
         has_mermaid: rendered.has_mermaid,
+        has_math: rendered.has_math,
         toc: rendered.toc,
     }
 }
@@ -40,6 +43,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
 struct CodeBlockRenderResult<'a> {
     events: Vec<Event<'a>>,
     has_mermaid: bool,
+    has_math: bool,
     toc: Vec<TocItem>,
 }
 
@@ -65,6 +69,7 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
     let mut code_language: Option<String> = None;
     let mut code_content = String::new();
     let mut has_mermaid = false;
+    let mut has_math = false;
     let mut pending_heading: Option<PendingHeading<'a>> = None;
     let mut heading_ids = BTreeMap::new();
     let mut toc_entries = Vec::new();
@@ -127,6 +132,10 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
             Event::Start(Tag::Heading { level, .. }) => {
                 pending_heading = Some(PendingHeading::new(level));
             }
+            Event::InlineMath(_) | Event::DisplayMath(_) => {
+                has_math = true;
+                events.push(event);
+            }
             _ => events.push(event),
         }
     }
@@ -134,6 +143,7 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
     CodeBlockRenderResult {
         events,
         has_mermaid,
+        has_math,
         toc: build_nested_toc(toc_entries),
     }
 }
@@ -242,6 +252,7 @@ mod tests {
         assert!(rendered.html.contains("<h1 id=\"hello\">Hello</h1>"));
         assert!(rendered.html.contains("<strong>Rustipo</strong>"));
         assert!(!rendered.has_mermaid);
+        assert!(!rendered.has_math);
         assert_eq!(rendered.toc.len(), 1);
         assert_eq!(rendered.toc[0].id, "hello");
         assert_eq!(rendered.toc[0].title, "Hello");
@@ -253,6 +264,7 @@ mod tests {
         assert!(rendered.html.contains("<pre"));
         assert!(rendered.html.contains("<span"));
         assert!(!rendered.has_mermaid);
+        assert!(!rendered.has_math);
     }
 
     #[test]
@@ -262,12 +274,30 @@ mod tests {
         assert!(rendered.html.contains("<pre class=\"mermaid\">"));
         assert!(rendered.html.contains("graph TD"));
         assert!(!rendered.html.contains("<span"));
+        assert!(!rendered.has_math);
     }
 
     #[test]
     fn escapes_html_inside_mermaid_code_block() {
         let rendered = render_html("```mermaid\ngraph TD\n  A[<b>x</b>] --> B\n```");
         assert!(rendered.html.contains("&lt;b&gt;x&lt;/b&gt;"));
+    }
+
+    #[test]
+    fn renders_inline_and_display_math() {
+        let rendered = render_html("Inline $a^2 + b^2$.\n\n$$c^2$$");
+
+        assert!(rendered.has_math);
+        assert!(
+            rendered
+                .html
+                .contains("<span class=\"math math-inline\">a^2 + b^2</span>")
+        );
+        assert!(
+            rendered
+                .html
+                .contains("<span class=\"math math-display\">c^2</span>")
+        );
     }
 
     #[test]

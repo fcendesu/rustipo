@@ -102,6 +102,21 @@ graph TD
 Rustipo renders Mermaid fences as diagram containers and injects the Mermaid runtime only on
 pages that contain Mermaid blocks.
 
+## Math
+
+Rustipo also supports inline and block math in Markdown:
+
+```md
+Inline math: $a^2 + b^2 = c^2$
+
+$$
+\int_0^1 x^2 \, dx
+$$
+```
+
+Rustipo parses math nodes during Markdown rendering and injects the KaTeX runtime only on pages
+that contain math content.
+
 ## Shortcodes
 
 Supported shortcodes:

@@ -84,6 +84,7 @@ pub(super) fn render_blog_archive_page(
     context.insert("page_title", &format!("Archive | {}", env.config.title));
     context.insert("content_html", "");
     context.insert("page_has_mermaid", &false);
+    context.insert("page_has_math", &false);
     context.insert("current_page", &1usize);
     context.insert("total_pages", &1usize);
     context.insert("prev_url", &Option::<String>::None);

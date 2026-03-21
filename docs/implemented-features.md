@@ -99,6 +99,9 @@
 - syntax highlighting for fenced code blocks
 - heading anchor ID generation
 - page table of contents extraction
+- inline math parsing
+- block math parsing
+- page-scoped KaTeX runtime injection
 - Mermaid fenced code blocks
 - page-scoped Mermaid runtime injection
 - shortcodes
@@ -195,6 +198,7 @@
 - `page_date`
 - `page_summary`
 - `page_tags`
+- `page_has_math`
 - `page_toc`
 - `page_kind`
 - `current_section`
