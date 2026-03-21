@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde::Serialize;
 use tera::Context as TeraContext;
@@ -21,10 +21,20 @@ pub(super) struct AdjacentPost {
     pub date: Option<String>,
 }
 
+#[derive(Clone, Serialize)]
+pub(super) struct BreadcrumbItem {
+    pub title: String,
+    pub route: String,
+    pub active: bool,
+    pub linkable: bool,
+}
+
 #[derive(Default)]
 pub(in crate::render) struct SharedTemplateData {
     auto_nav_entries: Vec<NavEntry>,
     configured_menus: BTreeMap<String, Vec<ConfiguredMenuEntry>>,
+    breadcrumb_titles: BTreeMap<String, String>,
+    linkable_breadcrumb_routes: BTreeSet<String>,
     adjacent_posts: BTreeMap<String, AdjacentPosts>,
 }
 
@@ -62,6 +72,8 @@ pub(super) fn build_shared_template_data(
     SharedTemplateData {
         auto_nav_entries: build_nav_entries(pages),
         configured_menus: build_configured_menus(config),
+        breadcrumb_titles: build_breadcrumb_titles(pages),
+        linkable_breadcrumb_routes: build_linkable_breadcrumb_routes(pages),
         adjacent_posts: build_adjacent_posts(pages),
     }
 }
@@ -80,6 +92,7 @@ pub(super) fn insert_page_context(
         &site_nav_for_route(shared, route, current_section),
     );
     context.insert("site_menus", &site_menus_for_route(shared, route));
+    context.insert("breadcrumbs", &breadcrumbs_for_route(shared, route));
 
     let adjacent = shared
         .adjacent_posts
@@ -167,6 +180,63 @@ fn build_configured_menus(config: &SiteConfig) -> BTreeMap<String, Vec<Configure
         .unwrap_or_default()
 }
 
+fn build_breadcrumb_titles(pages: &[Page]) -> BTreeMap<String, String> {
+    let mut titles = BTreeMap::new();
+
+    for page in pages {
+        titles.insert(page.route.clone(), breadcrumb_title_for_page(page));
+    }
+
+    if pages.iter().any(|page| page.kind == PageKind::BlogPost) {
+        titles
+            .entry("/blog/".to_string())
+            .or_insert_with(|| "Blog".to_string());
+        titles
+            .entry("/blog/archive/".to_string())
+            .or_insert_with(|| "Archive".to_string());
+
+        for page in pages.iter().filter(|page| page.kind == PageKind::BlogPost) {
+            let Some(tags) = page.frontmatter.tags.as_ref() else {
+                continue;
+            };
+
+            for tag in tags {
+                let slug = normalize_tag_slug(tag);
+                if slug.is_empty() {
+                    continue;
+                }
+
+                titles
+                    .entry(format!("/tags/{slug}/"))
+                    .or_insert_with(|| tag.clone());
+            }
+        }
+    }
+
+    if pages.iter().any(|page| page.kind == PageKind::Project) {
+        titles
+            .entry("/projects/".to_string())
+            .or_insert_with(|| "Projects".to_string());
+    }
+
+    titles
+}
+
+fn build_linkable_breadcrumb_routes(pages: &[Page]) -> BTreeSet<String> {
+    build_breadcrumb_titles(pages).into_keys().collect()
+}
+
+fn breadcrumb_title_for_page(page: &Page) -> String {
+    match page.kind {
+        PageKind::Index => "Home".to_string(),
+        _ => page
+            .frontmatter
+            .title
+            .clone()
+            .unwrap_or_else(|| titleize_segment(&page.slug)),
+    }
+}
+
 fn site_nav_for_route(
     shared: &SharedTemplateData,
     route: &str,
@@ -198,6 +268,67 @@ fn site_menus_for_route(
         .collect()
 }
 
+fn breadcrumbs_for_route(shared: &SharedTemplateData, route: &str) -> Vec<BreadcrumbItem> {
+    let Some(segments) = breadcrumb_segments(route) else {
+        return Vec::new();
+    };
+
+    if route == "/" {
+        return vec![BreadcrumbItem {
+            title: shared
+                .breadcrumb_titles
+                .get(route)
+                .cloned()
+                .unwrap_or_else(|| "Home".to_string()),
+            route: route.to_string(),
+            active: true,
+            linkable: shared.linkable_breadcrumb_routes.contains(route),
+        }];
+    }
+
+    let mut items = Vec::new();
+
+    if let Some(home_title) = shared.breadcrumb_titles.get("/") {
+        items.push(BreadcrumbItem {
+            title: home_title.clone(),
+            route: "/".to_string(),
+            active: false,
+            linkable: shared.linkable_breadcrumb_routes.contains("/"),
+        });
+    }
+
+    for (index, segment) in segments.iter().enumerate() {
+        let crumb_route = format!("/{}/", segments[..=index].join("/"));
+        items.push(BreadcrumbItem {
+            title: shared
+                .breadcrumb_titles
+                .get(&crumb_route)
+                .cloned()
+                .unwrap_or_else(|| titleize_segment(segment)),
+            route: crumb_route.clone(),
+            active: crumb_route == route,
+            linkable: shared.linkable_breadcrumb_routes.contains(&crumb_route),
+        });
+    }
+
+    items
+}
+
+fn breadcrumb_segments(route: &str) -> Option<Vec<String>> {
+    if !route.starts_with('/') || !route.ends_with('/') {
+        return None;
+    }
+
+    let segments = route
+        .trim_matches('/')
+        .split('/')
+        .filter(|segment| !segment.is_empty())
+        .map(ToString::to_string)
+        .collect::<Vec<_>>();
+
+    Some(segments)
+}
+
 fn configured_menu_for_route(entries: &[ConfiguredMenuEntry], route: &str) -> Vec<NavItem> {
     entries
         .iter()
@@ -221,6 +352,45 @@ fn configured_menu_entry_is_active(entry: &ConfiguredMenuEntry, route: &str) -> 
     let menu_route = entry.route.trim_end_matches('/');
     let current_route = route.trim_end_matches('/');
     current_route == menu_route || current_route.starts_with(&format!("{menu_route}/"))
+}
+
+fn titleize_segment(segment: &str) -> String {
+    segment
+        .split(['-', '_'])
+        .filter(|part| !part.is_empty())
+        .map(titleize_word)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn titleize_word(word: &str) -> String {
+    let mut chars = word.chars();
+    let Some(first) = chars.next() else {
+        return String::new();
+    };
+
+    format!(
+        "{}{}",
+        first.to_uppercase().collect::<String>(),
+        chars.as_str().to_ascii_lowercase()
+    )
+}
+
+fn normalize_tag_slug(input: &str) -> String {
+    let mut slug = String::with_capacity(input.len());
+    let mut previous_dash = false;
+
+    for ch in input.chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch.to_ascii_lowercase());
+            previous_dash = false;
+        } else if !previous_dash {
+            slug.push('-');
+            previous_dash = true;
+        }
+    }
+
+    slug.trim_matches('-').to_string()
 }
 
 fn nav_entry_is_active(entry: &NavEntry, route: &str, current_section: &str) -> bool {
