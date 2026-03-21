@@ -58,6 +58,7 @@ pub(crate) fn prepare_site(verbose: bool) -> Result<PreparedSite> {
             palette: &palette,
         },
     )?;
+    crate::content::links::validate_internal_links(&pages, &rendered_pages)?;
     if verbose {
         println!("Rendered pages with templates: {}", rendered_pages.len());
     }

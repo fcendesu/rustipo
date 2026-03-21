@@ -57,6 +57,7 @@ Current behavior:
 - Validates configured favicon and local font assets
 - Parses Markdown content and frontmatter
 - Renders pages through the theme templates
+- Validates internal Markdown links against generated routes and deep links when possible
 - Validates rendered route/output collisions
 - Validates generated `palette.css` would not collide with site or theme assets
 - Validates theme and user static asset paths would not collide
@@ -130,6 +131,7 @@ Current behavior:
 - Resolves custom font families from `site.typography`
 - Validates configured local font-face assets from `static/` or inherited theme `static/` directories
 - Injects `@font-face` CSS only when configured font faces are present
+- Validates internal Markdown links against generated routes and deep links when possible
 - Exposes style context from `config.toml` to templates (`site_style.*`):
   - `site.layout.content_width`
   - `site.layout.top_gap`
