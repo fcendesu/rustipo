@@ -79,6 +79,7 @@ For example:
   - `content/notes/rust/tips.md` -> `/notes/rust/tips/`
   - `content/notes/index.md` -> `/notes/`
 - blog/project items map to section routes (`/blog/<slug>/`, `/projects/<slug>/`)
+- when blog pagination is needed, listing routes become `/blog/` and `/blog/page/<n>/`
 - `slug` frontmatter overrides filename-derived slug
 - nested directory indexes ignore `slug` for route derivation and keep directory-index routes
 - slugs are normalized to lowercase kebab-case

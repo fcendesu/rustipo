@@ -194,6 +194,37 @@ Example:
 {% endif %}
 ```
 
+Section-style templates also receive built-in pagination state when Rustipo renders paginated
+listings such as the blog index:
+
+- `current_page`
+- `total_pages`
+- `prev_url`
+- `next_url`
+
+In v1, Rustipo paginates the built-in blog listing using:
+
+- `/blog/` for the first page
+- `/blog/page/<n>/` for later pages
+
+Example:
+
+```html
+{% if total_pages > 1 %}
+<nav aria-label="Pagination">
+  {% if prev_url %}
+  <a href="{{ prev_url }}">Previous</a>
+  {% endif %}
+
+  <span>Page {{ current_page }} of {{ total_pages }}</span>
+
+  {% if next_url %}
+  <a href="{{ next_url }}">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+```
+
 `breadcrumbs` exposes route-derived breadcrumb items for the current page or section. Themes can
 use `linkable` to avoid rendering dead links for intermediate route segments that do not have a
 real page.
