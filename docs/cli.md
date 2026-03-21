@@ -119,6 +119,7 @@ Current behavior:
 - Renders supported shortcodes in Markdown content
 - Applies syntax highlighting to fenced code blocks
 - Parses inline and block math nodes in Markdown
+- Parses GitHub-style alert blockquotes in Markdown
 - Renders `mermaid` fenced blocks as diagrams
 - Injects Mermaid runtime only on pages that contain Mermaid blocks
 - Injects KaTeX runtime only on pages that contain math content

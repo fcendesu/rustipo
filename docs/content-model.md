@@ -117,6 +117,32 @@ $$
 Rustipo parses math nodes during Markdown rendering and injects the KaTeX runtime only on pages
 that contain math content.
 
+## Admonitions
+
+Rustipo supports GitHub-style alert blockquotes for callouts:
+
+```md
+> [!NOTE]
+> Notes live here.
+
+> [!TIP]
+> Tips can include **Markdown** content.
+
+> [!WARNING]
+> Warnings stand out without raw HTML.
+```
+
+Supported alert types in v1:
+
+- `NOTE`
+- `TIP`
+- `IMPORTANT`
+- `WARNING`
+- `CAUTION`
+
+Supported alerts render as blockquotes with stable `markdown-alert-*` classes for theme styling.
+Unsupported variants degrade to normal blockquotes.
+
 ## Shortcodes
 
 Supported shortcodes:
