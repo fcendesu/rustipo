@@ -2,6 +2,12 @@
 
 Rustipo provides the following commands.
 
+## Installation
+
+```bash
+cargo install rustipo
+```
+
 ## `rustipo new <site-name>`
 
 Creates a new starter Rustipo site project directory.

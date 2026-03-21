@@ -24,16 +24,22 @@ MVP complete, active post-MVP development.
 
 ## Quick Start
 
+Install Rustipo:
+
 ```bash
-cargo run -- new my-site
+cargo install rustipo
+```
+
+```bash
+rustipo new my-site
 cd my-site
-cargo run -- dev
+rustipo dev
 ```
 
 Production build:
 
 ```bash
-cargo run -- build
+rustipo build
 ```
 
 ## Layout Without CSS Editing
