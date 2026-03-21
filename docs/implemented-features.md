@@ -222,6 +222,7 @@
 - `page_kind`
 - `current_section`
 - `site_nav`
+- `site_menus`
 - `previous_post`
 - `next_post`
 - `page_has_mermaid`
@@ -250,6 +251,9 @@
   - standalone pages
   - `Blog`
   - `Projects`
+- configured named menus from `config.toml`
+  - `site_menus`
+  - `menus.main` override for `site_nav`
 - active navigation state
 - standalone page ordering by frontmatter `order`
 - `previous_post`

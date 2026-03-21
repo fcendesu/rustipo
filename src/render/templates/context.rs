@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use serde::Serialize;
 use tera::Context as TeraContext;
 
+use crate::config::SiteConfig;
 use crate::content::pages::{Page, PageKind};
 
 #[derive(Clone, Serialize)]
@@ -22,7 +23,8 @@ pub(super) struct AdjacentPost {
 
 #[derive(Default)]
 pub(in crate::render) struct SharedTemplateData {
-    nav_entries: Vec<NavEntry>,
+    auto_nav_entries: Vec<NavEntry>,
+    configured_menus: BTreeMap<String, Vec<ConfiguredMenuEntry>>,
     adjacent_posts: BTreeMap<String, AdjacentPosts>,
 }
 
@@ -31,6 +33,12 @@ struct NavEntry {
     title: String,
     route: String,
     kind: NavEntryKind,
+}
+
+#[derive(Clone)]
+struct ConfiguredMenuEntry {
+    title: String,
+    route: String,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -47,9 +55,13 @@ struct AdjacentPosts {
     next_post: Option<AdjacentPost>,
 }
 
-pub(super) fn build_shared_template_data(pages: &[Page]) -> SharedTemplateData {
+pub(super) fn build_shared_template_data(
+    pages: &[Page],
+    config: &SiteConfig,
+) -> SharedTemplateData {
     SharedTemplateData {
-        nav_entries: build_nav_entries(pages),
+        auto_nav_entries: build_nav_entries(pages),
+        configured_menus: build_configured_menus(config),
         adjacent_posts: build_adjacent_posts(pages),
     }
 }
@@ -67,6 +79,7 @@ pub(super) fn insert_page_context(
         "site_nav",
         &site_nav_for_route(shared, route, current_section),
     );
+    context.insert("site_menus", &site_menus_for_route(shared, route));
 
     let adjacent = shared
         .adjacent_posts
@@ -132,13 +145,39 @@ fn build_nav_entries(pages: &[Page]) -> Vec<NavEntry> {
     entries
 }
 
+fn build_configured_menus(config: &SiteConfig) -> BTreeMap<String, Vec<ConfiguredMenuEntry>> {
+    config
+        .menus
+        .as_ref()
+        .map(|menus| {
+            menus
+                .iter()
+                .map(|(name, entries)| {
+                    let items = entries
+                        .iter()
+                        .map(|entry| ConfiguredMenuEntry {
+                            title: entry.title.trim().to_string(),
+                            route: entry.route.trim().to_string(),
+                        })
+                        .collect::<Vec<_>>();
+                    (name.clone(), items)
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 fn site_nav_for_route(
     shared: &SharedTemplateData,
     route: &str,
     current_section: &str,
 ) -> Vec<NavItem> {
+    if let Some(main_menu) = shared.configured_menus.get("main") {
+        return configured_menu_for_route(main_menu, route);
+    }
+
     shared
-        .nav_entries
+        .auto_nav_entries
         .iter()
         .map(|entry| NavItem {
             title: entry.title.clone(),
@@ -146,6 +185,42 @@ fn site_nav_for_route(
             active: nav_entry_is_active(entry, route, current_section),
         })
         .collect()
+}
+
+fn site_menus_for_route(
+    shared: &SharedTemplateData,
+    route: &str,
+) -> BTreeMap<String, Vec<NavItem>> {
+    shared
+        .configured_menus
+        .iter()
+        .map(|(name, entries)| (name.clone(), configured_menu_for_route(entries, route)))
+        .collect()
+}
+
+fn configured_menu_for_route(entries: &[ConfiguredMenuEntry], route: &str) -> Vec<NavItem> {
+    entries
+        .iter()
+        .map(|entry| NavItem {
+            title: entry.title.clone(),
+            route: entry.route.clone(),
+            active: configured_menu_entry_is_active(entry, route),
+        })
+        .collect()
+}
+
+fn configured_menu_entry_is_active(entry: &ConfiguredMenuEntry, route: &str) -> bool {
+    if !entry.route.starts_with('/') {
+        return false;
+    }
+
+    if entry.route == "/" {
+        return route == "/";
+    }
+
+    let menu_route = entry.route.trim_end_matches('/');
+    let current_route = route.trim_end_matches('/');
+    current_route == menu_route || current_route.starts_with(&format!("{menu_route}/"))
 }
 
 fn nav_entry_is_active(entry: &NavEntry, route: &str, current_section: &str) -> bool {

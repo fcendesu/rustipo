@@ -1,8 +1,9 @@
+use std::collections::BTreeMap;
 use std::fs;
 
 use tempfile::tempdir;
 
-use crate::config::SiteConfig;
+use crate::config::{MenuEntryConfig, SiteConfig};
 use crate::content::pages::build_pages;
 use crate::palette::loader::load_palette;
 use crate::theme::loader::load_active_theme;
@@ -56,6 +57,7 @@ fn renders_pages_with_theme_templates() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -171,6 +173,7 @@ fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
         base_url: "https://example.com".to_string(),
         theme: "child".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -273,6 +276,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: Some(crate::config::SiteOptions {
@@ -355,6 +359,7 @@ fn exposes_page_toc_to_templates() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A site".to_string(),
         author: None,
         site: None,
@@ -445,6 +450,7 @@ fn renders_archive_groups_for_dated_posts() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -542,6 +548,7 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -659,6 +666,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -727,6 +735,132 @@ fn exposes_navigation_adjacency_and_helper_context() {
 }
 
 #[test]
+fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        project_root.join("content/about.md"),
+        "---\ntitle: About\n---\n\n# About",
+    )
+    .expect("about page should be written");
+    fs::write(
+        project_root.join("content/blog/post.md"),
+        "---\ntitle: Post\ndate: 2026-03-21\n---\n\n# Post",
+    )
+    .expect("post should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{% for item in site_nav %}[nav:{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}|{% for item in site_menus.footer %}[footer:{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: Some(BTreeMap::from([
+            (
+                "main".to_string(),
+                vec![
+                    MenuEntryConfig {
+                        title: "Start".to_string(),
+                        route: "/".to_string(),
+                    },
+                    MenuEntryConfig {
+                        title: "Writing".to_string(),
+                        route: "/blog/".to_string(),
+                    },
+                    MenuEntryConfig {
+                        title: "About".to_string(),
+                        route: "/about/".to_string(),
+                    },
+                ],
+            ),
+            (
+                "footer".to_string(),
+                vec![MenuEntryConfig {
+                    title: "GitHub".to_string(),
+                    route: "https://github.com/fcendesu".to_string(),
+                }],
+            ),
+        ])),
+        description: "A portfolio".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let about = rendered
+        .iter()
+        .find(|page| page.route == "/about/")
+        .expect("about route should be rendered");
+    assert!(about.html.contains("[nav:Start:&#x2F;:false]"));
+    assert!(about.html.contains("[nav:Writing:&#x2F;blog&#x2F;:false]"));
+    assert!(about.html.contains("[nav:About:&#x2F;about&#x2F;:true]"));
+    assert!(
+        about
+            .html
+            .contains("[footer:GitHub:https:&#x2F;&#x2F;github.com&#x2F;fcendesu:false]")
+    );
+
+    let post = rendered
+        .iter()
+        .find(|page| page.route == "/blog/post/")
+        .expect("post route should be rendered");
+    assert!(post.html.contains("[nav:Writing:&#x2F;blog&#x2F;:true]"));
+}
+
+#[test]
 fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();
@@ -772,6 +906,7 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,
@@ -864,6 +999,7 @@ fn injects_math_runtime_only_for_pages_with_math() {
         base_url: "https://example.com".to_string(),
         theme: "default".to_string(),
         palette: None,
+        menus: None,
         description: "A portfolio".to_string(),
         author: None,
         site: None,

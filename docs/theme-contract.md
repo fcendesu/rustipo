@@ -150,6 +150,7 @@ Rustipo injects common site variables into template contexts, including:
   - `page_kind`
   - `current_section`
   - `site_nav`
+  - `site_menus`
   - `page_has_math`
   - `page_toc`
   - `previous_post`
@@ -211,12 +212,23 @@ content.
 - `route`
 - `active`
 
-Rustipo builds it from available content:
+Rustipo builds it from available content unless `menus.main` is configured in
+`config.toml`. When `menus.main` exists, `site_nav` uses those configured entries instead.
+
+Generated `site_nav` includes:
 
 - `Home` when `content/index.md` exists
 - standalone pages from `content/*.md`
 - `Blog` when blog posts exist
 - `Projects` when project pages exist
+
+`site_menus` is a map of configured menu names to ordered item lists. Each item includes:
+
+- `title`
+- `route`
+- `active`
+
+External menu links are exposed normally, but their `active` value stays `false`.
 
 `previous_post` and `next_post` are only populated for blog post pages.
 They include:

@@ -81,6 +81,7 @@ Rustipo also injects stable navigation and page-state values:
 - `page_kind`
 - `current_section`
 - `site_nav`
+- `site_menus`
 - `page_has_math`
 - `page_toc`
 - `previous_post`
@@ -165,6 +166,7 @@ Theme authors can rely on these context keys being present in normal page templa
 - `page_kind`: one of `index`, `page`, `post`, `project`, `section`
 - `current_section`: one of `home`, `pages`, `blog`, `projects`, `archive`, `tags`
 - `site_nav`: ordered navigation items with `title`, `route`, `active`
+- `site_menus`: named menus from `config.toml`, exposed as `{ menu_name -> [items...] }`
 - `previous_post` / `next_post`: adjacent blog post metadata when rendering a blog post
 
 `previous_post` and `next_post` expose:
@@ -220,6 +222,50 @@ Example:
 </aside>
 {% endif %}
 ```
+
+## Configured menus
+
+Rustipo supports named menus in `config.toml`:
+
+```toml
+[menus]
+main = [
+  { title = "Home", route = "/" },
+  { title = "Blog", route = "/blog/" },
+  { title = "About", route = "/about/" },
+]
+
+footer = [
+  { title = "GitHub", route = "https://github.com/fcendesu" },
+]
+```
+
+Each menu item exposes:
+
+- `title`
+- `route`
+- `active`
+
+Templates can access them through `site_menus`:
+
+```html
+<nav>
+  {% for item in site_menus.main %}
+  <a href="{{ item.route }}" {% if item.active %}aria-current="page"{% endif %}>
+    {{ item.title }}
+  </a>
+  {% endfor %}
+</nav>
+
+<footer>
+  {% for item in site_menus.footer %}
+  <a href="{{ item.route }}">{{ item.title }}</a>
+  {% endfor %}
+</footer>
+```
+
+When `menus.main` is configured, Rustipo uses it for `site_nav` as well. Without
+`menus.main`, `site_nav` keeps the default generated navigation from available content.
 
 Themes can use the same `page_toc` data for inline TOCs, sticky sidebar TOCs, or mobile
 collapsible outlines. Rustipo only provides the heading tree and stable anchor ids; theme-side

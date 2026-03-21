@@ -1,10 +1,11 @@
 pub mod editor;
 pub mod fonts;
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result, anyhow, bail};
 use serde::{Deserialize, Serialize};
 
 pub use fonts::{ResolvedFontFace, SiteFontOptions, TypographyOptions};
@@ -15,11 +16,18 @@ pub struct SiteConfig {
     pub base_url: String,
     pub theme: String,
     pub palette: Option<String>,
+    pub menus: Option<BTreeMap<String, Vec<MenuEntryConfig>>>,
     pub description: String,
     // Reserved for template contexts and future metadata outputs.
     #[allow(dead_code)]
     pub author: Option<AuthorConfig>,
     pub site: Option<SiteOptions>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct MenuEntryConfig {
+    pub title: String,
+    pub route: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -211,8 +219,41 @@ pub fn load(path: impl AsRef<Path>) -> Result<SiteConfig> {
 
     let config = toml::from_str::<SiteConfig>(&raw)
         .with_context(|| format!("failed to parse config file: {}", path.display()))?;
+    validate_menus(&config).map_err(|error| {
+        anyhow!(
+            "invalid menu configuration in config file: {}: {error}",
+            path.display()
+        )
+    })?;
 
     Ok(config)
+}
+
+fn validate_menus(config: &SiteConfig) -> Result<()> {
+    let Some(menus) = &config.menus else {
+        return Ok(());
+    };
+
+    for (name, entries) in menus {
+        if name.trim().is_empty() {
+            bail!("menu name must not be empty");
+        }
+        if entries.is_empty() {
+            bail!("menu '{name}' must contain at least one entry");
+        }
+
+        for (index, entry) in entries.iter().enumerate() {
+            let item_number = index + 1;
+            if entry.title.trim().is_empty() {
+                bail!("menu '{name}' item {item_number} title must not be empty");
+            }
+            if entry.route.trim().is_empty() {
+                bail!("menu '{name}' item {item_number} route must not be empty");
+            }
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -221,7 +262,7 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::{LayoutOptions, SiteConfig, SiteOptions, TypographyOptions};
+    use super::{LayoutOptions, SiteConfig, SiteOptions, TypographyOptions, load};
 
     fn base_config() -> SiteConfig {
         SiteConfig {
@@ -229,6 +270,7 @@ mod tests {
             base_url: "https://example.com".to_string(),
             theme: "default".to_string(),
             palette: None,
+            menus: None,
             description: "Portfolio".to_string(),
             author: None,
             site: None,
@@ -340,5 +382,67 @@ mod tests {
         fs::write(dir.path().join("static/custom.css"), "body{}")
             .expect("custom css should be written");
         assert!(config.has_custom_css(dir.path()));
+    }
+
+    #[test]
+    fn loads_named_menus_from_config() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Rustipo"
+base_url = "https://example.com"
+theme = "default"
+description = "Example"
+
+[menus]
+main = [
+  { title = "Home", route = "/" },
+  { title = "Blog", route = "/blog/" },
+]
+"#,
+        )
+        .expect("config should be written");
+
+        let config = load(&config_path).expect("config should load");
+        let main = config
+            .menus
+            .as_ref()
+            .and_then(|menus| menus.get("main"))
+            .expect("main menu should be present");
+
+        assert_eq!(main.len(), 2);
+        assert_eq!(main[0].title, "Home");
+        assert_eq!(main[1].route, "/blog/");
+    }
+
+    #[test]
+    fn rejects_menu_entries_with_blank_title() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Rustipo"
+base_url = "https://example.com"
+theme = "default"
+description = "Example"
+
+[menus]
+main = [
+  { title = "   ", route = "/" },
+]
+"#,
+        )
+        .expect("config should be written");
+
+        let error = load(&config_path).expect_err("blank menu title should fail");
+        assert!(
+            error
+                .to_string()
+                .contains("menu 'main' item 1 title must not be empty"),
+            "unexpected error: {error}"
+        );
     }
 }
