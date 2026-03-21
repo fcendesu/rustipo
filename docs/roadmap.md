@@ -25,23 +25,25 @@ For historical post-MVP batch planning, see:
 
 ## Upcoming milestones
 
-- `v0.7.0`: adoption
+- `v0.7.0`: adoption and reliability
   - crates.io publishing
   - installation and quickstart polish
   - `rustipo check`
-  - `sitemap.xml` generation
+  - fix generated GitHub Pages workflow for normal Rustipo sites
 - `v0.8.0`: authoring
   - table of contents
   - math rendering
   - admonitions/callouts
   - improved image ergonomics
+  - improved internal link and deep-link ergonomics
 - `v0.9.0`: publishing and site structure
   - drafts and scheduled publishing
-  - feeds
   - menus
   - breadcrumbs
+  - pagination
+  - `robots.txt`
+  - built-in 404 page
 - `v0.10.0`: discovery
-  - lightweight search index
   - flagship example sites
   - more built-in layout themes
 - `v0.11.0`: distribution
@@ -50,6 +52,8 @@ For historical post-MVP batch planning, see:
   - docs site built with Rustipo
 
 `#55` should lightly influence `v0.7.0` docs: installation and quickstart wording should already describe Rustipo as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
+
+Small publishing completeness items such as `robots.txt` and a built-in 404 page should stay in `v0.9.0` for now. They are valuable, but they are less urgent than the adoption and authoring work in `v0.7.0` and `v0.8.0`.
 
 ## Milestone 1: Foundation
 
@@ -95,4 +99,8 @@ For historical post-MVP batch planning, see:
   - more helper functions/filters
   - stronger macro/partial conventions and examples
 - continue growing the layout theme ecosystem now that palette/font foundations are in place
+- support reusable embeds or shortcodes for interactive content
+- consider optional analytics integration for common hosted and self-hosted setups
+- formalize taxonomy and palette token contracts as the ecosystem grows
+- consider multilingual support only after the single-language publishing model is more mature
 - evaluate optional SCSS support for theme authoring while keeping plain CSS as the default
