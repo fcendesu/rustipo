@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.8.0...rustipo-v0.9.0) (2026-03-21)
+
+
+### Features
+
+* **config:** add configurable site menus ([f4a95f1](https://github.com/fcendesu/rustipo/commit/f4a95f18348c66b755ebf477471fa78eb231810f))
+* **config:** add configurable site menus ([43f88a7](https://github.com/fcendesu/rustipo/commit/43f88a7ba514bbc11927c87cb8d0e1f8a8c71293))
+* **content:** add draft and scheduled publishing filters ([94418a6](https://github.com/fcendesu/rustipo/commit/94418a673df7eec9c55b53f402754103c166f8b7))
+* **content:** add draft and scheduled publishing support ([0450e1e](https://github.com/fcendesu/rustipo/commit/0450e1ed5485253b324ac898640263d5926ea38e))
+* **output:** generate built-in not-found page ([4496f52](https://github.com/fcendesu/rustipo/commit/4496f526e543c9deeb4f5c7d5122686d37330a2f))
+* **output:** generate built-in not-found page ([89b1141](https://github.com/fcendesu/rustipo/commit/89b1141a0787e7c7d54fd42c25022ce748d77c86))
+* **output:** generate default robots.txt ([5ae39c6](https://github.com/fcendesu/rustipo/commit/5ae39c63b9db14a73eee01aa71fb1657c3c99fb1))
+* **output:** generate default robots.txt ([02e3da6](https://github.com/fcendesu/rustipo/commit/02e3da6e891633d936013027cf05acc914728171))
+* **theme:** add breadcrumb support ([44f6594](https://github.com/fcendesu/rustipo/commit/44f6594471bf0e645cf74f80ea2b8f5a9445577f))
+* **theme:** add breadcrumb template context ([6d57c15](https://github.com/fcendesu/rustipo/commit/6d57c15a8269b7857846c757db229be5cf1aabd8))
+
 ## [0.8.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.7.0...rustipo-v0.8.0) (2026-03-21)
 
 
