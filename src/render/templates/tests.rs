@@ -8,7 +8,7 @@ use crate::content::pages::build_pages;
 use crate::palette::loader::load_palette;
 use crate::theme::loader::load_active_theme;
 
-use super::{SiteRenderContext, render_pages};
+use super::{SiteRenderContext, render_not_found_page, render_pages};
 
 #[test]
 fn renders_pages_with_theme_templates() {
@@ -1169,4 +1169,159 @@ fn injects_math_runtime_only_for_pages_with_math() {
         .expect("about should render");
     assert!(about.html.contains("false|"));
     assert!(!about.html.contains("data-rustipo-math"));
+}
+
+#[test]
+fn renders_not_found_page_with_page_template_fallback() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<html><body>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}<article>{{ content_html | safe }}</article>{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let html = render_not_found_page(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("404 page should render");
+
+    assert!(html.contains("<article><h1>Page not found</h1>"));
+    assert!(html.contains("Return home"));
+}
+
+#[test]
+fn prefers_dedicated_not_found_template_when_present() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<html><body>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/404.html"),
+        "{% extends \"base.html\" %}{% block body %}<section>Custom 404 for {{ site_title }}</section>{% endblock body %}",
+    )
+    .expect("404 template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}<article>{{ content_html | safe }}</article>{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let html = render_not_found_page(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("404 page should render");
+
+    assert!(html.contains("Custom 404 for My Site"));
+    assert!(!html.contains("Return home"));
 }

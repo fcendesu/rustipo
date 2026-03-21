@@ -1,4 +1,5 @@
 pub mod assets;
+pub mod not_found;
 pub mod palette;
 pub mod robots;
 pub mod rss;

@@ -56,6 +56,7 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/favicon.svg").is_file());
     assert!(project.join("dist/search-index.json").is_file());
     assert!(project.join("dist/robots.txt").is_file());
+    assert!(project.join("dist/404.html").is_file());
     assert!(
         project
             .join("themes/default/templates/partials/head_assets.html")
@@ -86,6 +87,11 @@ fn new_and_build_generate_expected_output() {
     assert!(robots_txt.contains("User-agent: *"));
     assert!(robots_txt.contains("Allow: /"));
     assert!(robots_txt.contains("Sitemap: https://example.com/sitemap.xml"));
+
+    let not_found_html =
+        fs::read_to_string(project.join("dist/404.html")).expect("404 html should be readable");
+    assert!(not_found_html.contains("Page not found"));
+    assert!(not_found_html.contains("Return home"));
 
     let base_template = fs::read_to_string(project.join("themes/default/templates/base.html"))
         .expect("base template should be readable");

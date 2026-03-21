@@ -12,6 +12,7 @@ pub(crate) struct PreparedSite {
     pub palette: Palette,
     pub pages: Vec<Page>,
     pub rendered_pages: Vec<RenderedPage>,
+    pub not_found_html: String,
 }
 
 pub(crate) fn prepare_site(
@@ -52,18 +53,17 @@ pub(crate) fn prepare_site(
         println!("Built pages from content: {}", pages.len());
     }
 
-    let rendered_pages = crate::render::templates::render_pages(
-        &theme,
-        &config,
-        &pages,
-        &crate::render::templates::SiteRenderContext {
-            favicon_links: &favicon_links,
-            site_style: &site_style,
-            site_has_custom_css,
-            site_font_faces_css: site_font_faces_css.as_deref(),
-            palette: &palette,
-        },
-    )?;
+    let site_context = crate::render::templates::SiteRenderContext {
+        favicon_links: &favicon_links,
+        site_style: &site_style,
+        site_has_custom_css,
+        site_font_faces_css: site_font_faces_css.as_deref(),
+        palette: &palette,
+    };
+    let rendered_pages =
+        crate::render::templates::render_pages(&theme, &config, &pages, &site_context)?;
+    let not_found_html =
+        crate::render::templates::render_not_found_page(&theme, &config, &pages, &site_context)?;
     crate::content::links::validate_internal_links(&pages, &rendered_pages)?;
     if verbose {
         println!("Rendered pages with templates: {}", rendered_pages.len());
@@ -75,5 +75,6 @@ pub(crate) fn prepare_site(
         palette,
         pages,
         rendered_pages,
+        not_found_html,
     })
 }

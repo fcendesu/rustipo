@@ -39,6 +39,8 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
     )?;
     let robots_file =
         crate::output::robots::write_default_robots_txt("dist", &prepared.config.base_url)?;
+    let not_found_file =
+        crate::output::not_found::write_not_found_page("dist", &prepared.not_found_html)?;
     if verbose {
         println!(
             "Generated palette CSS: dist/palette.css ({})",
@@ -49,6 +51,7 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
         println!("Generated search documents: {}", search_documents);
         println!("Generated sitemap URLs: {}", sitemap_urls);
         println!("Generated crawler guidance: dist/{robots_file}");
+        println!("Generated not-found page: dist/{not_found_file}");
         println!("Build completed: dist/");
     }
     Ok(())
