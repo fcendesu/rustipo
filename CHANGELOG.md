@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.7.0...rustipo-v0.8.0) (2026-03-21)
+
+
+### Features
+
+* **content:** add generated page toc data ([b2ff366](https://github.com/fcendesu/rustipo/commit/b2ff3661f23fe7877573582468c3901acb40b481))
+* **content:** add markdown admonition support ([c75e83c](https://github.com/fcendesu/rustipo/commit/c75e83cb61abf0bf3b09dc66c828643ba572e301))
+* **content:** add markdown math support ([9da40d3](https://github.com/fcendesu/rustipo/commit/9da40d3e730577cf2d682b372016fe723571a46f))
+* **content:** add page table of contents support ([9b852df](https://github.com/fcendesu/rustipo/commit/9b852df3ca910db5c16647f81b464529820f2d7b))
+* **content:** add page-scoped markdown math support ([704fbcb](https://github.com/fcendesu/rustipo/commit/704fbcb7bdb2a679459d204e3f9b34251ab664ee))
+* **content:** improve markdown image ergonomics ([54fcfc5](https://github.com/fcendesu/rustipo/commit/54fcfc5151d637c8249410b9ea3e0f80a8ecab95))
+* **content:** validate internal links and deep links ([cbabbf1](https://github.com/fcendesu/rustipo/commit/cbabbf11c2203a6a9fb17eb41999fe17daac2e70))
+
 ## [0.7.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.6.0...rustipo-v0.7.0) (2026-03-21)
 
 
