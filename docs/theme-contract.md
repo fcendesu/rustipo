@@ -156,6 +156,10 @@ Rustipo injects common site variables into template contexts, including:
   - `page_toc`
   - `previous_post`
   - `next_post`
+  - `current_page`
+  - `total_pages`
+  - `prev_url`
+  - `next_url`
 - favicon helpers: `site_favicon`, `site_favicon_svg`, `site_favicon_ico`, `site_apple_touch_icon`
 - style helpers from config:
   - `site_style.content_width`
@@ -242,6 +246,19 @@ Rustipo derives breadcrumb routes from the final rendered route. When an exact p
 section route is known, Rustipo uses its title; otherwise it falls back to a humanized route
 segment label. Intermediate segments without a real page are still included with `linkable =
 false` so themes can show location context without rendering broken links.
+
+Listing templates such as `section.html` also receive pagination helpers when the rendered route is
+part of a paginated listing:
+
+- `current_page`
+- `total_pages`
+- `prev_url`
+- `next_url`
+
+In v1, the built-in paginated listing is the blog section:
+
+- `/blog/`
+- `/blog/page/<n>/`
 
 `previous_post` and `next_post` are only populated for blog post pages.
 They include:

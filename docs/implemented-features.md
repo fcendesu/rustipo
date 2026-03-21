@@ -263,6 +263,13 @@
   - `linkable` flag for non-page intermediate segments
 - `previous_post`
 - `next_post`
+- built-in blog listing pagination
+  - `/blog/`
+  - `/blog/page/<n>/`
+  - `current_page`
+  - `total_pages`
+  - `prev_url`
+  - `next_url`
 
 ## Palette System
 
