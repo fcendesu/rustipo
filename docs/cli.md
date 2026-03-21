@@ -157,6 +157,7 @@ Current behavior:
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
 - Generates search index at `dist/search-index.json` from site content
 - Generates `dist/robots.txt` with default crawler guidance and sitemap location
+- Generates `dist/404.html` using `templates/404.html` when present, or `page.html` as a fallback
 - Uses a CDN-backed Mermaid ESM runtime in v1
 - Uses a CDN-backed KaTeX ESM runtime in v1
 

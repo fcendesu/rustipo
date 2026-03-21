@@ -17,6 +17,7 @@ Rustipo converts Markdown to HTML first, then injects that HTML and related meta
 - `post.html`: blog posts
 - `project.html`: project detail pages
 - `section.html`: listing pages such as blog/projects
+- `404.html`: optional not-found page override
 
 ## Minimal example
 
@@ -170,6 +171,10 @@ Theme authors can rely on these context keys being present in normal page templa
 - `site_menus`: named menus from `config.toml`, exposed as `{ menu_name -> [items...] }`
 - `breadcrumbs`: ordered breadcrumb items with `title`, `route`, `active`, `linkable`
 - `previous_post` / `next_post`: adjacent blog post metadata when rendering a blog post
+
+Rustipo also renders a built-in not-found page to `dist/404.html`. When a theme provides
+`templates/404.html`, Rustipo uses it. Otherwise, Rustipo falls back to `page.html` with the
+normal page-style context and a default not-found content body.
 
 `previous_post` and `next_post` expose:
 

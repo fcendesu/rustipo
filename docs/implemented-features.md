@@ -368,6 +368,7 @@
 - generated `dist/sitemap.xml`
 - generated `dist/search-index.json`
 - generated `dist/robots.txt`
+- generated `dist/404.html`
 - `/blog/` section index
 - `/projects/` section index
 - `/blog/archive/` page
@@ -392,6 +393,12 @@
 - default `robots.txt` generation
 - `Allow: /`
 - sitemap location hint
+
+## Not Found
+
+- built-in `404.html` generation
+- optional `templates/404.html` override
+- fallback to `templates/page.html`
 
 ## Search
 
