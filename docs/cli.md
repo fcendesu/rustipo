@@ -260,7 +260,8 @@ rustipo deploy github-pages --force
 Current behavior:
 
 - Writes `.github/workflows/deploy-pages.yml`
-- Workflow runs `cargo run -- build` and deploys `dist/` using Pages actions
+- Workflow installs Rustipo from crates.io with `cargo install rustipo --locked`
+- Workflow runs `rustipo build` and deploys `dist/` using Pages actions
 - Refuses to overwrite existing workflow unless `--force` is provided
 
 ## Style Options (`config.toml`)

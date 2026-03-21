@@ -500,6 +500,9 @@ fn deploy_github_pages_generates_workflow_file() {
     let content = fs::read_to_string(workflow).expect("workflow should be readable");
     assert!(content.contains("name: Deploy GitHub Pages"));
     assert!(content.contains("actions/deploy-pages@v4"));
+    assert!(content.contains("cargo install rustipo --locked"));
+    assert!(content.contains("run: rustipo build"));
+    assert!(!content.contains("cargo run -- build"));
 }
 
 #[test]
