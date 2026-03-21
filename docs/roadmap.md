@@ -17,6 +17,10 @@ Current shipped post-MVP capabilities:
 - nested custom pages outside special sections
 - richer Tera helpers/context for theme authors
 - refined default typography scale and prose rhythm
+- generated publishing/search artifacts during build:
+  - `dist/rss.xml`
+  - `dist/sitemap.xml`
+  - `dist/search-index.json`
 
 For historical post-MVP batch planning, see:
 
