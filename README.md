@@ -13,6 +13,7 @@ MVP complete, active post-MVP development.
 ## CLI
 
 - `rustipo new <site-name>`
+- `rustipo check`
 - `rustipo dev`
 - `rustipo build`
 - `rustipo serve`

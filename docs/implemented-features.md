@@ -3,6 +3,7 @@
 ## CLI
 
 - `rustipo new <site-name>`
+- `rustipo check`
 - `rustipo build`
 - `rustipo dev`
   - `--host`
@@ -395,4 +396,3 @@
 - invalid palette ID detection
 - invalid palette token name detection
 - missing `dist/` error on serve
-

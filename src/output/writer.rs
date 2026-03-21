@@ -16,21 +16,10 @@ pub fn write_rendered_pages(dist_dir: impl AsRef<Path>, pages: &[RenderedPage]) 
     fs::create_dir_all(dist_dir)
         .with_context(|| format!("failed to create output directory: {}", dist_dir.display()))?;
 
-    let mut outputs = Vec::with_capacity(pages.len());
-    let mut seen_output_paths: HashMap<PathBuf, String> = HashMap::new();
-    for page in pages {
-        let output_path = route_to_output_path(dist_dir, &page.route)?;
-        if let Some(existing_route) =
-            seen_output_paths.insert(output_path.clone(), page.route.clone())
-        {
-            bail!(
-                "duplicate output route collision: '{}' and '{}' both map to '{}'",
-                existing_route,
-                page.route,
-                output_path.display()
-            );
-        }
-        outputs.push((output_path, page.html.as_str()));
+    let output_routes = collect_output_routes(pages)?;
+    let mut outputs = Vec::with_capacity(output_routes.len());
+    for (page, rel_path) in pages.iter().zip(output_routes.iter()) {
+        outputs.push((dist_dir.join(rel_path), page.html.as_str()));
     }
 
     for (output_path, html) in outputs {
@@ -46,17 +35,43 @@ pub fn write_rendered_pages(dist_dir: impl AsRef<Path>, pages: &[RenderedPage]) 
     Ok(())
 }
 
-fn route_to_output_path(dist_dir: &Path, route: &str) -> Result<PathBuf> {
+pub fn validate_rendered_pages(pages: &[RenderedPage]) -> Result<usize> {
+    let output_routes = collect_output_routes(pages)?;
+    Ok(output_routes.len())
+}
+
+fn collect_output_routes(pages: &[RenderedPage]) -> Result<Vec<PathBuf>> {
+    let mut outputs = Vec::with_capacity(pages.len());
+    let mut seen_output_paths: HashMap<PathBuf, String> = HashMap::new();
+    for page in pages {
+        let output_path = route_to_output_path(&page.route)?;
+        if let Some(existing_route) =
+            seen_output_paths.insert(output_path.clone(), page.route.clone())
+        {
+            bail!(
+                "duplicate output route collision: '{}' and '{}' both map to '{}'",
+                existing_route,
+                page.route,
+                output_path.display()
+            );
+        }
+        outputs.push(output_path);
+    }
+
+    Ok(outputs)
+}
+
+fn route_to_output_path(route: &str) -> Result<PathBuf> {
     if !route.starts_with('/') || !route.ends_with('/') {
         bail!("route must start and end with '/': {route}");
     }
 
     let trimmed = route.trim_matches('/');
     if trimmed.is_empty() {
-        return Ok(dist_dir.join("index.html"));
+        return Ok(PathBuf::from("index.html"));
     }
 
-    Ok(dist_dir.join(trimmed).join("index.html"))
+    Ok(PathBuf::from(trimmed).join("index.html"))
 }
 
 #[cfg(test)]

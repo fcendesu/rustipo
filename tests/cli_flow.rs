@@ -91,6 +91,64 @@ fn new_and_build_generate_expected_output() {
 }
 
 #[test]
+fn check_succeeds_for_new_scaffold() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    let check_output = run_cli(&project, &["check"]);
+    assert!(
+        check_output.status.success(),
+        "check failed: {}",
+        String::from_utf8_lossy(&check_output.stderr)
+    );
+
+    let stdout = String::from_utf8_lossy(&check_output.stdout);
+    assert!(stdout.contains("Validated rendered routes:"));
+    assert!(stdout.contains("Validated asset paths:"));
+    assert!(stdout.contains("Check completed: project inputs are valid."));
+    assert!(
+        !project.join("dist").exists(),
+        "check should not write dist output"
+    );
+}
+
+#[test]
+fn check_fails_for_missing_configured_favicon() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-portfolio");
+    fs::write(
+        project.join("config.toml"),
+        "title = \"My Portfolio\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"default\"\ndescription = \"My personal portfolio site\"\n\n[site]\nfavicon = \"/missing.svg\"\n",
+    )
+    .expect("config should be updated");
+
+    let output = run_cli(&project, &["check"]);
+    assert!(!output.status.success(), "check should fail");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("configured favicon file not found"),
+        "unexpected stderr: {stderr}"
+    );
+}
+
+#[test]
 fn new_scaffold_includes_builtin_palettes() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();

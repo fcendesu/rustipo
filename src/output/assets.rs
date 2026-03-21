@@ -11,27 +11,22 @@ pub fn copy_assets_with_collision_check(
     theme_static_dirs: &[PathBuf],
     dist_dir: impl AsRef<Path>,
 ) -> Result<usize> {
-    let user_static_dir = user_static_dir.as_ref();
     let dist_dir = dist_dir.as_ref();
-
-    let user_files = collect_relative_files(user_static_dir)?;
-    let mut theme_files = BTreeMap::new();
-    for theme_dir in theme_static_dirs {
-        let rel_files = collect_relative_files(theme_dir)?;
-        for rel in rel_files {
-            theme_files.insert(rel.clone(), theme_dir.join(rel));
-        }
-    }
-
-    if let Some(rel) = user_files.iter().find(|rel| theme_files.contains_key(*rel)) {
-        bail!("asset path collision detected: {}", rel.display());
-    }
+    let prepared = prepare_asset_maps(user_static_dir.as_ref(), theme_static_dirs)?;
 
     let mut copied = 0;
-    copied += copy_files_from_map(dist_dir, &theme_files)?;
-    copied += copy_files(user_static_dir, dist_dir, &user_files)?;
+    copied += copy_files_from_map(dist_dir, &prepared.theme_files)?;
+    copied += copy_files(prepared.user_static_dir, dist_dir, &prepared.user_files)?;
 
     Ok(copied)
+}
+
+pub fn validate_assets_with_collision_check(
+    user_static_dir: impl AsRef<Path>,
+    theme_static_dirs: &[PathBuf],
+) -> Result<usize> {
+    let prepared = prepare_asset_maps(user_static_dir.as_ref(), theme_static_dirs)?;
+    Ok(prepared.user_files.len() + prepared.theme_files.len())
 }
 
 fn copy_files_from_map(dist_dir: &Path, files: &BTreeMap<PathBuf, PathBuf>) -> Result<usize> {
@@ -84,6 +79,36 @@ fn collect_relative_files(root: &Path) -> Result<HashSet<PathBuf>> {
     }
 
     Ok(files)
+}
+
+struct PreparedAssetMaps<'a> {
+    user_static_dir: &'a Path,
+    user_files: HashSet<PathBuf>,
+    theme_files: BTreeMap<PathBuf, PathBuf>,
+}
+
+fn prepare_asset_maps<'a>(
+    user_static_dir: &'a Path,
+    theme_static_dirs: &[PathBuf],
+) -> Result<PreparedAssetMaps<'a>> {
+    let user_files = collect_relative_files(user_static_dir)?;
+    let mut theme_files = BTreeMap::new();
+    for theme_dir in theme_static_dirs {
+        let rel_files = collect_relative_files(theme_dir)?;
+        for rel in rel_files {
+            theme_files.insert(rel.clone(), theme_dir.join(rel));
+        }
+    }
+
+    if let Some(rel) = user_files.iter().find(|rel| theme_files.contains_key(*rel)) {
+        bail!("asset path collision detected: {}", rel.display());
+    }
+
+    Ok(PreparedAssetMaps {
+        user_static_dir,
+        user_files,
+        theme_files,
+    })
 }
 
 fn copy_files(root: &Path, dist_dir: &Path, files: &HashSet<PathBuf>) -> Result<usize> {
