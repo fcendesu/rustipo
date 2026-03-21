@@ -201,7 +201,7 @@ What each part is for:
 
 ## Example Project
 
-- [basic-portfolio](./examples/basic-portfolio)
+- [starter example site](./examples/basic-portfolio)
 
 ## Documentation
 
