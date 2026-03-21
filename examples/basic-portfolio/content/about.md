@@ -1,6 +1,6 @@
 ---
 title: About
-summary: About this portfolio
+summary: About this site
 ---
 
 # About

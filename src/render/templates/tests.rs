@@ -58,7 +58,7 @@ fn renders_pages_with_theme_templates() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -174,7 +174,7 @@ fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
         theme: "child".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -277,7 +277,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: Some(crate::config::SiteOptions {
             posts_per_page: Some(2),
@@ -451,7 +451,7 @@ fn renders_archive_groups_for_dated_posts() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -549,7 +549,7 @@ fn exposes_frontmatter_metadata_in_page_templates() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -667,7 +667,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -811,7 +811,7 @@ fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
                 }],
             ),
         ])),
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -917,7 +917,7 @@ fn exposes_breadcrumbs_for_top_level_and_nested_pages() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -1022,7 +1022,7 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };
@@ -1115,7 +1115,7 @@ fn injects_math_runtime_only_for_pages_with_math() {
         theme: "default".to_string(),
         palette: None,
         menus: None,
-        description: "A portfolio".to_string(),
+        description: "A site".to_string(),
         author: None,
         site: None,
     };

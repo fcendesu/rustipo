@@ -6,7 +6,7 @@ title: Home
 
 # Welcome to Rustipo
 
-This is your portfolio homepage.
+Start with a homepage, notes, posts, or project pages.
 "#;
 
 pub const ABOUT_CONTENT: &str = r#"---
@@ -15,7 +15,7 @@ title: About
 
 # About
 
-Write about yourself here.
+Use this page to introduce your site, writing, or work.
 "#;
 
 pub const RESUME_CONTENT: &str = r#"---
@@ -24,14 +24,14 @@ title: Resume
 
 # Resume
 
-Add your experience and skills here.
+Use this page for a resume, links, notes, or anything else.
 "#;
 
-pub const CONFIG_TOML: &str = r#"title = "My Portfolio"
+pub const CONFIG_TOML: &str = r#"title = "My Site"
 base_url = "https://example.com"
 theme = "default"
 palette = "default"
-description = "My personal portfolio site"
+description = "My Rustipo site"
 
 [site]
 favicon = "/favicon.svg"

@@ -1,8 +1,8 @@
-title = "Basic Portfolio"
+title = "Basic Site"
 base_url = "https://example.com"
 theme = "default"
 palette = "default"
-description = "A starter Rustipo example site"
+description = "A starter Rustipo site example"
 
 # Basic design controls (applied by theme CSS variables).
 # You can tune layout/typography here without editing CSS files.

@@ -31,14 +31,14 @@ fn new_and_build_generate_expected_output() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     let build_output = run_cli(&project, &["build"]);
     assert!(
         build_output.status.success(),
@@ -108,14 +108,14 @@ fn check_succeeds_for_new_scaffold() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     let check_output = run_cli(&project, &["check"]);
     assert!(
         check_output.status.success(),
@@ -138,17 +138,17 @@ fn check_fails_for_missing_configured_favicon() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     fs::write(
         project.join("config.toml"),
-        "title = \"My Portfolio\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"default\"\ndescription = \"My personal portfolio site\"\n\n[site]\nfavicon = \"/missing.svg\"\n",
+        "title = \"My Site\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"default\"\ndescription = \"My Rustipo site\"\n\n[site]\nfavicon = \"/missing.svg\"\n",
     )
     .expect("config should be updated");
 
@@ -236,14 +236,14 @@ fn new_scaffold_includes_builtin_palettes() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     let list_output = run_cli(&project, &["palette", "list"]);
     assert!(
         list_output.status.success(),
@@ -268,17 +268,17 @@ fn build_supports_builtin_palette_variants() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     fs::write(
         project.join("config.toml"),
-        "title = \"My Portfolio\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"catppuccin-mocha\"\ndescription = \"My personal portfolio site\"\n",
+        "title = \"My Site\"\nbase_url = \"https://example.com\"\ntheme = \"default\"\npalette = \"catppuccin-mocha\"\ndescription = \"My Rustipo site\"\n",
     )
     .expect("config should be updated");
 
@@ -304,14 +304,14 @@ fn palette_use_updates_config_toml() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     let output = run_cli(&project, &["palette", "use", "catppuccin-macchiato"]);
     assert!(
         output.status.success(),
@@ -340,25 +340,25 @@ fn build_supports_custom_font_config_and_assets() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
 
-    let new_output = run_cli(root, &["new", "my-portfolio"]);
+    let new_output = run_cli(root, &["new", "my-site"]);
     assert!(
         new_output.status.success(),
         "new failed: {}",
         String::from_utf8_lossy(&new_output.stderr)
     );
 
-    let project = root.join("my-portfolio");
+    let project = root.join("my-site");
     fs::create_dir_all(project.join("static/fonts")).expect("font dir should be created");
     fs::write(project.join("static/fonts/inter.woff2"), "font-bytes")
         .expect("font should be written");
 
     fs::write(
         project.join("config.toml"),
-        r#"title = "My Portfolio"
+        r#"title = "My Site"
 base_url = "https://example.com"
 theme = "default"
 palette = "default"
-description = "My personal portfolio site"
+description = "My Rustipo site"
 
 [site]
 favicon = "/favicon.svg"
