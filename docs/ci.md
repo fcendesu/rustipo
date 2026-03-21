@@ -17,3 +17,7 @@ Checks run on push and pull request:
 
 - Release Please runs manually via workflow dispatch when maintainers want to prepare a release.
 - CI remains automatic for pushes and pull requests.
+
+## Maintainer release docs
+
+- [Release and publish workflow](./release.md)

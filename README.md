@@ -172,6 +172,7 @@ What each part is for:
 - [Theme contract](./docs/theme-contract.md)
 - [Theme Tera guide](./docs/theme-tera.md)
 - [Content model](./docs/content-model.md)
+- [Release and publish workflow](./docs/release.md)
 - [Roadmap](./docs/roadmap.md)
 - [MVP checklist](./docs/mvp-checklist.md)
 - [CI](./docs/ci.md)
