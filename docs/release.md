@@ -15,6 +15,7 @@ This document is for maintainers preparing a Rustipo release and publishing it t
   - `.github/workflows/release-please.yml`
   - `.github/release-please/config.json`
   - `.github/release-please/manifest.json`
+- When a release is created, the workflow also syncs the GitHub release body from the generated Release Please notes.
 - The release PR updates:
   - `Cargo.toml`
   - `CHANGELOG.md`
@@ -52,28 +53,29 @@ cargo package --list
    - manifest update
 8. Merge the release PR.
 9. Trigger the `Release Please` workflow manually again if needed to finalize the tag and GitHub release for the newly merged release commit.
-10. Sync local `master` again.
+10. Confirm the GitHub release page includes the generated notes body, not just the tag and assets.
+11. Sync local `master` again.
 
 ```bash
 git checkout master
 git pull --ff-only origin master
 ```
 
-11. Validate the publishable crate from the merged release state.
+12. Validate the publishable crate from the merged release state.
 
 ```bash
 cargo package --list
 cargo publish --dry-run
 ```
 
-12. Publish to crates.io.
+13. Publish to crates.io.
 
 ```bash
 cargo publish
 ```
 
-13. Verify the published crate version on crates.io.
-14. Verify the corresponding GitHub release and changelog entry.
+14. Verify the published crate version on crates.io.
+15. Verify the corresponding GitHub release and changelog entry.
 
 ## Relationship between release prep and crates.io publish
 
