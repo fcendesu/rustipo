@@ -4,8 +4,40 @@ Rustipo provides the following commands.
 
 ## Installation
 
+Published install:
+
 ```bash
 cargo install rustipo
+```
+
+Local development from the repository:
+
+```bash
+cargo install --path .
+```
+
+or
+
+```bash
+cargo run -- --help
+```
+
+## Quick Start
+
+```bash
+rustipo new my-site
+cd my-site
+rustipo palette list
+rustipo palette use catppuccin-mocha
+rustipo dev
+rustipo build
+```
+
+Theme discovery:
+
+```bash
+rustipo theme list
+rustipo theme install owner/repo
 ```
 
 ## `rustipo new <site-name>`
