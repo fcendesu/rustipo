@@ -2,11 +2,30 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::{Context, Result};
+use chrono::NaiveDate;
 
 use crate::content::pages::model::Page;
 use crate::content::pages::routing::derive_page_meta;
 
-pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PublicationMode {
+    Production,
+    Preview,
+}
+
+pub fn build_pages_for_mode(
+    content_dir: impl AsRef<Path>,
+    publication_mode: PublicationMode,
+) -> Result<Vec<Page>> {
+    let today = chrono::Utc::now().date_naive();
+    build_pages_for_date(content_dir, publication_mode, today)
+}
+
+fn build_pages_for_date(
+    content_dir: impl AsRef<Path>,
+    publication_mode: PublicationMode,
+    today: NaiveDate,
+) -> Result<Vec<Page>> {
     let content_dir = content_dir.as_ref();
     let markdown_files = crate::content::loader::discover_markdown_files(content_dir)?;
 
@@ -19,7 +38,7 @@ pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
         let parsed = crate::content::frontmatter::parse(&raw)
             .with_context(|| format!("failed to parse markdown file: {}", file.display()))?;
 
-        if parsed.frontmatter.draft == Some(true) {
+        if should_exclude_from_output(&parsed.frontmatter, publication_mode, today) {
             continue;
         }
 
@@ -51,4 +70,33 @@ pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
     }
 
     Ok(pages)
+}
+
+fn should_exclude_from_output(
+    frontmatter: &crate::content::frontmatter::Frontmatter,
+    publication_mode: PublicationMode,
+    today: NaiveDate,
+) -> bool {
+    match publication_mode {
+        PublicationMode::Preview => false,
+        PublicationMode::Production => {
+            if frontmatter.draft == Some(true) {
+                return true;
+            }
+
+            frontmatter
+                .date
+                .as_ref()
+                .is_some_and(|date| date.as_naive_date() > today)
+        }
+    }
+}
+
+#[cfg(test)]
+pub(super) fn build_pages_for_test_date(
+    content_dir: impl AsRef<Path>,
+    publication_mode: PublicationMode,
+    today: NaiveDate,
+) -> Result<Vec<Page>> {
+    build_pages_for_date(content_dir, publication_mode, today)
 }
