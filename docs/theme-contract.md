@@ -174,6 +174,19 @@ Rustipo also registers small Tera helpers for theme authors:
 - `asset_url(path="...")` function
 - `tag_url(name="...")` function
 
+### Markdown alert blockquotes
+
+Rustipo renders supported GitHub-style alert blockquotes as normal blockquotes with stable
+classes:
+
+- `markdown-alert-note`
+- `markdown-alert-tip`
+- `markdown-alert-important`
+- `markdown-alert-warning`
+- `markdown-alert-caution`
+
+This keeps admonitions theme-styleable without requiring raw HTML in content.
+
 ### Navigation and page-state details
 
 `site_nav` is an ordered list of objects with:

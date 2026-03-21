@@ -102,6 +102,13 @@
 - inline math parsing
 - block math parsing
 - page-scoped KaTeX runtime injection
+- GitHub-style alert blockquote parsing
+- supported admonition classes
+  - `markdown-alert-note`
+  - `markdown-alert-tip`
+  - `markdown-alert-important`
+  - `markdown-alert-warning`
+  - `markdown-alert-caution`
 - Mermaid fenced code blocks
 - page-scoped Mermaid runtime injection
 - shortcodes

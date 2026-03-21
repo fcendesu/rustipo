@@ -27,6 +27,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
     options.insert(Options::ENABLE_STRIKETHROUGH);
     options.insert(Options::ENABLE_TABLES);
     options.insert(Options::ENABLE_MATH);
+    options.insert(Options::ENABLE_GFM);
 
     let parser = Parser::new_ext(&markdown, options);
     let rendered = replace_code_blocks_with_highlighted_html(parser);
@@ -298,6 +299,32 @@ mod tests {
                 .html
                 .contains("<span class=\"math math-display\">c^2</span>")
         );
+    }
+
+    #[test]
+    fn renders_supported_alert_blockquote() {
+        let rendered = render_html("> [!NOTE]\n> Hello **world**");
+
+        assert!(
+            rendered
+                .html
+                .contains("<blockquote class=\"markdown-alert-note\">")
+        );
+        assert!(
+            rendered
+                .html
+                .contains("<p>Hello <strong>world</strong></p>")
+        );
+        assert!(!rendered.html.contains("[!NOTE]"));
+    }
+
+    #[test]
+    fn unsupported_alert_variant_degrades_to_plain_blockquote() {
+        let rendered = render_html("> [!DANGER]\n> Heads up");
+
+        assert!(rendered.html.contains("<blockquote>"));
+        assert!(rendered.html.contains("[!DANGER]\nHeads up"));
+        assert!(!rendered.html.contains("markdown-alert-"));
     }
 
     #[test]
