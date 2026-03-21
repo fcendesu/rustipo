@@ -19,10 +19,13 @@ Current shipped post-MVP capabilities:
 - refined default typography scale and prose rhythm
 - completed `v0.7.0` adoption and reliability release
 - completed `v0.8.0` core authoring release
+- completed `v0.9.0` publishing and site structure release
 - generated publishing/search artifacts during build:
   - `dist/rss.xml`
   - `dist/sitemap.xml`
   - `dist/search-index.json`
+  - `dist/robots.txt`
+  - `dist/404.html`
 
 For historical post-MVP batch planning, see:
 
@@ -42,27 +45,26 @@ For historical post-MVP batch planning, see:
   - admonitions/callouts
   - improved image ergonomics
   - improved internal link and deep-link ergonomics
+- `v0.9.0`: publishing and site structure
+  - draft and scheduled publishing
+  - configurable menus
+  - breadcrumbs
+  - documented built-in pagination
+  - `robots.txt`
+  - built-in 404 page
 
 ## Upcoming milestones
 
-- `v0.9.0`: publishing and site structure
-  - drafts and scheduled publishing
-  - menus
-  - breadcrumbs
-  - pagination
-  - `robots.txt`
-  - built-in 404 page
-- `v0.10.0`: discovery
+- `v0.10.0`: product identity and examples
+  - broader Rustipo positioning beyond portfolio-only wording
   - flagship example sites
   - more built-in layout themes
-- `v0.11.0`: distribution
+- `v0.11.0`: distribution and docs
   - prebuilt binaries
   - Homebrew distribution
   - docs site built with Rustipo
 
 `#55` should shape the product-story work in `v0.10.0`: Rustipo should be described as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
-
-Small publishing completeness items such as `robots.txt` and a built-in 404 page should stay in `v0.9.0` for now. They are valuable, but they are less urgent than the adoption and authoring work that already shipped in `v0.7.0` and `v0.8.0`.
 
 ## Milestone 1: Foundation
 
