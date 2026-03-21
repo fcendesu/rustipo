@@ -36,6 +36,7 @@ pub(super) fn render_content_pages(
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
         context.insert("page_has_mermaid", &page.has_mermaid);
+        context.insert("page_toc", &page.toc);
         let render_context = CommonRenderContext {
             shared: env.shared,
             route: &page.route,

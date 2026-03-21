@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use crate::content::frontmatter::Frontmatter;
+use crate::content::toc::TocItem;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PageKind {
@@ -19,6 +20,7 @@ pub struct Page {
     pub slug: String,
     pub kind: PageKind,
     pub has_mermaid: bool,
+    pub toc: Vec<TocItem>,
     pub frontmatter: Frontmatter,
     pub markdown: String,
     pub html: String,

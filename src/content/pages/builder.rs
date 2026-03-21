@@ -42,6 +42,7 @@ pub fn build_pages(content_dir: impl AsRef<Path>) -> Result<Vec<Page>> {
             slug: page_meta.slug,
             kind: page_meta.kind,
             has_mermaid: rendered.has_mermaid,
+            toc: rendered.toc,
             frontmatter: parsed.frontmatter,
             markdown: parsed.content,
             html: rendered.html,

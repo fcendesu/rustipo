@@ -150,6 +150,7 @@ Rustipo injects common site variables into template contexts, including:
   - `page_kind`
   - `current_section`
   - `site_nav`
+  - `page_toc`
   - `previous_post`
   - `next_post`
 - favicon helpers: `site_favicon`, `site_favicon_svg`, `site_favicon_ico`, `site_apple_touch_icon`
@@ -194,6 +195,14 @@ They include:
 - `route`
 - `summary`
 - `date`
+
+`page_toc` is an ordered, nested list of heading items for the current page.
+Each item includes:
+
+- `title`
+- `id`
+- `level`
+- `children`
 
 ### Theme authoring conventions
 

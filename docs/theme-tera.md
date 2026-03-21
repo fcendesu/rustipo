@@ -70,6 +70,7 @@ Rustipo injects common values such as:
 - `page_date`
 - `page_summary`
 - `page_tags`
+- `page_toc`
 - `site_title`
 - `site_description`
 - `site_style.*`
@@ -79,6 +80,7 @@ Rustipo also injects stable navigation and page-state values:
 - `page_kind`
 - `current_section`
 - `site_nav`
+- `page_toc`
 - `previous_post`
 - `next_post`
 
@@ -185,6 +187,41 @@ Example:
 <a href="{{ previous_post.route }}">Previous: {{ previous_post.title }}</a>
 {% endif %}
 ```
+
+`page_toc` is a nested list of heading items for the current page. Each item includes:
+
+- `title`
+- `id`
+- `level`
+- `children`
+
+Example:
+
+```html
+{% if page_toc | length > 0 %}
+<aside>
+  <h2>Table of contents</h2>
+  <ul>
+    {% for item in page_toc %}
+    <li>
+      <a href="#{{ item.id }}">{{ item.title }}</a>
+      {% if item.children | length > 0 %}
+      <ul>
+        {% for child in item.children %}
+        <li><a href="#{{ child.id }}">{{ child.title }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</aside>
+{% endif %}
+```
+
+Themes can use the same `page_toc` data for inline TOCs, sticky sidebar TOCs, or mobile
+collapsible outlines. Rustipo only provides the heading tree and stable anchor ids; theme-side
+layout and scroll behavior stay fully customizable.
 
 ## Starter theme structure
 

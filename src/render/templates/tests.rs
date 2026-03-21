@@ -213,14 +213,17 @@ fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
     assert!(
         index
             .html
-            .contains("<main class=\"page-shell\"><h1>Welcome Home</h1>")
+            .contains("<main class=\"page-shell\"><h1 id=\"welcome-home\">Welcome Home</h1>")
     );
 
     let post = rendered
         .iter()
         .find(|page| page.route == "/blog/post/")
         .expect("post page should render");
-    assert!(post.html.contains("<article><h1>Blog Body</h1>"));
+    assert!(
+        post.html
+            .contains("<article><h1 id=\"blog-body\">Blog Body</h1>")
+    );
     assert!(post.html.contains("data-slug=\"my-site\""));
 }
 
@@ -306,6 +309,90 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/page/2/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/archive/"));
+}
+
+#[test]
+fn exposes_page_toc_to_templates() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(
+        project_root.join("content/guide.md"),
+        "---\ntitle: Guide\n---\n\n# Guide\n\n## Install\n\n### Cargo\n\n## Next",
+    )
+    .expect("guide page should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/page.html"),
+        "{% extends \"base.html\" %}{% block body %}<nav data-top=\"{{ page_toc[0].title }}\" data-top-id=\"{{ page_toc[0].id }}\" data-child=\"{{ page_toc[0].children[0].title }}\" data-grandchild=\"{{ page_toc[0].children[0].children[0].title }}\">{{ content_html | safe }}</nav>{% endblock body %}",
+    )
+    .expect("page template should be written");
+    for template in ["index.html", "post.html", "project.html", "section.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let guide = rendered
+        .iter()
+        .find(|page| page.route == "/guide/")
+        .expect("guide page should render");
+
+    assert!(guide.html.contains("data-top=\"Guide\""));
+    assert!(guide.html.contains("data-top-id=\"guide\""));
+    assert!(guide.html.contains("data-child=\"Install\""));
+    assert!(guide.html.contains("data-grandchild=\"Cargo\""));
 }
 
 #[test]
