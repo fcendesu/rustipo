@@ -51,7 +51,7 @@ pub fn render_pages(
     site: &SiteRenderContext<'_>,
 ) -> Result<Vec<RenderedPage>> {
     let tera = load_theme_templates(theme, config)?;
-    let shared = context::build_shared_template_data(pages);
+    let shared = context::build_shared_template_data(pages, config);
     let env = RenderEnvironment {
         config,
         shared: &shared,
