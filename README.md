@@ -1,6 +1,6 @@
 # Rustipo
 
-Rustipo is an open-source, themeable static site generator written in Rust for portfolio websites.
+Rustipo is an open-source, themeable static site generator written in Rust for blogs, notes, docs, personal sites, and other Markdown-first websites.
 
 Rustipo is Markdown-first for content authoring and uses Tera templates for reusable layout.
 Rustipo separates layout from color selection: `theme` controls structure, while `palette`
@@ -25,8 +25,8 @@ MVP complete, active post-MVP development.
 ## Quick Start
 
 ```bash
-cargo run -- new my-portfolio
-cd my-portfolio
+cargo run -- new my-site
+cd my-site
 cargo run -- dev
 ```
 
@@ -106,7 +106,7 @@ Rustipo projects are organized around a simple model:
 Typical project layout:
 
 ```text
-my-portfolio/
+my-site/
   config.toml
   content/
     index.md

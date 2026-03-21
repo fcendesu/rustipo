@@ -4,7 +4,7 @@ This checklist is derived from the acceptance criteria in `rustipo_prd.md`.
 
 ## Acceptance criteria
 
-- [x] `rustipo new my-site` creates a usable starter portfolio project
+- [x] `rustipo new my-site` creates a usable starter site project
 - [x] `rustipo build` converts Markdown content into a static site in `dist/`
 - [x] Generated site includes homepage, about, resume, blog, and projects pages
 - [x] Blog and project entries render with frontmatter metadata

@@ -4,12 +4,12 @@ Rustipo provides the following commands.
 
 ## `rustipo new <site-name>`
 
-Creates a new starter portfolio project directory.
+Creates a new starter Rustipo site project directory.
 
 Example:
 
 ```bash
-rustipo new my-portfolio
+rustipo new my-site
 ```
 
 Current behavior:
