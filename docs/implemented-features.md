@@ -96,6 +96,8 @@
 - project route generation
 - nested custom page route generation
 - nested directory-index route generation
+- internal Markdown link validation
+- deep-link fragment validation for content pages when possible
 - syntax highlighting for fenced code blocks
 - heading anchor ID generation
 - page table of contents extraction

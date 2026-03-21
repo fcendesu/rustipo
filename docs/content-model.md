@@ -82,6 +82,31 @@ For example:
 - slugs are normalized to lowercase kebab-case
 - nested content under `blog/` and `projects/` remains invalid; those sections stay one-level only
 
+## Internal links and deep links
+
+Rustipo supports normal Markdown links for internal navigation:
+
+```md
+[About](/about/)
+[Guide](../guide/)
+[Install section](#install)
+[Guide install](/guide/#install)
+```
+
+Recommended authoring model in v1:
+
+- use root-relative links like `/about/` when you want the clearest and most stable page links
+- use normal relative links when linking within a nested section
+- use `#heading-id` for same-page deep links
+- use `/page/#heading-id` for cross-page deep links
+
+Heading IDs come from heading text and follow the same slugification rules as `page_toc`.
+Duplicate headings are de-duplicated with numeric suffixes such as `-2` and `-3`.
+
+During `rustipo build` and `rustipo check`, Rustipo validates internal Markdown links against
+generated routes and validates heading fragments for content pages when possible.
+External links and asset-like paths are left alone.
+
 ## Draft behavior
 
 Entries with `draft: true` are excluded from production build output.
