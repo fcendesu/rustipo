@@ -20,6 +20,20 @@ content/
     *.md
 ```
 
+## Mental model
+
+Rustipo keeps content and presentation separate:
+
+- Markdown files in `content/` are the source of truth for page writing
+- theme templates define reusable layout
+- palettes define color systems
+- static assets are copied into output
+
+In practice:
+
+- content authors mostly work in `content/` and `config.toml`
+- theme authors work in `themes/<theme>/templates/` and `themes/<theme>/static/`
+
 ## Frontmatter fields
 
 Supported fields for MVP:

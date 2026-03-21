@@ -93,21 +93,64 @@ style = "normal"
 - Config-driven layout knobs (`content_width`, `top_gap`, `vertical_align`, `line_height`)
 - Optional `static/custom.css` override loaded after theme CSS
 
-## Project Layout
+## Anatomy Of A Rustipo Site
+
+Rustipo projects are organized around a simple model:
+
+- Markdown = content
+- themes = layout
+- palettes = colors
+- static = assets
+- dist = generated output
+
+Typical project layout:
 
 ```text
 my-portfolio/
+  config.toml
   content/
     index.md
     about.md
     resume.md
     blog/
     projects/
+  palettes/
+    dracula.toml
   static/
     fonts/
+    img/
+    js/
+    favicon.svg
+    custom.css
   themes/
-  config.toml
+    default/
+      theme.toml
+      templates/
+      static/
+  dist/
 ```
+
+What each part is for:
+
+- `config.toml` is the main site configuration file
+  - site title, description, theme, palette, layout, and typography live here
+- `content/` is where you write Markdown content
+  - each Markdown file becomes a page
+  - `content/index.md` is the homepage
+  - `content/blog/` is for blog posts
+  - `content/projects/` is for project pages
+  - nested custom pages are supported outside `blog/` and `projects/`
+- `themes/` contains reusable layout themes
+  - `templates/` holds Tera HTML templates
+  - `static/` holds theme CSS and theme assets
+  - `theme.toml` describes the theme
+- `palettes/` is for optional local color palettes
+  - built-in palettes are embedded in Rustipo
+  - local palettes let you add your own color systems with `*.toml`
+- `static/` is for user assets copied into the final site
+  - images, fonts, JavaScript, favicons, and optional `custom.css` belong here
+- `dist/` is generated output
+  - Rustipo recreates it when you build
 
 ## Authoring Model
 
