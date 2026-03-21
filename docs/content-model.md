@@ -68,6 +68,8 @@ For example:
 
 - `date` must use strict `YYYY-MM-DD` format.
 - Invalid dates fail frontmatter parsing with a readable error.
+- In production output, future-dated content stays hidden until the current UTC date reaches the
+  configured `date`.
 
 ## URL rules
 
@@ -107,9 +109,14 @@ During `rustipo build` and `rustipo check`, Rustipo validates internal Markdown 
 generated routes and validates heading fragments for content pages when possible.
 External links and asset-like paths are left alone.
 
-## Draft behavior
+## Draft and scheduled publishing behavior
 
-Entries with `draft: true` are excluded from production build output.
+- Entries with `draft: true` are excluded from production build output.
+- Entries with a future `date` are excluded from production build output until the current UTC
+  date reaches that frontmatter value.
+- `rustipo build` and `rustipo check` use production behavior.
+- `rustipo dev` and `rustipo serve --watch` use preview behavior and include drafts and
+  future-dated content locally.
 
 ## Code blocks
 

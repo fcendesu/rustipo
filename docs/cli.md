@@ -56,6 +56,7 @@ Current behavior:
 - Loads the active theme and selected palette
 - Validates configured favicon and local font assets
 - Parses Markdown content and frontmatter
+- Excludes drafts and future-dated content using production rules
 - Renders pages through the theme templates
 - Validates internal Markdown links against generated routes and deep links when possible
 - Validates rendered route/output collisions
@@ -100,6 +101,7 @@ Current behavior:
 
 - Runs the same local workflow as `rustipo serve --watch`
 - Performs an initial build before serving
+- Includes drafts and future-dated content in local preview builds
 - Rebuilds on file changes and triggers live reload after successful rebuilds
 - Uses the same default address as `serve`: `127.0.0.1:3000`
 
@@ -115,7 +117,7 @@ Current behavior:
 - Resolves theme inheritance chain when `extends` is used in `theme.toml`
 - Validates required templates across the resolved theme chain
 - Discovers Markdown files from `content/`
-- Parses frontmatter, validates date format (`YYYY-MM-DD`), and excludes drafts
+- Parses frontmatter, validates date format (`YYYY-MM-DD`), and excludes drafts and future-dated content from production output
 - Converts Markdown to HTML
 - Renders supported shortcodes in Markdown content
 - Applies syntax highlighting to fenced code blocks
@@ -177,6 +179,7 @@ Current behavior:
 - Default address: `127.0.0.1:3000`
 - Supports custom host/port via `--host` and `--port`
 - Supports watch mode with `--watch` (rebuilds on file changes)
+- In watch mode, preview builds include drafts and future-dated content
 - In watch mode, injects live-reload script into HTML responses and auto-refreshes browser after successful rebuild
 - In watch mode, skips rebuild when file content hash is unchanged (reduces no-op save rebuild noise)
 - Prints local URL on startup
