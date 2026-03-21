@@ -12,6 +12,7 @@ use crate::theme::models::Theme;
 mod archive;
 mod context;
 mod helpers;
+mod not_found;
 mod page;
 mod section;
 mod tags;
@@ -64,6 +65,23 @@ pub fn render_pages(
     rendered.extend(tags::render_tag_pages(&tera, pages, &env)?);
 
     Ok(rendered)
+}
+
+pub fn render_not_found_page(
+    theme: &Theme,
+    config: &SiteConfig,
+    pages: &[Page],
+    site: &SiteRenderContext<'_>,
+) -> Result<String> {
+    let tera = load_theme_templates(theme, config)?;
+    let shared = context::build_shared_template_data(pages, config);
+    let env = RenderEnvironment {
+        config,
+        shared: &shared,
+        site,
+    };
+
+    not_found::render_not_found_page(&tera, &env)
 }
 
 fn insert_common_site_context(

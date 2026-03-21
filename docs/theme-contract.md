@@ -25,6 +25,10 @@ For a standalone theme (no parent), include:
 
 For an inherited theme, templates can be provided by parent themes in the inheritance chain.
 
+Optional template:
+
+- `templates/404.html` (used for `dist/404.html`; falls back to `templates/page.html` when absent)
+
 ## `theme.toml` fields
 
 Minimum metadata fields:
