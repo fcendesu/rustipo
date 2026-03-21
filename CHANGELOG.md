@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.6.0...rustipo-v0.7.0) (2026-03-21)
+
+
+### Features
+
+* **cli:** add rustipo check command ([19101db](https://github.com/fcendesu/rustipo/commit/19101dbb052a5581e4e26aa7197f20993bf892c0))
+* **cli:** add rustipo check command ([5688b08](https://github.com/fcendesu/rustipo/commit/5688b08f81423e996428f57db35bf919d4ae1807))
+
+
+### Bug Fixes
+
+* **crate:** shorten crates.io keyword list ([e0c1a4f](https://github.com/fcendesu/rustipo/commit/e0c1a4f35e9dd072c63187a8c480c1b170a05d33))
+* **crate:** shorten crates.io keyword list ([8c294e3](https://github.com/fcendesu/rustipo/commit/8c294e3a74cd5330191e629512d506a1a76b7ff7))
+* **deploy:** generate valid github pages workflow ([184d558](https://github.com/fcendesu/rustipo/commit/184d5582dd023a284fe0c24153080e8f532fa9b0))
+* **deploy:** generate valid github pages workflow ([620ed7b](https://github.com/fcendesu/rustipo/commit/620ed7b5e1ec7bf45b5fb1ef5514be8fa0d0202a))
+
 ## [0.6.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.5.0...rustipo-v0.6.0) (2026-03-20)
 
 
