@@ -223,6 +223,7 @@
 - `current_section`
 - `site_nav`
 - `site_menus`
+- `breadcrumbs`
 - `previous_post`
 - `next_post`
 - `page_has_mermaid`
@@ -256,6 +257,10 @@
   - `menus.main` override for `site_nav`
 - active navigation state
 - standalone page ordering by frontmatter `order`
+- route-derived breadcrumbs
+  - exact-page titles when available
+  - fallback segment titles
+  - `linkable` flag for non-page intermediate segments
 - `previous_post`
 - `next_post`
 

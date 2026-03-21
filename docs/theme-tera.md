@@ -82,6 +82,7 @@ Rustipo also injects stable navigation and page-state values:
 - `current_section`
 - `site_nav`
 - `site_menus`
+- `breadcrumbs`
 - `page_has_math`
 - `page_toc`
 - `previous_post`
@@ -167,6 +168,7 @@ Theme authors can rely on these context keys being present in normal page templa
 - `current_section`: one of `home`, `pages`, `blog`, `projects`, `archive`, `tags`
 - `site_nav`: ordered navigation items with `title`, `route`, `active`
 - `site_menus`: named menus from `config.toml`, exposed as `{ menu_name -> [items...] }`
+- `breadcrumbs`: ordered breadcrumb items with `title`, `route`, `active`, `linkable`
 - `previous_post` / `next_post`: adjacent blog post metadata when rendering a blog post
 
 `previous_post` and `next_post` expose:
@@ -189,6 +191,30 @@ Example:
 
 {% if previous_post %}
 <a href="{{ previous_post.route }}">Previous: {{ previous_post.title }}</a>
+{% endif %}
+```
+
+`breadcrumbs` exposes route-derived breadcrumb items for the current page or section. Themes can
+use `linkable` to avoid rendering dead links for intermediate route segments that do not have a
+real page.
+
+Example:
+
+```html
+{% if breadcrumbs | length > 1 %}
+<nav aria-label="Breadcrumb">
+  <ol>
+    {% for item in breadcrumbs %}
+    <li>
+      {% if item.linkable and not item.active %}
+      <a href="{{ item.route }}">{{ item.title }}</a>
+      {% else %}
+      <span {% if item.active %}aria-current="page"{% endif %}>{{ item.title }}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
 {% endif %}
 ```
 
