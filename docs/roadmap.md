@@ -17,6 +17,8 @@ Current shipped post-MVP capabilities:
 - nested custom pages outside special sections
 - richer Tera helpers/context for theme authors
 - refined default typography scale and prose rhythm
+- completed `v0.7.0` adoption and reliability release
+- completed `v0.8.0` core authoring release
 - generated publishing/search artifacts during build:
   - `dist/rss.xml`
   - `dist/sitemap.xml`
@@ -27,19 +29,22 @@ For historical post-MVP batch planning, see:
 - [v0.4.0 checklist](./v0.4.0-checklist.md)
 - [MVP checklist](./mvp-checklist.md) (includes current post-MVP follow-up note)
 
-## Upcoming milestones
+## Recent releases
 
 - `v0.7.0`: adoption and reliability
   - crates.io publishing
   - installation and quickstart polish
   - `rustipo check`
-  - fix generated GitHub Pages workflow for normal Rustipo sites
+  - GitHub Pages workflow fix for normal Rustipo sites
 - `v0.8.0`: authoring
   - table of contents
   - math rendering
   - admonitions/callouts
   - improved image ergonomics
   - improved internal link and deep-link ergonomics
+
+## Upcoming milestones
+
 - `v0.9.0`: publishing and site structure
   - drafts and scheduled publishing
   - menus
@@ -55,9 +60,9 @@ For historical post-MVP batch planning, see:
   - Homebrew distribution
   - docs site built with Rustipo
 
-`#55` should lightly influence `v0.7.0` docs: installation and quickstart wording should already describe Rustipo as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
+`#55` should shape the product-story work in `v0.10.0`: Rustipo should be described as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
 
-Small publishing completeness items such as `robots.txt` and a built-in 404 page should stay in `v0.9.0` for now. They are valuable, but they are less urgent than the adoption and authoring work in `v0.7.0` and `v0.8.0`.
+Small publishing completeness items such as `robots.txt` and a built-in 404 page should stay in `v0.9.0` for now. They are valuable, but they are less urgent than the adoption and authoring work that already shipped in `v0.7.0` and `v0.8.0`.
 
 ## Milestone 1: Foundation
 
