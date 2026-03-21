@@ -29,8 +29,11 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Rustipo
+        run: cargo install rustipo --locked
+
       - name: Build Site
-        run: cargo run -- build
+        run: rustipo build
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
