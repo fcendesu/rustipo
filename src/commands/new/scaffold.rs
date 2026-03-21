@@ -273,6 +273,66 @@ main blockquote {
   color: var(--rustipo-subtext-1, var(--rustipo-text));
 }
 
+main blockquote[class^="markdown-alert-"] {
+  padding: 0.9rem 1rem 0.85rem;
+  border-left-width: 5px;
+  border-radius: 0 12px 12px 0;
+}
+
+main blockquote[class^="markdown-alert-"]::before {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+main blockquote.markdown-alert-note {
+  border-left-color: var(--rustipo-accent, var(--rustipo-blockquote-border));
+}
+
+main blockquote.markdown-alert-note::before {
+  content: "Note";
+  color: var(--rustipo-accent, var(--rustipo-link));
+}
+
+main blockquote.markdown-alert-tip {
+  border-left-color: var(--rustipo-success, var(--rustipo-accent, var(--rustipo-blockquote-border)));
+}
+
+main blockquote.markdown-alert-tip::before {
+  content: "Tip";
+  color: var(--rustipo-success, var(--rustipo-accent, var(--rustipo-link)));
+}
+
+main blockquote.markdown-alert-important {
+  border-left-color: var(--rustipo-accent-strong, var(--rustipo-accent, var(--rustipo-blockquote-border)));
+}
+
+main blockquote.markdown-alert-important::before {
+  content: "Important";
+  color: var(--rustipo-accent-strong, var(--rustipo-accent, var(--rustipo-link)));
+}
+
+main blockquote.markdown-alert-warning {
+  border-left-color: var(--rustipo-warning, var(--rustipo-accent, var(--rustipo-blockquote-border)));
+}
+
+main blockquote.markdown-alert-warning::before {
+  content: "Warning";
+  color: var(--rustipo-warning, var(--rustipo-accent, var(--rustipo-link)));
+}
+
+main blockquote.markdown-alert-caution {
+  border-left-color: var(--rustipo-danger, var(--rustipo-accent, var(--rustipo-blockquote-border)));
+}
+
+main blockquote.markdown-alert-caution::before {
+  content: "Caution";
+  color: var(--rustipo-danger, var(--rustipo-accent, var(--rustipo-link)));
+}
+
 main hr {
   border: 0;
   border-top: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
