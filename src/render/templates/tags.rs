@@ -75,6 +75,7 @@ pub(super) fn render_tag_pages(
         );
         context.insert("content_html", "");
         context.insert("page_has_mermaid", &false);
+        context.insert("page_has_math", &false);
 
         let html = tera
             .render("section.html", &context)

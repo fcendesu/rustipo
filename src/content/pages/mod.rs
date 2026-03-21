@@ -204,6 +204,33 @@ mod tests {
     }
 
     #[test]
+    fn builds_pages_with_math_flag() {
+        let dir = tempdir().expect("tempdir should be created");
+        let content_dir = dir.path().join("content");
+        fs::create_dir_all(&content_dir).expect("content dir should be created");
+
+        fs::write(
+            content_dir.join("math.md"),
+            "---\ntitle: Math\n---\n\nInline $a^2$.\n\n$$b^2$$",
+        )
+        .expect("math page should be written");
+        fs::write(content_dir.join("plain.md"), "# Plain").expect("plain page should be written");
+
+        let pages = build_pages(&content_dir).expect("build_pages should succeed");
+        let math = pages
+            .iter()
+            .find(|page| page.route == "/math/")
+            .expect("math page should exist");
+        let plain = pages
+            .iter()
+            .find(|page| page.route == "/plain/")
+            .expect("plain page should exist");
+
+        assert!(math.has_math);
+        assert!(!plain.has_math);
+    }
+
+    #[test]
     fn builds_pages_with_toc_data() {
         let dir = tempdir().expect("tempdir should be created");
         let content_dir = dir.path().join("content");

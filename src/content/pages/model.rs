@@ -20,6 +20,7 @@ pub struct Page {
     pub slug: String,
     pub kind: PageKind,
     pub has_mermaid: bool,
+    pub has_math: bool,
     pub toc: Vec<TocItem>,
     pub frontmatter: Frontmatter,
     pub markdown: String,

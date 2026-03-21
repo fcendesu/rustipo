@@ -11,6 +11,19 @@ import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.mi
 mermaid.initialize({ startOnLoad: false });
 await mermaid.run({ querySelector: ".mermaid" });
 </script>"#;
+const MATH_SNIPPET_MARKER: &str = "data-rustipo-math";
+const MATH_STYLESHEET: &str = r#"<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/katex.min.css" data-rustipo-math>"#;
+const MATH_SNIPPET: &str = r#"<script type="module" data-rustipo-math>
+import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/katex.mjs";
+
+for (const node of document.querySelectorAll(".math-inline, .math-display")) {
+  katex.render(node.textContent ?? "", node, {
+    displayMode: node.classList.contains("math-display"),
+    throwOnError: false,
+    output: "htmlAndMathml"
+  });
+}
+</script>"#;
 
 pub(super) fn render_content_pages(
     tera: &Tera,
@@ -36,6 +49,7 @@ pub(super) fn render_content_pages(
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
         context.insert("page_has_mermaid", &page.has_mermaid);
+        context.insert("page_has_math", &page.has_math);
         context.insert("page_toc", &page.toc);
         let render_context = CommonRenderContext {
             shared: env.shared,
@@ -60,6 +74,7 @@ pub(super) fn render_content_pages(
                 page.route
             )
         })?;
+        let html = inject_math_runtime(html, page.has_math);
         let html = inject_mermaid_runtime(html, page.has_mermaid);
 
         rendered.push(RenderedPage {
@@ -76,13 +91,36 @@ fn inject_mermaid_runtime(html: String, page_has_mermaid: bool) -> String {
         return html;
     }
 
+    inject_before_body_end(html, MERMAID_SNIPPET)
+}
+
+fn inject_math_runtime(html: String, page_has_math: bool) -> String {
+    if !page_has_math || html.contains(MATH_SNIPPET_MARKER) {
+        return html;
+    }
+
+    let html = inject_before_head_end(html, MATH_STYLESHEET);
+    inject_before_body_end(html, MATH_SNIPPET)
+}
+
+fn inject_before_head_end(html: String, snippet: &str) -> String {
+    if let Some(pos) = html.rfind("</head>") {
+        let mut output = html;
+        output.insert_str(pos, snippet);
+        output
+    } else {
+        format!("{snippet}{html}")
+    }
+}
+
+fn inject_before_body_end(html: String, snippet: &str) -> String {
     if let Some(pos) = html.rfind("</body>") {
         let mut output = html;
-        output.insert_str(pos, MERMAID_SNIPPET);
+        output.insert_str(pos, snippet);
         output
     } else {
         let mut output = html;
-        output.push_str(MERMAID_SNIPPET);
+        output.push_str(snippet);
         output
     }
 }
