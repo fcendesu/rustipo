@@ -15,6 +15,8 @@ pub struct Cli {
 pub enum Commands {
     /// Create a new site scaffold
     New { site_name: String },
+    /// Validate config, content, themes, palettes, and routes without writing output
+    Check,
     /// Build the site into dist/
     Build,
     /// Build, serve, and watch the site during development
@@ -106,6 +108,16 @@ mod tests {
                 assert_eq!(port, 4000);
             }
             other => panic!("expected dev command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parses_check_command() {
+        let cli = Cli::parse_from(["rustipo", "check"]);
+
+        match cli.command {
+            Commands::Check => {}
+            other => panic!("expected check command, got {other:?}"),
         }
     }
 

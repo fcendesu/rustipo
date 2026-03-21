@@ -1,7 +1,9 @@
 pub mod build;
+pub mod check;
 pub mod deploy;
 pub mod dev;
 pub mod new;
 pub mod palette;
 pub mod serve;
+pub mod site;
 pub mod theme;

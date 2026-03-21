@@ -16,6 +16,7 @@ fn main() -> Result<()> {
 
     match cli.command {
         cli::Commands::New { site_name } => commands::new::run(&site_name),
+        cli::Commands::Check => commands::check::run(),
         cli::Commands::Build => commands::build::run(),
         cli::Commands::Dev { host, port } => commands::dev::run(&host, port),
         cli::Commands::Serve { host, port, watch } => commands::serve::run(&host, port, watch),

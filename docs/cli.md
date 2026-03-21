@@ -33,12 +33,34 @@ rustipo dev
 rustipo build
 ```
 
+Project validation:
+
+```bash
+rustipo check
+```
+
 Theme discovery:
 
 ```bash
 rustipo theme list
 rustipo theme install owner/repo
 ```
+
+## `rustipo check`
+
+Validates project inputs without writing build output.
+
+Current behavior:
+
+- Loads and validates `config.toml`
+- Loads the active theme and selected palette
+- Validates configured favicon and local font assets
+- Parses Markdown content and frontmatter
+- Renders pages through the theme templates
+- Validates rendered route/output collisions
+- Validates generated `palette.css` would not collide with site or theme assets
+- Validates theme and user static asset paths would not collide
+- Exits with non-zero status when validation fails
 
 ## `rustipo new <site-name>`
 
