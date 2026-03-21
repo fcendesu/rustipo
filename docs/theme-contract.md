@@ -150,6 +150,7 @@ Rustipo injects common site variables into template contexts, including:
   - `page_kind`
   - `current_section`
   - `site_nav`
+  - `page_has_math`
   - `page_toc`
   - `previous_post`
   - `next_post`

@@ -70,6 +70,7 @@ Rustipo injects common values such as:
 - `page_date`
 - `page_summary`
 - `page_tags`
+- `page_has_math`
 - `page_toc`
 - `site_title`
 - `site_description`
@@ -80,6 +81,7 @@ Rustipo also injects stable navigation and page-state values:
 - `page_kind`
 - `current_section`
 - `site_nav`
+- `page_has_math`
 - `page_toc`
 - `previous_post`
 - `next_post`
