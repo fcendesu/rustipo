@@ -4,7 +4,7 @@ use clap::{Parser, Subcommand};
 #[command(
     name = "rustipo",
     version,
-    about = "Portfolio-first static site generator"
+    about = "Themeable Markdown-first static site generator"
 )]
 pub struct Cli {
     #[command(subcommand)]

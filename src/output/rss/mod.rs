@@ -66,7 +66,7 @@ mod tests {
             theme: "default".to_string(),
             palette: None,
             menus: None,
-            description: "Portfolio".to_string(),
+            description: "Site".to_string(),
             author: None,
             site: None,
         };
