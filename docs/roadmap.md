@@ -23,6 +23,34 @@ For historical post-MVP batch planning, see:
 - [v0.4.0 checklist](./v0.4.0-checklist.md)
 - [MVP checklist](./mvp-checklist.md) (includes current post-MVP follow-up note)
 
+## Upcoming milestones
+
+- `v0.7.0`: adoption
+  - crates.io publishing
+  - installation and quickstart polish
+  - `rustipo check`
+  - `sitemap.xml` generation
+- `v0.8.0`: authoring
+  - table of contents
+  - math rendering
+  - admonitions/callouts
+  - improved image ergonomics
+- `v0.9.0`: publishing and site structure
+  - drafts and scheduled publishing
+  - feeds
+  - menus
+  - breadcrumbs
+- `v0.10.0`: discovery
+  - lightweight search index
+  - flagship example sites
+  - more built-in layout themes
+- `v0.11.0`: distribution
+  - prebuilt binaries
+  - Homebrew distribution
+  - docs site built with Rustipo
+
+`#55` should lightly influence `v0.7.0` docs: installation and quickstart wording should already describe Rustipo as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
+
 ## Milestone 1: Foundation
 
 - [x] CLI skeleton (`new`, `build`, `serve`, `theme list`)
