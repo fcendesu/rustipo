@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/fcendesu/rustipo"
 homepage = "https://github.com/fcendesu/rustipo"
-keywords = ["static-site-generator", "markdown", "blog", "docs", "tera"]
+keywords = ["ssg", "markdown", "blog", "docs", "tera"]
 categories = ["command-line-utilities", "web-programming"]
 include = [
     "/assets/**",
