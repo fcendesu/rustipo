@@ -20,3 +20,25 @@ jobs:
         with:
           config-file: .github/release-please/config.json
           manifest-file: .github/release-please/manifest.json
+
+      - name: Sync GitHub release notes body
+        if: ${{ steps.release.outputs.release_created == 'true' && steps.release.outputs.tag_name != '' && steps.release.outputs.body != '' }}
+        uses: actions/github-script@v7
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_BODY: ${{ steps.release.outputs.body }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const release = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: process.env.RELEASE_TAG,
+            });
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.data.id,
+              body: process.env.RELEASE_BODY,
+            });
