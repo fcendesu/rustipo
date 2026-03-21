@@ -21,7 +21,13 @@ cargo clippy --all-targets --all-features -- -D warnings
 cargo test
 ```
 
-4. Open a pull request with a clear description.
+4. For changes that affect packaging or release readiness, verify the published crate contents:
+
+```bash
+cargo package --allow-dirty --list
+```
+
+5. Open a pull request with a clear description.
 
 ## Commit format
 
