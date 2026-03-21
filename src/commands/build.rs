@@ -37,6 +37,8 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
         &prepared.config.base_url,
         &prepared.rendered_pages,
     )?;
+    let robots_file =
+        crate::output::robots::write_default_robots_txt("dist", &prepared.config.base_url)?;
     if verbose {
         println!(
             "Generated palette CSS: dist/palette.css ({})",
@@ -46,6 +48,7 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
         println!("Generated RSS items: {}", rss_items);
         println!("Generated search documents: {}", search_documents);
         println!("Generated sitemap URLs: {}", sitemap_urls);
+        println!("Generated crawler guidance: dist/{robots_file}");
         println!("Build completed: dist/");
     }
     Ok(())

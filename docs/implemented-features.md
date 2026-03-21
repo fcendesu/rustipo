@@ -367,6 +367,7 @@
 - generated `dist/rss.xml`
 - generated `dist/sitemap.xml`
 - generated `dist/search-index.json`
+- generated `dist/robots.txt`
 - `/blog/` section index
 - `/projects/` section index
 - `/blog/archive/` page
@@ -385,6 +386,12 @@
 - XML sitemap generation
 - absolute URL generation from `base_url`
 - duplicate route deduplication
+
+## Robots
+
+- default `robots.txt` generation
+- `Allow: /`
+- sitemap location hint
 
 ## Search
 

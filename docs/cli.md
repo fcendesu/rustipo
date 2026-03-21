@@ -156,6 +156,7 @@ Current behavior:
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
 - Generates search index at `dist/search-index.json` from site content
+- Generates `dist/robots.txt` with default crawler guidance and sitemap location
 - Uses a CDN-backed Mermaid ESM runtime in v1
 - Uses a CDN-backed KaTeX ESM runtime in v1
 

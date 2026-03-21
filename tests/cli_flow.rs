@@ -55,6 +55,7 @@ fn new_and_build_generate_expected_output() {
     assert!(project.join("dist/palette.css").is_file());
     assert!(project.join("dist/favicon.svg").is_file());
     assert!(project.join("dist/search-index.json").is_file());
+    assert!(project.join("dist/robots.txt").is_file());
     assert!(
         project
             .join("themes/default/templates/partials/head_assets.html")
@@ -79,6 +80,12 @@ fn new_and_build_generate_expected_output() {
     assert!(style_css.contains("main h4"));
     assert!(style_css.contains("font-size: clamp(2.4rem, 5vw, 3.25rem);"));
     assert!(style_css.contains("max-width: 68ch;"));
+
+    let robots_txt =
+        fs::read_to_string(project.join("dist/robots.txt")).expect("robots.txt should be readable");
+    assert!(robots_txt.contains("User-agent: *"));
+    assert!(robots_txt.contains("Allow: /"));
+    assert!(robots_txt.contains("Sitemap: https://example.com/sitemap.xml"));
 
     let base_template = fs::read_to_string(project.join("themes/default/templates/base.html"))
         .expect("base template should be readable");
