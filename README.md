@@ -22,7 +22,7 @@ MVP complete, active post-MVP development.
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 
-## Quick Start
+## Installation And Quick Start
 
 Install Rustipo:
 
@@ -30,16 +30,47 @@ Install Rustipo:
 cargo install rustipo
 ```
 
+Create a site:
+
 ```bash
 rustipo new my-site
 cd my-site
+```
+
+Choose a palette:
+
+```bash
+rustipo palette list
+rustipo palette use catppuccin-mocha
+```
+
+Preview locally:
+
+```bash
 rustipo dev
 ```
 
-Production build:
+Build static output:
 
 ```bash
 rustipo build
+```
+
+Theme discovery:
+
+```bash
+rustipo theme list
+rustipo theme install owner/repo
+```
+
+## Local Development From The Repository
+
+If you are working on Rustipo itself instead of the published crate:
+
+```bash
+cargo run -- new my-site
+cd my-site
+../target/debug/rustipo dev
 ```
 
 ## Layout Without CSS Editing
