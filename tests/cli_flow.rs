@@ -149,6 +149,44 @@ fn check_fails_for_missing_configured_favicon() {
 }
 
 #[test]
+fn check_fails_for_broken_internal_deep_link() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::write(
+        project.join("content/index.md"),
+        "# Home\n\n[Missing section](/about/#missing-heading)\n",
+    )
+    .expect("index should be updated");
+    fs::write(
+        project.join("content/about.md"),
+        "# About\n\n## Real heading\n",
+    )
+    .expect("about should be updated");
+
+    let output = run_cli(&project, &["check"]);
+    assert!(!output.status.success(), "check should fail");
+
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("invalid deep link"),
+        "unexpected stderr: {stderr}"
+    );
+    assert!(
+        stderr.contains("missing-heading"),
+        "unexpected stderr: {stderr}"
+    );
+}
+
+#[test]
 fn new_scaffold_includes_builtin_palettes() {
     let dir = tempdir().expect("tempdir should be created");
     let root = dir.path();
