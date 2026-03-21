@@ -67,3 +67,4 @@ For historical post-MVP batch planning, see:
   - more helper functions/filters
   - stronger macro/partial conventions and examples
 - continue growing the layout theme ecosystem now that palette/font foundations are in place
+- evaluate optional SCSS support for theme authoring while keeping plain CSS as the default
