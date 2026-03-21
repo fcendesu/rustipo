@@ -2,13 +2,29 @@
 name = "rustipo"
 version = "0.6.0"
 edition = "2024"
-description = "Themeable static site generator for portfolio websites"
+description = "Themeable Markdown-first static site generator for blogs, notes, docs, and personal sites"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/fcendesu/rustipo"
 homepage = "https://github.com/fcendesu/rustipo"
-keywords = ["static-site-generator", "portfolio", "markdown", "rust"]
+keywords = ["static-site-generator", "markdown", "blog", "docs", "tera"]
 categories = ["command-line-utilities", "web-programming"]
+include = [
+    "/assets/**",
+    "/docs/**",
+    "/examples/basic-portfolio/config.toml",
+    "/examples/basic-portfolio/content/**",
+    "/examples/basic-portfolio/themes/**",
+    "/src/**",
+    "/tests/**",
+    "/CHANGELOG.md",
+    "/CODE_OF_CONDUCT.md",
+    "/CONTRIBUTING.md",
+    "/Cargo.lock",
+    "/Cargo.toml",
+    "/LICENSE.md",
+    "/README.md",
+]
 
 [dependencies]
 anyhow = "1.0.102"
