@@ -64,6 +64,16 @@ impl<'a> PendingHeading<'a> {
     }
 }
 
+struct PendingParagraph<'a> {
+    events: Vec<Event<'a>>,
+}
+
+impl<'a> PendingParagraph<'a> {
+    fn new() -> Self {
+        Self { events: Vec::new() }
+    }
+}
+
 fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBlockRenderResult<'a> {
     let mut events = Vec::new();
     let mut in_code_block = false;
@@ -72,6 +82,7 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
     let mut has_mermaid = false;
     let mut has_math = false;
     let mut pending_heading: Option<PendingHeading<'a>> = None;
+    let mut pending_paragraph: Option<PendingParagraph<'a>> = None;
     let mut heading_ids = BTreeMap::new();
     let mut toc_entries = Vec::new();
 
@@ -90,6 +101,25 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
                     append_heading_text(&mut heading.plain_text, &event);
                     heading.events.push(event);
                 }
+            }
+            continue;
+        }
+
+        if let Some(paragraph) = pending_paragraph.as_mut() {
+            match event {
+                Event::End(TagEnd::Paragraph) => {
+                    let paragraph = pending_paragraph
+                        .take()
+                        .expect("pending paragraph should exist");
+                    events.push(Event::Html(CowStr::Boxed(
+                        render_paragraph(paragraph.events).into_boxed_str(),
+                    )));
+                }
+                Event::InlineMath(_) | Event::DisplayMath(_) => {
+                    has_math = true;
+                    paragraph.events.push(event);
+                }
+                _ => paragraph.events.push(event),
             }
             continue;
         }
@@ -133,6 +163,9 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
             Event::Start(Tag::Heading { level, .. }) => {
                 pending_heading = Some(PendingHeading::new(level));
             }
+            Event::Start(Tag::Paragraph) => {
+                pending_paragraph = Some(PendingParagraph::new());
+            }
             Event::InlineMath(_) | Event::DisplayMath(_) => {
                 has_math = true;
                 events.push(event);
@@ -146,6 +179,164 @@ fn replace_code_blocks_with_highlighted_html<'a>(parser: Parser<'a>) -> CodeBloc
         has_mermaid,
         has_math,
         toc: build_nested_toc(toc_entries),
+    }
+}
+
+fn render_paragraph<'a>(paragraph_events: Vec<Event<'a>>) -> String {
+    try_render_standalone_image(&paragraph_events).unwrap_or_else(|| {
+        let mut html_output = String::new();
+        let mut events = Vec::with_capacity(paragraph_events.len() + 2);
+        events.push(Event::Start(Tag::Paragraph));
+        events.extend(paragraph_events);
+        events.push(Event::End(TagEnd::Paragraph));
+        html::push_html(&mut html_output, events.into_iter());
+        html_output
+    })
+}
+
+fn try_render_standalone_image(paragraph_events: &[Event<'_>]) -> Option<String> {
+    let mut events = paragraph_events.iter();
+    let first = events.next()?;
+    let Event::Start(Tag::Image {
+        dest_url, title, ..
+    }) = first
+    else {
+        return None;
+    };
+
+    let mut alt = String::new();
+    loop {
+        match events.next()? {
+            Event::End(TagEnd::Image) => break,
+            Event::Text(text)
+            | Event::Code(text)
+            | Event::InlineMath(text)
+            | Event::DisplayMath(text)
+            | Event::FootnoteReference(text) => alt.push_str(text),
+            Event::SoftBreak | Event::HardBreak => alt.push(' '),
+            Event::Start(_) | Event::End(_) => {}
+            _ => return None,
+        }
+    }
+
+    if events.next().is_some() {
+        return None;
+    }
+
+    let title = parse_image_title(title.as_ref());
+    let mut classes = vec!["markdown-image"];
+    if let Some(size) = title.size_class() {
+        classes.push(size);
+    }
+    if let Some(alignment) = title.align_class() {
+        classes.push(alignment);
+    }
+
+    let escaped_src = escape_html_attr(dest_url.as_ref());
+    let escaped_alt = escape_html_attr(alt.trim());
+    let mut html_output = format!(
+        "<figure class=\"{}\"><img class=\"markdown-image-img\" src=\"{}\" alt=\"{}\" loading=\"lazy\" decoding=\"async\" />",
+        classes.join(" "),
+        escaped_src,
+        escaped_alt,
+    );
+
+    if let Some(caption) = title.caption {
+        html_output.push_str(&format!(
+            "<figcaption class=\"markdown-image-caption\">{}</figcaption>",
+            escape_html(&caption)
+        ));
+    }
+
+    html_output.push_str("</figure>");
+    Some(html_output)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ParsedImageTitle {
+    caption: Option<String>,
+    alignment: Option<ImageAlignment>,
+    size: Option<ImageSize>,
+}
+
+impl ParsedImageTitle {
+    fn align_class(&self) -> Option<&'static str> {
+        self.alignment.map(|alignment| match alignment {
+            ImageAlignment::Left => "markdown-image-left",
+            ImageAlignment::Center => "markdown-image-center",
+            ImageAlignment::Right => "markdown-image-right",
+        })
+    }
+
+    fn size_class(&self) -> Option<&'static str> {
+        self.size.map(|size| match size {
+            ImageSize::Wide => "markdown-image-wide",
+            ImageSize::Full => "markdown-image-full",
+        })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ImageAlignment {
+    Left,
+    Center,
+    Right,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ImageSize {
+    Wide,
+    Full,
+}
+
+fn parse_image_title(title: &str) -> ParsedImageTitle {
+    let trimmed = title.trim();
+    if trimmed.is_empty() {
+        return ParsedImageTitle {
+            caption: None,
+            alignment: None,
+            size: None,
+        };
+    }
+
+    let Some(directive_end) = trimmed.strip_prefix('{').and_then(|rest| rest.find('}')) else {
+        return ParsedImageTitle {
+            caption: Some(trimmed.to_string()),
+            alignment: None,
+            size: None,
+        };
+    };
+
+    let directives = &trimmed[1..=directive_end];
+    let mut alignment = None;
+    let mut size = None;
+
+    for token in directives
+        .trim_end_matches('}')
+        .split(|ch: char| ch == ',' || ch.is_ascii_whitespace())
+        .filter(|token| !token.is_empty())
+    {
+        match token {
+            "left" => alignment = Some(ImageAlignment::Left),
+            "center" => alignment = Some(ImageAlignment::Center),
+            "right" => alignment = Some(ImageAlignment::Right),
+            "wide" => size = Some(ImageSize::Wide),
+            "full" => size = Some(ImageSize::Full),
+            _ => {
+                return ParsedImageTitle {
+                    caption: Some(trimmed.to_string()),
+                    alignment: None,
+                    size: None,
+                };
+            }
+        }
+    }
+
+    let caption = trimmed[directive_end + 2..].trim();
+    ParsedImageTitle {
+        caption: (!caption.is_empty()).then(|| caption.to_string()),
+        alignment,
+        size,
     }
 }
 
@@ -241,6 +432,10 @@ fn escape_html(input: &str) -> String {
         .replace('>', "&gt;")
 }
 
+fn escape_html_attr(input: &str) -> String {
+    escape_html(input).replace('"', "&quot;")
+}
+
 #[cfg(test)]
 mod tests {
     use syntect::highlighting::ThemeSet;
@@ -325,6 +520,58 @@ mod tests {
         assert!(rendered.html.contains("<blockquote>"));
         assert!(rendered.html.contains("[!DANGER]\nHeads up"));
         assert!(!rendered.html.contains("markdown-alert-"));
+    }
+
+    #[test]
+    fn renders_standalone_image_as_figure_with_caption() {
+        let rendered = render_html("![A lighthouse](/img/lighthouse.jpg \"Lighthouse at dusk\")");
+
+        assert!(rendered.html.contains("<figure class=\"markdown-image\">"));
+        assert!(rendered.html.contains(
+            "src=\"/img/lighthouse.jpg\" alt=\"A lighthouse\" loading=\"lazy\" decoding=\"async\""
+        ));
+        assert!(rendered.html.contains(
+            "<figcaption class=\"markdown-image-caption\">Lighthouse at dusk</figcaption>"
+        ));
+        assert!(!rendered.html.contains("<p><img"));
+    }
+
+    #[test]
+    fn supports_standalone_image_size_and_alignment_directives() {
+        let rendered = render_html("![JPEG flow](/img/jpeg.png \"{wide right} JPEG pipeline\")");
+
+        assert!(rendered.html.contains(
+            "<figure class=\"markdown-image markdown-image-wide markdown-image-right\">"
+        ));
+        assert!(
+            rendered.html.contains(
+                "<figcaption class=\"markdown-image-caption\">JPEG pipeline</figcaption>"
+            )
+        );
+    }
+
+    #[test]
+    fn unknown_image_directive_degrades_to_plain_caption() {
+        let rendered = render_html("![Diagram](/img/diagram.png \"{giant} Diagram overview\")");
+
+        assert!(rendered.html.contains("<figure class=\"markdown-image\">"));
+        assert!(rendered.html.contains(
+            "<figcaption class=\"markdown-image-caption\">{giant} Diagram overview</figcaption>"
+        ));
+        assert!(!rendered.html.contains("markdown-image-wide"));
+        assert!(!rendered.html.contains("markdown-image-full"));
+    }
+
+    #[test]
+    fn keeps_inline_images_inside_paragraphs() {
+        let rendered = render_html("Look at ![this chart](/img/chart.png) here.");
+
+        assert!(
+            rendered
+                .html
+                .contains("<p>Look at <img src=\"/img/chart.png\" alt=\"this chart\" /> here.</p>")
+        );
+        assert!(!rendered.html.contains("<figure class=\"markdown-image\">"));
     }
 
     #[test]

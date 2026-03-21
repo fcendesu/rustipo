@@ -333,6 +333,56 @@ main blockquote.markdown-alert-caution::before {
   color: var(--rustipo-danger, var(--rustipo-accent, var(--rustipo-link)));
 }
 
+main img {
+  max-width: 100%;
+  height: auto;
+}
+
+main figure.markdown-image {
+  width: 100%;
+  margin: 1.6rem auto;
+}
+
+main > figure.markdown-image {
+  max-width: min(100%, 68ch);
+}
+
+main figure.markdown-image.markdown-image-wide {
+  max-width: min(100%, 82ch);
+}
+
+main figure.markdown-image.markdown-image-full {
+  max-width: 100%;
+}
+
+main figure.markdown-image.markdown-image-left {
+  margin-inline: 0 auto;
+}
+
+main figure.markdown-image.markdown-image-center {
+  margin-inline: auto;
+}
+
+main figure.markdown-image.markdown-image-right {
+  margin-inline: auto 0;
+}
+
+main .markdown-image-img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
+  background: var(--rustipo-surface-0, var(--rustipo-surface-muted));
+}
+
+main .markdown-image-caption {
+  margin-top: 0.7rem;
+  font-size: 0.94rem;
+  line-height: 1.45;
+  color: var(--rustipo-subtext-0, var(--rustipo-text));
+  text-align: center;
+}
+
 main hr {
   border: 0;
   border-top: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
