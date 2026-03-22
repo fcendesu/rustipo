@@ -34,6 +34,8 @@
   - `aarch64-apple-darwin`
   - `x86_64-pc-windows-msvc`
 - release checksum file generation
+- Homebrew tap formula
+- Homebrew formula update helper script
 
 ## Project Structure
 
