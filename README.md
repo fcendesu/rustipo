@@ -25,11 +25,22 @@ MVP complete, active post-MVP development.
 
 ## Installation And Quick Start
 
-Install Rustipo:
+Install Rustipo from crates.io:
 
 ```bash
 cargo install rustipo
 ```
+
+Install a prebuilt binary from the GitHub releases page:
+
+- Linux x86_64: `x86_64-unknown-linux-gnu`
+- macOS Intel: `x86_64-apple-darwin`
+- macOS Apple Silicon: `aarch64-apple-darwin`
+- Windows x86_64: `x86_64-pc-windows-msvc`
+
+1. Download the archive for your platform from [GitHub Releases](https://github.com/fcendesu/rustipo/releases).
+2. Extract it.
+3. Move `rustipo` (or `rustipo.exe`) somewhere on your `PATH`.
 
 Create a site:
 

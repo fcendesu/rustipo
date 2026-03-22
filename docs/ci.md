@@ -16,6 +16,7 @@ Checks run on push and pull request:
 ## Release cadence
 
 - Release Please runs manually via workflow dispatch when maintainers want to prepare a release.
+- When a release is created, the same workflow also builds prebuilt binaries for the main supported targets and uploads them, plus a checksum file, to the GitHub release.
 - CI remains automatic for pushes and pull requests.
 
 ## Maintainer release docs

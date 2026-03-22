@@ -23,6 +23,18 @@
 - `rustipo deploy github-pages`
   - `--force`
 
+## Distribution And Release
+
+- crates.io publication
+- GitHub release generation
+- GitHub release notes synchronization
+- prebuilt release archives
+  - `x86_64-unknown-linux-gnu`
+  - `x86_64-apple-darwin`
+  - `aarch64-apple-darwin`
+  - `x86_64-pc-windows-msvc`
+- release checksum file generation
+
 ## Project Structure
 
 - `config.toml`
