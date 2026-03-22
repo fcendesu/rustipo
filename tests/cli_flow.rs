@@ -461,6 +461,14 @@ fn theme_list_reads_local_theme_metadata() {
         stdout.contains("default (0.1.0)"),
         "unexpected stdout: {stdout}"
     );
+    assert!(
+        stdout.contains("journal -> Journal (0.1.0)"),
+        "unexpected stdout: {stdout}"
+    );
+    assert!(
+        stdout.contains("atlas -> Atlas (0.1.0)"),
+        "unexpected stdout: {stdout}"
+    );
 }
 
 #[test]

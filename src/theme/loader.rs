@@ -4,7 +4,8 @@ use std::path::Path;
 
 use anyhow::{Context, Result, bail};
 
-use crate::theme::models::{Theme, ThemeMetadata, ThemeSummary};
+use crate::theme::builtin::{list_builtin_themes, materialize_builtin_theme};
+use crate::theme::models::{Theme, ThemeMetadata, ThemeSource, ThemeSummary};
 
 const REQUIRED_TEMPLATES: &[&str] = &[
     "base.html",
@@ -31,21 +32,24 @@ pub fn load_active_theme(project_root: impl AsRef<Path>, theme_name: &str) -> Re
     let theme_index = build_theme_index(&discovered)?;
     let mut layers = Vec::new();
     let mut visited = HashSet::new();
-    let mut current = resolve_theme_directory_name(theme_name, &theme_index)?.to_string();
+    let mut current = resolve_theme_summary(theme_name, &theme_index)?
+        .directory_name
+        .clone();
 
     loop {
         if !visited.insert(current.clone()) {
             bail!("theme inheritance cycle detected at: {current}");
         }
 
-        let layer = load_theme_layer(project_root, &current)?;
+        let summary = resolve_theme_summary(&current, &theme_index)?;
+        let layer = load_theme_layer(project_root, summary)?;
         let next = layer
             .metadata
             .extends
             .as_deref()
-            .map(|parent| resolve_theme_directory_name(parent, &theme_index))
+            .map(|parent| resolve_theme_summary(parent, &theme_index))
             .transpose()?
-            .map(str::to_string);
+            .map(|summary| summary.directory_name.clone());
         layers.push(layer);
 
         match next {
@@ -102,31 +106,32 @@ struct ThemeLayer {
     metadata: ThemeMetadata,
 }
 
-fn load_theme_layer(project_root: &Path, theme_name: &str) -> Result<ThemeLayer> {
-    let root_dir = project_root.join("themes").join(theme_name);
+fn load_theme_layer(project_root: &Path, summary: &ThemeSummary) -> Result<ThemeLayer> {
+    let root_dir = match summary.source {
+        ThemeSource::BuiltIn => materialize_builtin_theme(&summary.directory_name)?,
+        ThemeSource::Local => project_root.join("themes").join(&summary.directory_name),
+    };
     if !root_dir.is_dir() {
         bail!("active theme not found: {}", root_dir.display());
     }
-
-    let metadata_path = root_dir.join("theme.toml");
-    let metadata_raw = fs::read_to_string(&metadata_path)
-        .with_context(|| format!("failed to read theme metadata: {}", metadata_path.display()))?;
-    let metadata = toml::from_str::<ThemeMetadata>(&metadata_raw).with_context(|| {
-        format!(
-            "failed to parse theme metadata: {}",
-            metadata_path.display()
-        )
-    })?;
 
     Ok(ThemeLayer {
         templates_dir: root_dir.join("templates"),
         static_dir: root_dir.join("static"),
         root_dir,
-        metadata,
+        metadata: summary.metadata.clone(),
     })
 }
 
 fn discover_theme_summaries(project_root: impl AsRef<Path>) -> Result<Vec<ThemeSummary>> {
+    let mut themes = list_builtin_themes()?;
+    themes.extend(discover_local_theme_summaries(project_root)?);
+    ensure_unique_theme_ids(&themes)?;
+    build_theme_index(&themes)?;
+    Ok(themes)
+}
+
+fn discover_local_theme_summaries(project_root: impl AsRef<Path>) -> Result<Vec<ThemeSummary>> {
     let themes_dir = project_root.as_ref().join("themes");
     if !themes_dir.is_dir() {
         return Ok(Vec::new());
@@ -153,33 +158,35 @@ fn discover_theme_summaries(project_root: impl AsRef<Path>) -> Result<Vec<ThemeS
             continue;
         }
 
-        let metadata_raw = fs::read_to_string(&metadata_path).with_context(|| {
-            format!("failed to read theme metadata: {}", metadata_path.display())
-        })?;
-        let metadata = toml::from_str::<ThemeMetadata>(&metadata_raw).with_context(|| {
-            format!(
-                "failed to parse theme metadata: {}",
-                metadata_path.display()
-            )
-        })?;
-
         let directory_name = path
             .file_name()
             .and_then(|name| name.to_str())
             .context("invalid theme directory name")?
             .to_string();
+        let metadata = read_theme_metadata(&metadata_path)?;
         let theme_id = resolved_theme_id(&metadata, &directory_name);
         validate_theme_id(&theme_id, &metadata_path)?;
 
         themes.push(ThemeSummary {
             theme_id,
             directory_name,
+            source: ThemeSource::Local,
             metadata,
         });
     }
 
-    ensure_unique_theme_ids(&themes)?;
     Ok(themes)
+}
+
+fn read_theme_metadata(metadata_path: &Path) -> Result<ThemeMetadata> {
+    let metadata_raw = fs::read_to_string(metadata_path)
+        .with_context(|| format!("failed to read theme metadata: {}", metadata_path.display()))?;
+    toml::from_str::<ThemeMetadata>(&metadata_raw).with_context(|| {
+        format!(
+            "failed to parse theme metadata: {}",
+            metadata_path.display()
+        )
+    })
 }
 
 fn resolved_theme_id(metadata: &ThemeMetadata, directory_name: &str) -> String {
@@ -229,17 +236,26 @@ fn ensure_unique_theme_ids(themes: &[ThemeSummary]) -> Result<()> {
     Ok(())
 }
 
-fn build_theme_index(themes: &[ThemeSummary]) -> Result<HashMap<&str, &str>> {
+fn build_theme_index(themes: &[ThemeSummary]) -> Result<HashMap<&str, &ThemeSummary>> {
     let mut index = HashMap::new();
     for theme in themes {
-        index.insert(theme.directory_name.as_str(), theme.directory_name.as_str());
-        if let Some(existing) = index.insert(theme.theme_id.as_str(), theme.directory_name.as_str())
-            && existing != theme.directory_name
+        if let Some(existing) = index.insert(theme.directory_name.as_str(), theme)
+            && existing.directory_name != theme.directory_name
+        {
+            bail!(
+                "theme reference '{}' is ambiguous between '{}' and '{}'",
+                theme.directory_name,
+                existing.directory_name,
+                theme.directory_name
+            );
+        }
+        if let Some(existing) = index.insert(theme.theme_id.as_str(), theme)
+            && existing.directory_name != theme.directory_name
         {
             bail!(
                 "theme reference '{}' is ambiguous between '{}' and '{}'",
                 theme.theme_id,
-                existing,
+                existing.directory_name,
                 theme.directory_name
             );
         }
@@ -247,10 +263,10 @@ fn build_theme_index(themes: &[ThemeSummary]) -> Result<HashMap<&str, &str>> {
     Ok(index)
 }
 
-fn resolve_theme_directory_name<'a>(
+fn resolve_theme_summary<'a>(
     theme_reference: &str,
-    index: &'a HashMap<&'a str, &'a str>,
-) -> Result<&'a str> {
+    index: &'a HashMap<&'a str, &'a ThemeSummary>,
+) -> Result<&'a ThemeSummary> {
     index
         .get(theme_reference)
         .copied()
@@ -263,6 +279,8 @@ mod tests {
     use std::path::Path;
 
     use tempfile::tempdir;
+
+    use crate::theme::models::ThemeSource;
 
     use super::{REQUIRED_TEMPLATES, list_installed_themes, load_active_theme};
 
@@ -432,11 +450,14 @@ mod tests {
         .expect("dark theme metadata should be written");
 
         let themes = list_installed_themes(project_root).expect("theme listing should succeed");
-        assert_eq!(themes.len(), 2);
-        assert_eq!(themes[0].theme_id, "catppuccin-mocha");
-        assert_eq!(themes[0].metadata.name, "Catppuccin Mocha");
-        assert_eq!(themes[1].theme_id, "tokyonight-storm");
-        assert_eq!(themes[1].metadata.name, "Tokyo Night Storm");
+        let theme_ids = themes
+            .iter()
+            .map(|theme| theme.theme_id.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            theme_ids,
+            vec!["atlas", "catppuccin-mocha", "journal", "tokyonight-storm"]
+        );
     }
 
     #[test]
@@ -501,6 +522,51 @@ mod tests {
             error
                 .to_string()
                 .contains("theme id must use lowercase kebab-case ASCII")
+        );
+    }
+
+    #[test]
+    fn errors_when_local_theme_id_collides_with_built_in_theme() {
+        let dir = tempdir().expect("tempdir should be created");
+        let project_root = dir.path();
+
+        let theme_root = project_root.join("themes/custom");
+        fs::create_dir_all(&theme_root).expect("theme dir should be created");
+        fs::write(
+            theme_root.join("theme.toml"),
+            "id = \"journal\"\nname = \"Custom Journal\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Theme\"\n",
+        )
+        .expect("metadata should be written");
+
+        let error = list_installed_themes(project_root).expect_err("duplicate id should fail");
+        assert!(error.to_string().contains("duplicate theme id 'journal'"));
+    }
+
+    #[test]
+    fn lists_built_in_themes_without_local_theme_directory() {
+        let dir = tempdir().expect("tempdir should be created");
+        let themes = list_installed_themes(dir.path()).expect("theme listing should succeed");
+
+        assert_eq!(themes.len(), 2);
+        assert_eq!(themes[0].theme_id, "atlas");
+        assert_eq!(themes[0].source, ThemeSource::BuiltIn);
+        assert_eq!(themes[1].theme_id, "journal");
+        assert_eq!(themes[1].source, ThemeSource::BuiltIn);
+    }
+
+    #[test]
+    fn loads_built_in_theme_without_local_theme_directory() {
+        let dir = tempdir().expect("tempdir should be created");
+        let project_root = dir.path();
+
+        let theme = load_active_theme(project_root, "journal").expect("theme should load");
+        assert_eq!(theme.metadata.name, "Journal");
+        assert!(
+            theme
+                .template_dirs
+                .last()
+                .expect("theme should have templates")
+                .ends_with(Path::new("journal/templates"))
         );
     }
 }

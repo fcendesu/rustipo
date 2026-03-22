@@ -64,6 +64,11 @@ rustipo theme list
 rustipo theme install owner/repo
 ```
 
+Current built-in themes:
+
+- `atlas`
+- `journal`
+
 ## Local Development From The Repository
 
 If you are working on Rustipo itself instead of the published crate:

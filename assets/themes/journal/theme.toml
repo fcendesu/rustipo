@@ -1,0 +1,5 @@
+id = "journal"
+name = "Journal"
+version = "0.1.0"
+author = "Rustipo"
+description = "Editorial built-in theme for blogs and long-form writing"

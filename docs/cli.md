@@ -193,8 +193,9 @@ Lists available themes.
 
 Current behavior:
 
-- Reads installed themes from `themes/*/theme.toml`
-- Prints selectable theme ID, name, version, description, and directory name
+- Lists built-in themes shipped with Rustipo
+- Lists local themes from `themes/*/theme.toml` when present
+- Prints selectable theme ID, name, version, description, and source (`built-in` or local directory name)
 - Theme IDs use lowercase kebab-case; variant themes should use `family-variant`
 
 Config example:
@@ -202,6 +203,11 @@ Config example:
 ```toml
 theme = "default"
 ```
+
+Current built-in themes:
+
+- `atlas`
+- `journal`
 
 ## `rustipo palette list`
 
