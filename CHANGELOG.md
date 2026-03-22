@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.9.0...rustipo-v0.10.0) (2026-03-22)
+
+
+### Features
+
+* **examples:** add flagship journal and knowledge-base sites ([376016a](https://github.com/fcendesu/rustipo/commit/376016af77ae9e71ef401897fbaf283de9c11852))
+* **theme:** add built-in atlas and journal themes ([5a12f7e](https://github.com/fcendesu/rustipo/commit/5a12f7e0166ce262db023f7ee2255443e1178f87))
+
+
+### Bug Fixes
+
+* **ci:** sync github release notes body ([7892315](https://github.com/fcendesu/rustipo/commit/78923157044a7598f0fea97d7a9ad91e973f4ed2))
+
 ## [0.9.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.8.0...rustipo-v0.9.0) (2026-03-21)
 
 
