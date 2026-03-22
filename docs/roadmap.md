@@ -20,6 +20,9 @@ Current shipped post-MVP capabilities:
 - completed `v0.7.0` adoption and reliability release
 - completed `v0.8.0` core authoring release
 - completed `v0.9.0` publishing and site structure release
+- completed `v0.10.0` product identity and examples release
+- flagship example sites for blog and docs-style use cases
+- built-in `atlas` and `journal` layout themes
 - generated publishing/search artifacts during build:
   - `dist/rss.xml`
   - `dist/sitemap.xml`
@@ -52,19 +55,17 @@ For historical post-MVP batch planning, see:
   - documented built-in pagination
   - `robots.txt`
   - built-in 404 page
+- `v0.10.0`: product identity and examples
+  - broader Markdown-first site-generator positioning
+  - flagship `journal` and `knowledge-base` examples
+  - built-in `atlas` and `journal` layout themes
 
 ## Upcoming milestones
 
-- `v0.10.0`: product identity and examples
-  - broader Rustipo positioning beyond portfolio-only wording
-  - flagship example sites
-  - more built-in layout themes
 - `v0.11.0`: distribution and docs
+  - docs site built with Rustipo
   - prebuilt binaries
   - Homebrew distribution
-  - docs site built with Rustipo
-
-`#55` should shape the product-story work in `v0.10.0`: Rustipo should be described as a broader Markdown-first static site generator, with portfolio sites treated as one supported use case rather than the product's whole identity.
 
 ## Milestone 1: Foundation
 
