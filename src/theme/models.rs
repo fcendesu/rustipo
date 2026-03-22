@@ -2,6 +2,21 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ThemeSource {
+    BuiltIn,
+    Local,
+}
+
+impl ThemeSource {
+    pub fn label(self, directory_name: &str) -> String {
+        match self {
+            Self::BuiltIn => "built-in".to_string(),
+            Self::Local => directory_name.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct ThemeMetadata {
     pub id: Option<String>,
@@ -18,6 +33,7 @@ pub struct ThemeMetadata {
 pub struct ThemeSummary {
     pub theme_id: String,
     pub directory_name: String,
+    pub source: ThemeSource,
     pub metadata: ThemeMetadata,
 }
 

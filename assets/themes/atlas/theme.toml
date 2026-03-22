@@ -1,0 +1,5 @@
+id = "atlas"
+name = "Atlas"
+version = "0.1.0"
+author = "Rustipo"
+description = "Documentation-focused built-in theme for notes, guides, and nested pages"
