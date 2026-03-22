@@ -15,7 +15,8 @@ This document is for maintainers preparing a Rustipo release and publishing it t
   - `.github/workflows/release-please.yml`
   - `.github/release-please/config.json`
   - `.github/release-please/manifest.json`
-- When a release is created, the workflow also syncs the GitHub release body from the generated Release Please notes.
+- When a release is created, the workflow syncs the GitHub release body from the generated Release Please notes.
+- The same workflow builds prebuilt binary archives for the main supported targets and uploads them, plus a SHA-256 checksum file, to the GitHub release.
 - The release PR updates:
   - `Cargo.toml`
   - `CHANGELOG.md`
@@ -53,29 +54,30 @@ cargo package --list
    - manifest update
 8. Merge the release PR.
 9. Trigger the `Release Please` workflow manually again if needed to finalize the tag and GitHub release for the newly merged release commit.
-10. Confirm the GitHub release page includes the generated notes body, not just the tag and assets.
-11. Sync local `master` again.
+10. Confirm the GitHub release page includes the generated notes body.
+11. Confirm the GitHub release assets include the platform archives and the SHA-256 checksum file.
+12. Sync local `master` again.
 
 ```bash
 git checkout master
 git pull --ff-only origin master
 ```
 
-12. Validate the publishable crate from the merged release state.
+13. Validate the publishable crate from the merged release state.
 
 ```bash
 cargo package --list
 cargo publish --dry-run
 ```
 
-13. Publish to crates.io.
+14. Publish to crates.io.
 
 ```bash
 cargo publish
 ```
 
-14. Verify the published crate version on crates.io.
-15. Verify the corresponding GitHub release and changelog entry.
+15. Verify the published crate version on crates.io.
+16. Verify the corresponding GitHub release and changelog entry.
 
 ## Relationship between release prep and crates.io publish
 
@@ -95,5 +97,4 @@ Validated locally against the current repository state:
 ## Future automation ideas
 
 - automate crates.io publish from a trusted release workflow after the release PR merge
-- publish prebuilt binaries from the same release pipeline
 - automate Homebrew formula updates after release artifacts are available

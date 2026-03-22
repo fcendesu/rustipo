@@ -10,6 +10,16 @@ Published install:
 cargo install rustipo
 ```
 
+Prebuilt binaries are also attached to each GitHub release for:
+
+- `x86_64-unknown-linux-gnu`
+- `x86_64-apple-darwin`
+- `aarch64-apple-darwin`
+- `x86_64-pc-windows-msvc`
+
+Download the matching archive from the GitHub releases page, extract it, and place `rustipo`
+or `rustipo.exe` on your `PATH`.
+
 Local development from the repository:
 
 ```bash
