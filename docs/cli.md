@@ -10,6 +10,12 @@ Published install:
 cargo install rustipo
 ```
 
+Homebrew install on macOS:
+
+```bash
+brew install fcendesu/rustipo/rustipo
+```
+
 Prebuilt binaries are also attached to each GitHub release for:
 
 - `x86_64-unknown-linux-gnu`

@@ -17,6 +17,7 @@ This document is for maintainers preparing a Rustipo release and publishing it t
   - `.github/release-please/manifest.json`
 - When a release is created, the workflow syncs the GitHub release body from the generated Release Please notes.
 - The same workflow builds prebuilt binary archives for the main supported targets and uploads them, plus a SHA-256 checksum file, to the GitHub release.
+- The repository also contains the Homebrew tap formula at `Formula/rustipo.rb`.
 - The release PR updates:
   - `Cargo.toml`
   - `CHANGELOG.md`
@@ -78,6 +79,37 @@ cargo publish
 
 15. Verify the published crate version on crates.io.
 16. Verify the corresponding GitHub release and changelog entry.
+
+## Homebrew formula maintenance
+
+Rustipo uses this repository itself as the Homebrew tap. macOS users can install it with:
+
+```bash
+brew install fcendesu/rustipo/rustipo
+```
+
+After a release is finalized and the GitHub release assets exist:
+
+1. Update the formula from the release checksum file.
+
+```bash
+./scripts/update-homebrew-formula.sh rustipo-v0.10.0
+```
+
+2. Review the resulting `Formula/rustipo.rb` change.
+3. Commit the formula update on your branch.
+4. Validate the tap from the branch checkout.
+
+```bash
+brew tap fcendesu/rustipo "$(pwd)"
+brew audit --strict fcendesu/rustipo/rustipo
+brew install fcendesu/rustipo/rustipo
+brew test rustipo
+brew uninstall --force rustipo
+brew untap fcendesu/rustipo
+```
+
+5. Merge the formula update to `master`.
 
 ## Relationship between release prep and crates.io publish
 
