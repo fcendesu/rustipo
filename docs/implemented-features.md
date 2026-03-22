@@ -34,6 +34,7 @@
 - `examples/basic-portfolio/`
 - `examples/journal/`
 - `examples/knowledge-base/`
+- `site/`
 
 ## Configuration
 
