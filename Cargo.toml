@@ -1,6 +1,6 @@
 [package]
 name = "rustipo"
-version = "0.9.0"
+version = "0.10.0"
 edition = "2024"
 description = "Themeable Markdown-first static site generator for blogs, notes, docs, and personal sites"
 license = "MIT"
