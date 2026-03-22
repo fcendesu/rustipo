@@ -162,6 +162,9 @@
 - inherited static asset resolution
 - child template override precedence
 - child static asset override precedence
+- built-in theme registry
+  - `atlas`
+  - `journal`
 - required templates
   - `base.html`
   - `index.html`

@@ -55,6 +55,10 @@ Rustipo projects are organized around a simple model:
   - `templates/` contains reusable Tera templates
   - `static/` contains theme CSS and theme assets
   - `theme.toml` contains theme metadata
+  - local project themes live here when you want to override or add custom layouts
+- built-in themes are embedded in Rustipo and selectable without copying files into the project:
+  - `atlas`
+  - `journal`
 - `palettes/` (optional): local palette overrides and custom color schemes (`*.toml`)
 - built-in palettes are embedded in Rustipo and selectable without copying files into the project:
   - `dracula`

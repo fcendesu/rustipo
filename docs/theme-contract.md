@@ -60,6 +60,9 @@ When `id` is omitted, Rustipo falls back to the theme directory name for selecti
 `config.toml` `theme = "..."` can reference either the explicit theme ID or the directory name,
 but explicit IDs are the recommended public interface.
 
+Rustipo can load either built-in themes shipped with the binary or local project themes from
+`themes/<name>/`.
+
 Color presets such as `catppuccin-mocha` and `tokyonight-storm` belong in the palette system, not
 in theme IDs. Themes define structure; palettes define color tokens.
 
