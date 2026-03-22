@@ -10,10 +10,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Features
 
-* **distribution:** add homebrew tap formula ([3b825d9](https://github.com/fcendesu/rustipo/commit/3b825d9ae66c09368aee90f47520f8e4eb0005d4))
-* **distribution:** add Homebrew tap support ([4f9fa0c](https://github.com/fcendesu/rustipo/commit/4f9fa0c7ef5d16d36e94cafac480956cd0f8f153))
-* **site:** add in-repo Rustipo docs site ([566f4a0](https://github.com/fcendesu/rustipo/commit/566f4a0b664413f1abdce14c302edbebb5233386))
-* **site:** add in-repo Rustipo docs site ([3e553f1](https://github.com/fcendesu/rustipo/commit/3e553f128e20c42efd68558fd4454935d9ef6b75))
+* **distribution:** add Homebrew distribution support ([3b825d9](https://github.com/fcendesu/rustipo/commit/3b825d9ae66c09368aee90f47520f8e4eb0005d4), [4f9fa0c](https://github.com/fcendesu/rustipo/commit/4f9fa0c7ef5d16d36e94cafac480956cd0f8f153))
+* **site:** add in-repo Rustipo docs site ([566f4a0](https://github.com/fcendesu/rustipo/commit/566f4a0b664413f1abdce14c302edbebb5233386), [3e553f1](https://github.com/fcendesu/rustipo/commit/3e553f128e20c42efd68558fd4454935d9ef6b75))
 
 
 ### Bug Fixes
