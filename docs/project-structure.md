@@ -40,6 +40,7 @@ Rustipo projects are organized around a simple model:
 - `examples/basic-portfolio/`: starter personal-site example
 - `examples/journal/`: blog-focused editorial example
 - `examples/knowledge-base/`: docs-and-notes example with nested pages
+- `site/`: the main in-repo docs site built with Rustipo itself
 
 ## What each part is for
 

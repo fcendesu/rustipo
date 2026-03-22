@@ -746,3 +746,46 @@ fn bundled_examples_build_successfully() {
         );
     }
 }
+
+#[test]
+fn docs_site_builds_successfully() {
+    let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let source = repo_root.join("site");
+    let temp = tempdir().expect("tempdir should be created");
+    let project = temp.path().join("site");
+    copy_dir_recursive_filtered(&source, &project);
+
+    let output = run_cli(&project, &["build"]);
+    assert!(
+        output.status.success(),
+        "docs site build failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    assert!(project.join("dist/index.html").is_file());
+    assert!(project.join("dist/guides/index.html").is_file());
+    assert!(
+        project
+            .join("dist/guides/getting-started/index.html")
+            .is_file()
+    );
+    assert!(project.join("dist/reference/cli/index.html").is_file());
+    assert!(project.join("dist/examples/index.html").is_file());
+    assert!(project.join("dist/roadmap/index.html").is_file());
+    assert!(project.join("dist/style.css").is_file());
+    assert!(project.join("dist/palette.css").is_file());
+    assert!(project.join("dist/search-index.json").is_file());
+    assert!(project.join("dist/sitemap.xml").is_file());
+    assert!(project.join("dist/robots.txt").is_file());
+    assert!(project.join("dist/404.html").is_file());
+
+    let index_html =
+        fs::read_to_string(project.join("dist/index.html")).expect("index html should exist");
+    assert!(index_html.contains("Rustipo Docs"));
+    assert!(index_html.contains("Build the docs site"));
+
+    let cli_html = fs::read_to_string(project.join("dist/reference/cli/index.html"))
+        .expect("cli page should exist");
+    assert!(cli_html.contains("rustipo check"));
+    assert!(cli_html.contains("Theme And Palette Commands"));
+}

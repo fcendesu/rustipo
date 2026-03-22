@@ -209,9 +209,11 @@ What each part is for:
 - [starter example site](./examples/basic-portfolio)
 - [journal example](./examples/journal)
 - [knowledge base example](./examples/knowledge-base)
+- [docs site project](./site)
 
 ## Documentation
 
+- [docs site source](./site)
 - [CLI reference](./docs/cli.md)
 - [Project structure](./docs/project-structure.md)
 - [Theme contract](./docs/theme-contract.md)

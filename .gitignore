@@ -1,3 +1,4 @@
 /target
 /dist
 /examples/**/dist/
+/site/dist/
