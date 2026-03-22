@@ -1,0 +1,60 @@
+---
+title: Roadmap
+summary: Recent Rustipo releases and the next milestone currently in progress.
+---
+
+# Roadmap
+
+Rustipo has shipped four post-MVP releases in a row, each focused on a clear product slice.
+
+## Recent Releases
+
+### `v0.7.0`
+
+Adoption and reliability:
+
+- crates.io publishing
+- installation and quickstart polish
+- `rustipo check`
+- fixed GitHub Pages workflow generation
+
+### `v0.8.0`
+
+Core authoring:
+
+- page table of contents
+- math rendering
+- admonitions
+- image ergonomics
+- internal link validation
+
+### `v0.9.0`
+
+Publishing and site structure:
+
+- draft and scheduled publishing
+- menus and breadcrumbs
+- documented pagination
+- `robots.txt`
+- built-in `404.html`
+
+### `v0.10.0`
+
+Product identity and examples:
+
+- broader positioning beyond portfolio-only wording
+- flagship `journal` and `knowledge-base` examples
+- built-in `atlas` and `journal` themes
+
+## Next Up: `v0.11.0`
+
+The current next milestone focuses on distribution and docs:
+
+- docs site with Rustipo
+- prebuilt release binaries
+- Homebrew distribution
+
+## Related Pages
+
+- [Examples](/examples/)
+- [Build the docs site](/guides/building-the-docs-site/)

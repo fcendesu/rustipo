@@ -1,0 +1,34 @@
+title = "Rustipo Docs"
+base_url = "https://fcendesu.github.io/rustipo/"
+theme = "atlas"
+palette = "catppuccin-macchiato"
+description = "Official documentation site for Rustipo"
+
+[site]
+favicon = "/favicon.svg"
+
+[site.layout]
+content_width = "1320px"
+top_gap = "0rem"
+vertical_align = "start"
+
+[site.typography]
+line_height = "1.6"
+body_font = "\"IBM Plex Sans\", \"Segoe UI\", sans-serif"
+heading_font = "\"IBM Plex Sans\", \"Segoe UI\", sans-serif"
+mono_font = "\"JetBrains Mono\", \"SFMono-Regular\", monospace"
+
+[menus]
+main = [
+  { title = "Home", route = "/" },
+  { title = "Guides", route = "/guides/" },
+  { title = "Reference", route = "/reference/" },
+  { title = "Examples", route = "/examples/" },
+  { title = "Roadmap", route = "/roadmap/" },
+]
+
+footer = [
+  { title = "GitHub", route = "https://github.com/fcendesu/rustipo" },
+  { title = "Crates.io", route = "https://crates.io/crates/rustipo" },
+  { title = "Releases", route = "https://github.com/fcendesu/rustipo/releases" },
+]
