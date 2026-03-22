@@ -33,19 +33,18 @@ fi
 
 cat > "$formula_path" <<EOF
 class Rustipo < Formula
-  desc "Themeable Markdown-first static site generator for blogs, notes, docs, and personal sites"
+  desc "Markdown-first static site generator for blogs, docs, notes, and personal sites"
   homepage "https://github.com/fcendesu/rustipo"
-  version "${version}"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v#{version}/rustipo-v#{version}-aarch64-apple-darwin.tar.gz"
+      url "https://github.com/fcendesu/rustipo/releases/download/${tag}/${tag}-aarch64-apple-darwin.tar.gz"
       sha256 "${arm_sha}"
     end
 
     on_intel do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v#{version}/rustipo-v#{version}-x86_64-apple-darwin.tar.gz"
+      url "https://github.com/fcendesu/rustipo/releases/download/${tag}/${tag}-x86_64-apple-darwin.tar.gz"
       sha256 "${intel_sha}"
     end
   end

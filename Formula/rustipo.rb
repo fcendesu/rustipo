@@ -1,17 +1,16 @@
 class Rustipo < Formula
-  desc "Themeable Markdown-first static site generator for blogs, notes, docs, and personal sites"
+  desc "Markdown-first static site generator for blogs, docs, notes, and personal sites"
   homepage "https://github.com/fcendesu/rustipo"
-  version "0.10.0"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v#{version}/rustipo-v#{version}-aarch64-apple-darwin.tar.gz"
+      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.10.0/rustipo-v0.10.0-aarch64-apple-darwin.tar.gz"
       sha256 "3cd60a98edb00fe379bebaae1fa1b1e934f95964948dc768cdbae41443da8712"
     end
 
     on_intel do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v#{version}/rustipo-v#{version}-x86_64-apple-darwin.tar.gz"
+      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.10.0/rustipo-v0.10.0-x86_64-apple-darwin.tar.gz"
       sha256 "e8549cba5af4decbebe5686908ca2ce5d944dfc7a274314e4cdc327d1296b5a3"
     end
   end
