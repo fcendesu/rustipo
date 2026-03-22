@@ -1,0 +1,12 @@
+{% macro render(items) %}
+<ul>
+  {% for item in items %}
+  <li>
+    <a href="#{{ item.id }}">{{ item.title }}</a>
+    {% if item.children | length > 0 %}
+    {{ self::render(items=item.children) }}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro render %}

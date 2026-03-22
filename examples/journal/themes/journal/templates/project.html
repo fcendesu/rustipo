@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+<article class="story story-project">
+  <p class="eyebrow">Project Note</p>
+  {% if page_date %}<p class="story-meta"><time datetime="{{ page_date }}">{{ page_date | format_date(format="%B %d, %Y") }}</time></p>{% endif %}
+  {{ content_html | safe }}
+</article>
+{% endblock body %}

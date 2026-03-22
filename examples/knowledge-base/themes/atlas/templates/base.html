@@ -1,0 +1,56 @@
+{% import "macros/toc.html" as toc %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    {% include "partials/head_assets.html" %}
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar">
+        <a class="docs-brand" href="/">{{ site_title }}</a>
+        <p class="docs-tagline">{{ site_description }}</p>
+        <nav class="docs-nav" aria-label="Primary navigation">
+          {% for item in site_nav %}
+          <a href="{{ item.route }}" {% if item.active %}aria-current="page"{% endif %}>{{ item.title }}</a>
+          {% endfor %}
+        </nav>
+        {% if site_menus.footer %}
+        <div class="docs-meta">
+          {% for item in site_menus.footer %}
+          <a href="{{ item.route }}">{{ item.title }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </aside>
+      <div class="docs-main">
+        <header class="docs-header">
+          {% if breadcrumbs %}
+          <nav class="breadcrumbs" aria-label="Breadcrumbs">
+            {% for item in breadcrumbs %}
+              {% if item.linkable and not item.active %}
+              <a href="{{ item.route }}">{{ item.title }}</a>
+              {% else %}
+              <span {% if item.active %}aria-current="page"{% endif %}>{{ item.title }}</span>
+              {% endif %}
+            {% endfor %}
+          </nav>
+          {% endif %}
+        </header>
+        <div class="docs-content-grid">
+          <main class="docs-content">
+            {% block body %}{% endblock body %}
+          </main>
+          {% if page_toc is defined and page_toc | length > 0 %}
+          <aside class="docs-toc" aria-label="Table of contents">
+            <p>On this page</p>
+            {{ toc::render(items=page_toc) }}
+          </aside>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

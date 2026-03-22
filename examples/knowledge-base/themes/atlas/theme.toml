@@ -1,0 +1,5 @@
+id = "atlas"
+name = "Atlas Example"
+version = "0.1.0"
+author = "Rustipo"
+description = "Docs-and-notes example theme for the Signal Notes sample site"

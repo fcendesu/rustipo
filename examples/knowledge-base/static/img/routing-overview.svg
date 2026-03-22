@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360">
+  <rect width="720" height="360" rx="28" fill="#1f2335" />
+  <rect x="42" y="58" width="170" height="80" rx="18" fill="#2b3052" stroke="#3b4261" />
+  <rect x="274" y="58" width="170" height="80" rx="18" fill="#2b3052" stroke="#3b4261" />
+  <rect x="506" y="58" width="170" height="80" rx="18" fill="#2b3052" stroke="#3b4261" />
+  <rect x="158" y="222" width="170" height="80" rx="18" fill="#2b3052" stroke="#3b4261" />
+  <rect x="392" y="222" width="170" height="80" rx="18" fill="#2b3052" stroke="#3b4261" />
+  <path d="M212 98h62" stroke="#7aa2f7" stroke-width="6" stroke-linecap="round" />
+  <path d="M444 98h62" stroke="#7aa2f7" stroke-width="6" stroke-linecap="round" />
+  <path d="M360 138v56" stroke="#73daca" stroke-width="6" stroke-linecap="round" />
+  <path d="M244 262h148" stroke="#bb9af7" stroke-width="6" stroke-linecap="round" />
+  <text x="127" y="105" fill="#c0caf5" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Markdown</text>
+  <text x="359" y="105" fill="#c0caf5" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Validation</text>
+  <text x="591" y="105" fill="#c0caf5" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Templates</text>
+  <text x="243" y="269" fill="#c0caf5" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Palette + Theme</text>
+  <text x="477" y="269" fill="#c0caf5" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Static Output</text>
+</svg>

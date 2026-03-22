@@ -1,0 +1,34 @@
+title = "Field Journal"
+base_url = "https://journal.example.com"
+theme = "journal"
+palette = "catppuccin-frappe"
+description = "An editorial Rustipo example for essays, logs, and small project write-ups"
+
+[site]
+favicon = "/favicon.svg"
+posts_per_page = 2
+
+[site.layout]
+content_width = "1120px"
+top_gap = "1.75rem"
+vertical_align = "start"
+
+[site.typography]
+line_height = "1.68"
+body_font = "\"Source Serif 4\", Georgia, serif"
+heading_font = "\"Fraunces\", \"Iowan Old Style\", Georgia, serif"
+mono_font = "\"JetBrains Mono\", \"SFMono-Regular\", monospace"
+
+[menus]
+main = [
+  { title = "Home", route = "/" },
+  { title = "Writing", route = "/blog/" },
+  { title = "Archive", route = "/blog/archive/" },
+  { title = "Projects", route = "/projects/" },
+  { title = "About", route = "/about/" },
+]
+
+footer = [
+  { title = "RSS", route = "/rss.xml" },
+  { title = "GitHub", route = "https://github.com/fcendesu/rustipo" },
+]

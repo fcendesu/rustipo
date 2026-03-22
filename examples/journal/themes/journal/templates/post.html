@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+<article class="story">
+  <p class="eyebrow">Journal Entry</p>
+  <div class="story-meta">
+    {% if page_date %}<time datetime="{{ page_date }}">{{ page_date | format_date(format="%B %d, %Y") }}</time>{% endif %}
+    {% if page_tags %}
+    <ul class="tag-list" aria-label="Tags">
+      {% for tag in page_tags %}
+      <li><a href="{{ tag_url(name=tag) }}">{{ tag }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {{ content_html | safe }}
+  {% if previous_post or next_post %}
+  <nav class="story-nav" aria-label="Adjacent posts">
+    {% if previous_post %}<a href="{{ previous_post.route }}">← {{ previous_post.title }}</a>{% else %}<span></span>{% endif %}
+    {% if next_post %}<a href="{{ next_post.route }}">{{ next_post.title }} →</a>{% endif %}
+  </nav>
+  {% endif %}
+</article>
+{% endblock body %}

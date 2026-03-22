@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="section-shell">
+  <p class="eyebrow">{% if section_name == "archive" %}Monthly archive{% elif section_name == "projects" %}Projects{% else %}Writing{% endif %}</p>
+  <h1>{{ section_title }}</h1>
+
+  {% if section_name == "archive" %}
+    {% for group in archive_groups | default(value=[]) %}
+    <section class="archive-group">
+      <h2>{{ group.label }}</h2>
+      <ul class="story-list">
+        {% for item in group.items %}
+        <li>
+          <a href="{{ item.route }}">{{ item.title }}</a>
+          {% if item.summary %}<p>{{ item.summary }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  {% else %}
+    <ul class="story-list">
+      {% for item in items %}
+      <li>
+        <div>
+          <a href="{{ item.route }}">{{ item.title }}</a>
+          {% if item.summary %}<p>{{ item.summary }}</p>{% endif %}
+        </div>
+        {% if item.date %}<time datetime="{{ item.date }}">{{ item.date | format_date(format="%b %d, %Y") }}</time>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% if total_pages is defined and total_pages > 1 %}
+    <nav class="pager" aria-label="Pagination">
+      {% if prev_url %}<a href="{{ prev_url }}">Newer</a>{% else %}<span></span>{% endif %}
+      <span>Page {{ current_page }} of {{ total_pages }}</span>
+      {% if next_url %}<a href="{{ next_url }}">Older</a>{% else %}<span></span>{% endif %}
+    </nav>
+    {% endif %}
+  {% endif %}
+</section>
+{% endblock body %}
