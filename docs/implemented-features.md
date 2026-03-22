@@ -31,6 +31,9 @@
 - `palettes/`
 - `static/`
 - `dist/`
+- `examples/basic-portfolio/`
+- `examples/journal/`
+- `examples/knowledge-base/`
 
 ## Configuration
 

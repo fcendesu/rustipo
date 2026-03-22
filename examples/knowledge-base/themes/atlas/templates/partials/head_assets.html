@@ -1,0 +1,25 @@
+{% if site_favicon_svg %}<link rel="icon" href="{{ site_favicon_svg }}" type="image/svg+xml" />{% endif %}
+{% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
+{% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
+{% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
+<style>
+  :root {
+    --rustipo-content-width: {{ site_style.content_width | default(value="1280px") }};
+    --rustipo-top-gap: {{ site_style.top_gap | default(value="0rem") }};
+    --rustipo-vertical-align: {{ site_style.vertical_align | default(value="start") }};
+    --rustipo-line-height: {{ site_style.line_height | default(value="1.6") }};
+    --rustipo-font-body: {{ site_style.body_font }};
+    --rustipo-font-heading: {{ site_style.heading_font }};
+    --rustipo-font-mono: {{ site_style.mono_font }};
+  }
+</style>
+{% if site_font_faces_css %}
+<style>
+  {{ site_font_faces_css | safe }}
+</style>
+{% endif %}
+<link rel="stylesheet" href="/style.css" />
+<link rel="stylesheet" href="/palette.css" />
+{% if site_has_custom_css %}
+<link rel="stylesheet" href="/custom.css" />
+{% endif %}

@@ -26,6 +26,26 @@ fn run_git(cwd: &Path, args: &[&str]) {
     );
 }
 
+fn copy_dir_recursive_filtered(source: &Path, destination: &Path) {
+    fs::create_dir_all(destination).expect("destination dir should be created");
+
+    for entry in fs::read_dir(source).expect("source dir should be readable") {
+        let entry = entry.expect("directory entry should be readable");
+        let path = entry.path();
+        let file_name = entry.file_name();
+        let target = destination.join(&file_name);
+
+        if path.is_dir() {
+            if file_name == "dist" || file_name == ".git" {
+                continue;
+            }
+            copy_dir_recursive_filtered(&path, &target);
+        } else {
+            fs::copy(&path, &target).expect("file should be copied");
+        }
+    }
+}
+
 #[test]
 fn new_and_build_generate_expected_output() {
     let dir = tempdir().expect("tempdir should be created");
@@ -672,4 +692,49 @@ fn deploy_github_pages_refuses_overwrite_without_force() {
         "deploy helper should overwrite with --force: {}",
         String::from_utf8_lossy(&force_output.stderr)
     );
+}
+
+#[test]
+fn bundled_examples_build_successfully() {
+    let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let examples_root = repo_root.join("examples");
+    let temp = tempdir().expect("tempdir should be created");
+
+    for example in ["basic-portfolio", "journal", "knowledge-base"] {
+        let source = examples_root.join(example);
+        let project = temp.path().join(example);
+        copy_dir_recursive_filtered(&source, &project);
+
+        let output = run_cli(&project, &["build"]);
+        assert!(
+            output.status.success(),
+            "example build failed for {example}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+
+        assert!(
+            project.join("dist/index.html").is_file(),
+            "index output missing for {example}"
+        );
+        assert!(
+            project.join("dist/style.css").is_file(),
+            "style output missing for {example}"
+        );
+        assert!(
+            project.join("dist/palette.css").is_file(),
+            "palette output missing for {example}"
+        );
+        assert!(
+            project.join("dist/sitemap.xml").is_file(),
+            "sitemap output missing for {example}"
+        );
+        assert!(
+            project.join("dist/robots.txt").is_file(),
+            "robots output missing for {example}"
+        );
+        assert!(
+            project.join("dist/404.html").is_file(),
+            "404 output missing for {example}"
+        );
+    }
 }

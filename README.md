@@ -199,9 +199,11 @@ What each part is for:
 - optional local palettes live under `palettes/<palette>.toml`
 - `dist/` is generated output only
 
-## Example Project
+## Example Sites
 
 - [starter example site](./examples/basic-portfolio)
+- [journal example](./examples/journal)
+- [knowledge base example](./examples/knowledge-base)
 
 ## Documentation
 

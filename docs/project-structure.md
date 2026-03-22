@@ -35,6 +35,12 @@ Rustipo projects are organized around a simple model:
   config.toml
 ```
 
+## Repository example sites
+
+- `examples/basic-portfolio/`: starter personal-site example
+- `examples/journal/`: blog-focused editorial example
+- `examples/knowledge-base/`: docs-and-notes example with nested pages
+
 ## What each part is for
 
 - `config.toml`: the main site configuration file

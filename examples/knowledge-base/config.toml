@@ -1,0 +1,31 @@
+title = "Signal Notes"
+base_url = "https://notes.example.com"
+theme = "atlas"
+palette = "tokyonight-storm"
+description = "A docs-and-notes Rustipo example with nested pages, breadcrumbs, and page TOCs"
+
+[site]
+favicon = "/favicon.svg"
+
+[site.layout]
+content_width = "1280px"
+top_gap = "0rem"
+vertical_align = "start"
+
+[site.typography]
+line_height = "1.6"
+body_font = "\"IBM Plex Sans\", \"Segoe UI\", sans-serif"
+heading_font = "\"IBM Plex Sans\", \"Segoe UI\", sans-serif"
+mono_font = "\"JetBrains Mono\", \"SFMono-Regular\", monospace"
+
+[menus]
+main = [
+  { title = "Overview", route = "/" },
+  { title = "Guides", route = "/guides/" },
+  { title = "Notes", route = "/notes/" },
+  { title = "About", route = "/about/" },
+]
+
+footer = [
+  { title = "GitHub", route = "https://github.com/fcendesu/rustipo" },
+]
