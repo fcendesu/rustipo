@@ -97,7 +97,12 @@ The main repository keeps the source-of-truth formula in `Formula/rustipo.rb`.
 To let the release workflow update the public tap automatically, configure this repository secret:
 
 - `HOMEBREW_TAP_TOKEN`
-  - a GitHub token with write access to `fcendesu/homebrew-rustipo`
+  - use a dedicated fine-grained GitHub personal access token
+  - scope it only to `fcendesu/homebrew-rustipo`
+  - grant:
+    - repository contents: `Read and write`
+    - metadata: `Read`
+  - do not reuse a broad personal token from your main developer account if you can avoid it
 
 ### Automatic sync behavior
 
@@ -116,6 +121,9 @@ If the secret is missing or the automated sync fails, you can still update the t
 ```bash
 ./scripts/update-homebrew-formula.sh rustipo-v0.11.0
 ```
+
+The script downloads the public release checksum file directly from GitHub Releases and does not
+require `gh auth` or a maintainer token.
 
 2. Review the resulting `Formula/rustipo.rb` change.
 3. Copy that file into `fcendesu/homebrew-rustipo/Formula/rustipo.rb`.

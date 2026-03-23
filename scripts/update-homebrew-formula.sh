@@ -20,9 +20,15 @@ formula_path="$repo_root/Formula/rustipo.rb"
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 
-gh release download "$tag" --pattern "${tag}-sha256sums.txt" --dir "$tmpdir" >/dev/null
-
 checksum_file="$tmpdir/${tag}-sha256sums.txt"
+repo_slug="${RUSTIPO_GITHUB_REPO:-fcendesu/rustipo}"
+checksum_url="https://github.com/${repo_slug}/releases/download/${tag}/${tag}-sha256sums.txt"
+
+curl --fail --silent --show-error --location \
+  --retry 3 \
+  --output "$checksum_file" \
+  "$checksum_url"
+
 arm_sha="$(awk "/${tag}-aarch64-apple-darwin\\.tar\\.gz$/ { print \$1 }" "$checksum_file")"
 intel_sha="$(awk "/${tag}-x86_64-apple-darwin\\.tar\\.gz$/ { print \$1 }" "$checksum_file")"
 
