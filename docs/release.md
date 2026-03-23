@@ -17,7 +17,8 @@ This document is for maintainers preparing a Rustipo release and publishing it t
   - `.github/release-please/manifest.json`
 - When a release is created, the workflow syncs the GitHub release body from the generated Release Please notes.
 - The same workflow builds prebuilt binary archives for the main supported targets and uploads them, plus a SHA-256 checksum file, to the GitHub release.
-- The repository also contains the Homebrew tap formula at `Formula/rustipo.rb`.
+- The repository also contains the source-of-truth Homebrew formula at `Formula/rustipo.rb`.
+- When `HOMEBREW_TAP_TOKEN` is configured in GitHub Actions secrets, the release workflow syncs that formula into `fcendesu/homebrew-rustipo` after the release assets are uploaded.
 - The release PR updates:
   - `Cargo.toml`
   - `CHANGELOG.md`
@@ -82,34 +83,52 @@ cargo publish
 
 ## Homebrew formula maintenance
 
-Rustipo uses this repository itself as the Homebrew tap. macOS users can install it with:
+Rustipo publishes Homebrew installs through the separate tap repository `fcendesu/homebrew-rustipo`.
+macOS users can install it with:
 
 ```bash
 brew install fcendesu/rustipo/rustipo
 ```
 
-After a release is finalized and the GitHub release assets exist:
+The main repository keeps the source-of-truth formula in `Formula/rustipo.rb`.
+
+### Required secret
+
+To let the release workflow update the public tap automatically, configure this repository secret:
+
+- `HOMEBREW_TAP_TOKEN`
+  - a GitHub token with write access to `fcendesu/homebrew-rustipo`
+
+### Automatic sync behavior
+
+After a release is finalized and the GitHub release assets exist, the release workflow will:
+
+1. run `./scripts/update-homebrew-formula.sh <tag>` in the Rustipo checkout
+2. copy the resulting `Formula/rustipo.rb` into `fcendesu/homebrew-rustipo`
+3. commit and push the tap update automatically
+
+### Manual fallback
+
+If the secret is missing or the automated sync fails, you can still update the tap manually:
 
 1. Update the formula from the release checksum file.
 
 ```bash
-./scripts/update-homebrew-formula.sh rustipo-v0.10.0
+./scripts/update-homebrew-formula.sh rustipo-v0.11.0
 ```
 
 2. Review the resulting `Formula/rustipo.rb` change.
-3. Commit the formula update on your branch.
-4. Validate the tap from the branch checkout.
+3. Copy that file into `fcendesu/homebrew-rustipo/Formula/rustipo.rb`.
+4. Commit and push the tap repo update.
+5. Validate the public tap.
 
 ```bash
-brew tap fcendesu/rustipo "$(pwd)"
-brew audit --strict fcendesu/rustipo/rustipo
+brew tap fcendesu/rustipo
 brew install fcendesu/rustipo/rustipo
 brew test rustipo
 brew uninstall --force rustipo
 brew untap fcendesu/rustipo
 ```
-
-5. Merge the formula update to `master`.
 
 ## Relationship between release prep and crates.io publish
 
