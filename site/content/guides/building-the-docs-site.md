@@ -44,10 +44,18 @@ From the repository root:
 
 ```bash
 cd site
-../../target/debug/rustipo build
+../target/debug/rustipo build
 ```
 
 In CI, Rustipo also copies `site/` to a temporary directory and runs a full build as an end-to-end check.
+
+## Publishing
+
+The docs site is published from this repository with GitHub Pages.
+
+- pushes to `master` rebuild and deploy the site automatically
+- the published URL is `https://fcendesu.github.io/rustipo/`
+- the workflow lives at `.github/workflows/docs-site.yml`
 
 ## What This Site Should Showcase
 

@@ -236,6 +236,7 @@ What each part is for:
 
 ## Documentation
 
+- [published docs site](https://fcendesu.github.io/rustipo/)
 - [docs site source](./site)
 - [CLI reference](./docs/cli.md)
 - [Project structure](./docs/project-structure.md)
