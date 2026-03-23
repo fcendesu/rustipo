@@ -157,3 +157,53 @@ jobs:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: release-assets/*
           fail_on_unmatched_files: true
+
+  sync-homebrew-tap:
+    name: Sync Homebrew tap
+    runs-on: ubuntu-latest
+    needs:
+      - release-please
+      - publish-release-assets
+    if: ${{ needs.release-please.outputs.release_created == 'true' && needs.release-please.outputs.tag_name != '' && secrets.HOMEBREW_TAP_TOKEN != '' }}
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+    steps:
+      - name: Check out Rustipo release tag
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Check out Homebrew tap
+        uses: actions/checkout@v6
+        with:
+          repository: fcendesu/homebrew-rustipo
+          path: homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+      - name: Update in-repo formula from release checksums
+        run: ./scripts/update-homebrew-formula.sh "$RELEASE_TAG"
+
+      - name: Copy formula into tap repository
+        run: |
+          set -euo pipefail
+          mkdir -p homebrew-tap/Formula
+          cp Formula/rustipo.rb homebrew-tap/Formula/rustipo.rb
+
+      - name: Commit and push tap update
+        working-directory: homebrew-tap
+        env:
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Formula/rustipo.rb; then
+            echo "No Homebrew formula changes to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/rustipo.rb
+          git commit -m "chore(formula): update rustipo for ${RELEASE_TAG#rustipo-v}"
+          git push origin HEAD:main
