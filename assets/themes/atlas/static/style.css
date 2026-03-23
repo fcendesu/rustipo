@@ -27,10 +27,6 @@ body {
   min-height: 100vh;
 }
 
-body.docs-sidebar-collapsed .docs-shell {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .docs-sidebar {
   position: sticky;
   top: 0;
@@ -41,14 +37,9 @@ body.docs-sidebar-collapsed .docs-shell {
   background: color-mix(in srgb, var(--rustipo-mantle) 82%, var(--rustipo-base) 18%);
 }
 
-body.docs-sidebar-collapsed .docs-sidebar {
-  display: none;
-}
-
 .docs-sidebar-head {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 0.9rem;
 }
 
@@ -80,54 +71,16 @@ body.docs-sidebar-collapsed .docs-sidebar {
   margin-top: 1.25rem;
 }
 
-.docs-menu-toggle,
-.docs-sidebar-close,
-.docs-overlay,
 .back-to-top {
   font: inherit;
 }
 
-.docs-menu-toggle,
-.docs-sidebar-close,
 .back-to-top {
   border: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   border-radius: 999px;
   background: color-mix(in srgb, var(--rustipo-mantle) 78%, var(--rustipo-base) 22%);
   color: var(--rustipo-text);
   box-shadow: 0 16px 36px color-mix(in srgb, var(--rustipo-mantle) 34%, transparent);
-}
-
-.docs-menu-toggle,
-.docs-sidebar-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.docs-menu-toggle {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 60;
-  padding: 0.6rem 0.9rem;
-}
-
-.docs-sidebar-close {
-  padding: 0.45rem 0.75rem;
-  white-space: nowrap;
-}
-
-.docs-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  border: 0;
-  background: color-mix(in srgb, var(--rustipo-mantle) 55%, transparent);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease;
-  z-index: 25;
 }
 
 .back-to-top {
@@ -184,11 +137,6 @@ body.docs-sidebar-collapsed .docs-sidebar {
   width: 100%;
   max-width: calc(var(--rustipo-content-width) + 4rem);
   padding: 1.5rem 1.5rem 3rem;
-}
-
-body.docs-sidebar-collapsed .docs-main {
-  max-width: min(1600px, calc(var(--rustipo-content-width) + 22rem));
-  padding-left: 5.2rem;
 }
 
 .docs-content-grid {
@@ -370,46 +318,15 @@ body.docs-sidebar-collapsed .docs-main {
     grid-template-columns: 1fr;
   }
 
-  body.docs-sidebar-collapsed .docs-sidebar {
-    display: block;
-  }
-
   .docs-sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 50;
-    width: min(82vw, 320px);
-    min-height: 100vh;
-    border-right: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
-    border-bottom: 0;
-    overflow-y: auto;
-    transform: translateX(-105%);
-    transition: transform 180ms ease;
-  }
-
-  body.docs-sidebar-open .docs-sidebar {
-    transform: translateX(0);
-  }
-
-  body.docs-sidebar-open {
-    overflow: hidden;
-  }
-
-  .docs-overlay {
-    display: block;
-  }
-
-  body.docs-sidebar-open .docs-overlay {
-    opacity: 1;
-    pointer-events: auto;
+    position: static;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--rustipo-surface-1, var(--rustipo-border));
   }
 
   .docs-main {
-    padding: 4.6rem 1rem 2rem;
-  }
-
-  body.docs-sidebar-collapsed .docs-main {
-    padding: 4.6rem 1rem 2rem;
+    padding: 1.1rem 1rem 2rem;
   }
 
   .doc-card {
