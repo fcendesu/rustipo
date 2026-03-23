@@ -28,6 +28,7 @@
 - crates.io publication
 - GitHub release generation
 - GitHub release notes synchronization
+- published docs site
 - prebuilt release archives
   - `x86_64-unknown-linux-gnu`
   - `x86_64-apple-darwin`
@@ -219,6 +220,7 @@
 - `site_favicon_svg`
 - `site_favicon_ico`
 - `site_apple_touch_icon`
+- `site_asset_version`
 - `site_style`
   - `content_width`
   - `top_gap`
@@ -435,6 +437,7 @@
 - theme static asset copy
 - user static asset copy
 - inherited theme static asset merge
+- asset version fingerprint for theme and site asset URLs
 
 ## Local Development and Preview
 
@@ -451,6 +454,7 @@
 
 - GitHub Pages workflow generation
 - workflow overwrite protection
+- docs site GitHub Pages publish workflow
 
 ## Validation and Failure Handling
 

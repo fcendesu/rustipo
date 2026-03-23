@@ -1,11 +1,11 @@
 ---
 title: Roadmap
-summary: Recent Rustipo releases and the next milestone currently in progress.
+summary: Recent Rustipo releases and the next maintenance milestone now in progress.
 ---
 
 # Roadmap
 
-Rustipo has shipped four post-MVP releases in a row, each focused on a clear product slice.
+Rustipo has shipped five post-MVP releases in a row, each focused on a clear product slice.
 
 ## Recent Releases
 
@@ -52,6 +52,12 @@ Distribution and docs release:
 
 - docs site with Rustipo
 - prebuilt release binaries
+
+## Next Up: `v0.12.0`
+
+Maintenance and workflow compatibility:
+
+- audit GitHub Actions workflows for Node 24 compatibility
 
 ## Related Pages
 

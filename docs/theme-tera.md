@@ -75,6 +75,7 @@ Rustipo injects common values such as:
 - `page_toc`
 - `site_title`
 - `site_description`
+- `site_asset_version`
 - `site_style.*`
 
 Rustipo also injects stable navigation and page-state values:
