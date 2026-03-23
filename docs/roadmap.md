@@ -61,7 +61,7 @@ For historical post-MVP batch planning, see:
   - flagship `journal` and `knowledge-base` examples
   - built-in `atlas` and `journal` layout themes
 - `v0.11.0`: distribution and docs
-  - docs site built with Rustipo
+  - docs site built with Rustipo and published with GitHub Pages
   - prebuilt binaries
 
 ## Upcoming milestones

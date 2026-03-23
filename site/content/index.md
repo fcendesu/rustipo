@@ -47,4 +47,4 @@ Rustipo is easiest to understand in layers:
 
 ## Why This Site Exists
 
-The docs site is part of the product story for `v0.11.0`. It gives Rustipo a real docs-and-notes project inside the main repository, which helps validate the product outside the earlier portfolio-only framing.
+The docs site was a major part of the `v0.11.0` product story. It gives Rustipo a real docs-and-notes project inside the main repository, which helps validate the product outside the earlier portfolio-only framing.
