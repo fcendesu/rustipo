@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-summary: Recent Rustipo releases and the next maintenance milestone now in progress.
+summary: Recent Rustipo releases and the next planned milestone batches for Rustipo.
 ---
 
 # Roadmap
@@ -58,6 +58,29 @@ Distribution and docs release:
 Maintenance and workflow compatibility:
 
 - audit GitHub Actions workflows for Node 24 compatibility
+
+## After That: `v0.13.0`
+
+Hosting and metadata polish:
+
+- built-in default meta description support for themes
+- Cloudflare Pages deployment support
+- Netlify deployment support
+
+## Looking Ahead: `v0.14.0`
+
+Rich content and media:
+
+- reusable embeds or shortcodes for interactive content
+- built-in image processing and resize helpers
+
+## Later
+
+- optional analytics integration
+- expanded taxonomy support
+- formalized palette token contract
+- optional SCSS support
+- multilingual site support
 
 ## Related Pages
 

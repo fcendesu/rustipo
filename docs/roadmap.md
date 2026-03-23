@@ -68,6 +68,13 @@ For historical post-MVP batch planning, see:
 
 - `v0.12.0`: maintenance and workflow compatibility
   - audit GitHub Actions workflows for Node 24 compatibility
+- `v0.13.0`: hosting and metadata polish
+  - built-in default meta description support for themes
+  - Cloudflare Pages deployment support
+  - Netlify deployment support
+- `v0.14.0`: rich content and media
+  - reusable embeds or shortcodes for interactive content
+  - built-in image processing and resize helpers
 
 ## Milestone 1: Foundation
 
@@ -113,8 +120,7 @@ For historical post-MVP batch planning, see:
   - more helper functions/filters
   - stronger macro/partial conventions and examples
 - continue growing the layout theme ecosystem now that palette/font foundations are in place
-- support reusable embeds or shortcodes for interactive content
 - consider optional analytics integration for common hosted and self-hosted setups
 - formalize taxonomy and palette token contracts as the ecosystem grows
-- consider multilingual support only after the single-language publishing model is more mature
 - evaluate optional SCSS support for theme authoring while keeping plain CSS as the default
+- consider multilingual support only after the single-language publishing model is more mature
