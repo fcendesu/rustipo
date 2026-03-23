@@ -6,15 +6,16 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   release-please:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    permissions:
+      contents: write
+      pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -55,6 +56,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -137,6 +140,8 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created == 'true' && needs.release-please.outputs.tag_name != '' }}
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    permissions:
+      contents: write
     steps:
       - name: Download packaged release archives
         uses: actions/download-artifact@v8
@@ -167,13 +172,16 @@ jobs:
     if: ${{ needs.release-please.outputs.release_created == 'true' && needs.release-please.outputs.tag_name != '' && secrets.HOMEBREW_TAP_TOKEN != '' }}
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-      GH_TOKEN: ${{ github.token }}
       RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+    permissions:
+      contents: read
     steps:
       - name: Check out Rustipo release tag
         uses: actions/checkout@v6
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
+          fetch-depth: 1
+          persist-credentials: false
 
       - name: Check out Homebrew tap
         uses: actions/checkout@v6
@@ -181,6 +189,7 @@ jobs:
           repository: fcendesu/homebrew-rustipo
           path: homebrew-tap
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          fetch-depth: 1
 
       - name: Update in-repo formula from release checksums
         run: ./scripts/update-homebrew-formula.sh "$RELEASE_TAG"
