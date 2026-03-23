@@ -5,13 +5,13 @@ class Rustipo < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.10.0/rustipo-v0.10.0-aarch64-apple-darwin.tar.gz"
-      sha256 "3cd60a98edb00fe379bebaae1fa1b1e934f95964948dc768cdbae41443da8712"
+      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.11.0/rustipo-v0.11.0-aarch64-apple-darwin.tar.gz"
+      sha256 "59fd0c20e15f9edab4d095b3d5015dd3bc530cd884b373d9244919ed03f5e2a2"
     end
 
     on_intel do
-      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.10.0/rustipo-v0.10.0-x86_64-apple-darwin.tar.gz"
-      sha256 "e8549cba5af4decbebe5686908ca2ce5d944dfc7a274314e4cdc327d1296b5a3"
+      url "https://github.com/fcendesu/rustipo/releases/download/rustipo-v0.11.0/rustipo-v0.11.0-x86_64-apple-darwin.tar.gz"
+      sha256 "ae54ae2995d86ddda515df60d18cdaec82e839f90a1932bb7ae1477ab07655be"
     end
   end
 
