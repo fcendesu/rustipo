@@ -17,7 +17,6 @@ Checks run on push and pull request:
 
 - Release Please runs manually via workflow dispatch when maintainers want to prepare a release.
 - When a release is created, the same workflow also builds prebuilt binaries for the main supported targets and uploads them, plus a checksum file, to the GitHub release.
-- If `HOMEBREW_TAP_TOKEN` is configured, the same workflow also syncs `Formula/rustipo.rb` into `fcendesu/homebrew-rustipo`.
 - CI remains automatic for pushes and pull requests.
 
 ## Maintainer release docs

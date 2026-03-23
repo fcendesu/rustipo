@@ -31,12 +31,6 @@ Install Rustipo from crates.io:
 cargo install rustipo
 ```
 
-Install with Homebrew on macOS:
-
-```bash
-brew install fcendesu/rustipo/rustipo
-```
-
 Install a prebuilt binary from the GitHub releases page:
 
 - Linux x86_64: `x86_64-unknown-linux-gnu`
@@ -47,12 +41,6 @@ Install a prebuilt binary from the GitHub releases page:
 1. Download the archive for your platform from [GitHub Releases](https://github.com/fcendesu/rustipo/releases).
 2. Extract it.
 3. Move `rustipo` (or `rustipo.exe`) somewhere on your `PATH`.
-
-Upgrade a Homebrew install:
-
-```bash
-brew upgrade fcendesu/rustipo/rustipo
-```
 
 Create a site:
 
