@@ -26,19 +26,6 @@
         {% endif %}
       </aside>
       <div class="docs-main">
-        <header class="docs-header">
-          {% if breadcrumbs %}
-          <nav class="breadcrumbs" aria-label="Breadcrumbs">
-            {% for item in breadcrumbs %}
-              {% if item.linkable and not item.active %}
-              <a href="{{ item.route }}">{{ item.title }}</a>
-              {% else %}
-              <span {% if item.active %}aria-current="page"{% endif %}>{{ item.title }}</span>
-              {% endif %}
-            {% endfor %}
-          </nav>
-          {% endif %}
-        </header>
         <div class="docs-content-grid">
           <main class="docs-content">
             {% block body %}{% endblock body %}
