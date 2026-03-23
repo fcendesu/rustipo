@@ -46,13 +46,12 @@ Product identity and examples:
 - flagship `journal` and `knowledge-base` examples
 - built-in `atlas` and `journal` themes
 
-## Next Up: `v0.11.0`
+## `v0.11.0`
 
-The current next milestone focuses on distribution and docs:
+Distribution and docs release:
 
 - docs site with Rustipo
 - prebuilt release binaries
-- Homebrew distribution
 
 ## Related Pages
 

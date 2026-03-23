@@ -63,7 +63,6 @@ For historical post-MVP batch planning, see:
 - `v0.11.0`: distribution and docs
   - docs site built with Rustipo
   - prebuilt binaries
-  - Homebrew distribution
 
 ## Upcoming milestones
 
