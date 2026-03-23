@@ -48,7 +48,6 @@ body {
 
 .docs-tagline,
 .docs-meta,
-.breadcrumbs,
 .docs-toc,
 .section-list p,
 .doc-meta {
@@ -67,7 +66,6 @@ body {
 
 .docs-nav a,
 .docs-meta a,
-.breadcrumbs a,
 .doc-card a,
 .docs-toc a,
 .pagination a {
@@ -96,21 +94,6 @@ body {
   width: 100%;
   max-width: calc(var(--rustipo-content-width) + 4rem);
   padding: 1.5rem 1.5rem 3rem;
-}
-
-.docs-header {
-  margin-bottom: 1rem;
-}
-
-.breadcrumbs {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  font-size: 0.93rem;
-}
-
-.breadcrumbs span[aria-current="page"] {
-  color: var(--rustipo-text);
 }
 
 .docs-content-grid {
