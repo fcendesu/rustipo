@@ -106,10 +106,10 @@ pub const HEAD_ASSETS_PARTIAL: &str = r#"{% if site_favicon_svg %}<link rel="ico
   {{ site_font_faces_css | safe }}
 </style>
 {% endif %}
-<link rel="stylesheet" href="{{ asset_url(path='style.css') }}" />
-<link rel="stylesheet" href="{{ asset_url(path='palette.css') }}" />
+<link rel="stylesheet" href="{{ asset_url(path='style.css') }}?v={{ site_asset_version }}" />
+<link rel="stylesheet" href="{{ asset_url(path='palette.css') }}?v={{ site_asset_version }}" />
 {% if site_has_custom_css %}
-<link rel="stylesheet" href="{{ asset_url(path='custom.css') }}" />
+<link rel="stylesheet" href="{{ asset_url(path='custom.css') }}?v={{ site_asset_version }}" />
 {% endif %}
 "#;
 

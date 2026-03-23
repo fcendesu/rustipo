@@ -28,6 +28,7 @@ pub struct SiteRenderContext<'a> {
     pub site_style: &'a SiteStyleOptions,
     pub site_has_custom_css: bool,
     pub site_font_faces_css: Option<&'a str>,
+    pub asset_version: &'a str,
     pub palette: &'a Palette,
 }
 
@@ -115,6 +116,7 @@ fn insert_common_site_context(
         "site_font_faces_css",
         &render_context.site.site_font_faces_css,
     );
+    context.insert("site_asset_version", &render_context.site.asset_version);
     context::insert_page_context(
         context,
         config,
