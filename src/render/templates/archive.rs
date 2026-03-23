@@ -38,7 +38,7 @@ pub(super) fn render_blog_archive_page(
                 .title
                 .clone()
                 .unwrap_or_else(|| page.slug.clone()),
-            route: page.route.clone(),
+            route: env.config.public_url_path(&page.route),
             summary: page.frontmatter.summary.clone(),
             date: page.frontmatter.date.as_ref().map(ToString::to_string),
         };
@@ -67,8 +67,9 @@ pub(super) fn render_blog_archive_page(
     archive_groups.sort_by(|a, b| b.key.cmp(&a.key));
 
     let route = "/blog/archive/".to_string();
+    let public_route = env.config.public_url_path(&route);
     let mut context = TeraContext::new();
-    context.insert("route", &route);
+    context.insert("route", &public_route);
     context.insert("section_name", "archive");
     context.insert("section_title", "Archive");
     context.insert("items", &all_items);

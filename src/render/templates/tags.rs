@@ -34,7 +34,7 @@ pub(super) fn render_tag_pages(
             .unwrap_or_else(|| page.slug.clone());
         let item = SectionItem {
             title,
-            route: page.route.clone(),
+            route: env.config.public_url_path(&page.route),
             summary: page.frontmatter.summary.clone(),
             date: page.frontmatter.date.as_ref().map(ToString::to_string),
         };
@@ -57,7 +57,7 @@ pub(super) fn render_tag_pages(
     for (tag_slug, items) in tags {
         let route = format!("/tags/{tag_slug}/");
         let mut context = TeraContext::new();
-        context.insert("route", &route);
+        context.insert("route", &env.config.public_url_path(&route));
         context.insert("section_name", "tags");
         context.insert("section_title", &format!("Tag: {tag_slug}"));
         context.insert("items", &items);

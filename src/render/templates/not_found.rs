@@ -34,9 +34,11 @@ pub(super) fn render_not_found_page(tera: &Tera, env: &RenderEnvironment<'_>) ->
     };
 
     let mut context = TeraContext::new();
-    context.insert("route", NOT_FOUND_ROUTE);
+    let public_route = env.config.public_url_path(NOT_FOUND_ROUTE);
+    let content_html = super::rewrite_public_html_urls(NOT_FOUND_CONTENT_HTML, env.config);
+    context.insert("route", &public_route);
     context.insert("slug", "404");
-    context.insert("content_html", NOT_FOUND_CONTENT_HTML);
+    context.insert("content_html", &content_html);
     context.insert("frontmatter", &frontmatter);
     context.insert("page_summary", &frontmatter.summary);
     context.insert(
@@ -66,13 +68,13 @@ pub(super) fn render_not_found_page(tera: &Tera, env: &RenderEnvironment<'_>) ->
         &vec![
             BreadcrumbItem {
                 title: "Home".to_string(),
-                route: "/".to_string(),
+                route: env.config.public_url_path("/"),
                 active: false,
                 linkable: true,
             },
             BreadcrumbItem {
                 title: "Page not found".to_string(),
-                route: NOT_FOUND_ROUTE.to_string(),
+                route: public_route,
                 active: true,
                 linkable: false,
             },

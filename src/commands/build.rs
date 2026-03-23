@@ -31,7 +31,11 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
         "dist",
     )?;
     let rss_items = crate::output::rss::write_rss_feed("dist", &prepared.config, &prepared.pages)?;
-    let search_documents = crate::output::search::write_search_index("dist", &prepared.pages)?;
+    let search_documents = crate::output::search::write_search_index(
+        "dist",
+        &prepared.config.base_url,
+        &prepared.pages,
+    )?;
     let sitemap_urls = crate::output::sitemap::write_sitemap(
         "dist",
         &prepared.config.base_url,

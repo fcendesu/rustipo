@@ -35,10 +35,12 @@ pub(super) fn render_content_pages(
     for page in pages {
         let template = template_for_kind(page.kind);
         let mut context = TeraContext::new();
+        let public_route = env.config.public_url_path(&page.route);
+        let content_html = super::rewrite_public_html_urls(&page.html, env.config);
 
-        context.insert("route", &page.route);
+        context.insert("route", &public_route);
         context.insert("slug", &page.slug);
-        context.insert("content_html", &page.html);
+        context.insert("content_html", &content_html);
         context.insert("frontmatter", &page.frontmatter);
         context.insert("page_summary", &page.frontmatter.summary);
         context.insert(

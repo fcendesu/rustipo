@@ -80,6 +80,7 @@ pub(super) fn build_shared_template_data(
 
 pub(super) fn insert_page_context(
     context: &mut TeraContext,
+    config: &SiteConfig,
     shared: &SharedTemplateData,
     route: &str,
     page_kind: &str,
@@ -89,18 +90,30 @@ pub(super) fn insert_page_context(
     context.insert("current_section", current_section);
     context.insert(
         "site_nav",
-        &site_nav_for_route(shared, route, current_section),
+        &site_nav_for_route(shared, config, route, current_section),
     );
-    context.insert("site_menus", &site_menus_for_route(shared, route));
-    context.insert("breadcrumbs", &breadcrumbs_for_route(shared, route));
+    context.insert("site_menus", &site_menus_for_route(shared, config, route));
+    context.insert("breadcrumbs", &breadcrumbs_for_route(shared, config, route));
 
     let adjacent = shared
         .adjacent_posts
         .get(route)
         .cloned()
         .unwrap_or_default();
-    context.insert("previous_post", &adjacent.previous_post);
-    context.insert("next_post", &adjacent.next_post);
+    context.insert(
+        "previous_post",
+        &adjacent.previous_post.map(|post| AdjacentPost {
+            route: config.public_url_path(&post.route),
+            ..post
+        }),
+    );
+    context.insert(
+        "next_post",
+        &adjacent.next_post.map(|post| AdjacentPost {
+            route: config.public_url_path(&post.route),
+            ..post
+        }),
+    );
 }
 
 fn build_nav_entries(pages: &[Page]) -> Vec<NavEntry> {
@@ -239,11 +252,12 @@ fn breadcrumb_title_for_page(page: &Page) -> String {
 
 fn site_nav_for_route(
     shared: &SharedTemplateData,
+    config: &SiteConfig,
     route: &str,
     current_section: &str,
 ) -> Vec<NavItem> {
     if let Some(main_menu) = shared.configured_menus.get("main") {
-        return configured_menu_for_route(main_menu, route);
+        return configured_menu_for_route(main_menu, config, route);
     }
 
     shared
@@ -251,7 +265,7 @@ fn site_nav_for_route(
         .iter()
         .map(|entry| NavItem {
             title: entry.title.clone(),
-            route: entry.route.clone(),
+            route: config.public_url_path(&entry.route),
             active: nav_entry_is_active(entry, route, current_section),
         })
         .collect()
@@ -259,16 +273,26 @@ fn site_nav_for_route(
 
 fn site_menus_for_route(
     shared: &SharedTemplateData,
+    config: &SiteConfig,
     route: &str,
 ) -> BTreeMap<String, Vec<NavItem>> {
     shared
         .configured_menus
         .iter()
-        .map(|(name, entries)| (name.clone(), configured_menu_for_route(entries, route)))
+        .map(|(name, entries)| {
+            (
+                name.clone(),
+                configured_menu_for_route(entries, config, route),
+            )
+        })
         .collect()
 }
 
-fn breadcrumbs_for_route(shared: &SharedTemplateData, route: &str) -> Vec<BreadcrumbItem> {
+fn breadcrumbs_for_route(
+    shared: &SharedTemplateData,
+    config: &SiteConfig,
+    route: &str,
+) -> Vec<BreadcrumbItem> {
     let Some(segments) = breadcrumb_segments(route) else {
         return Vec::new();
     };
@@ -280,7 +304,7 @@ fn breadcrumbs_for_route(shared: &SharedTemplateData, route: &str) -> Vec<Breadc
                 .get(route)
                 .cloned()
                 .unwrap_or_else(|| "Home".to_string()),
-            route: route.to_string(),
+            route: config.public_url_path(route),
             active: true,
             linkable: shared.linkable_breadcrumb_routes.contains(route),
         }];
@@ -291,7 +315,7 @@ fn breadcrumbs_for_route(shared: &SharedTemplateData, route: &str) -> Vec<Breadc
     if let Some(home_title) = shared.breadcrumb_titles.get("/") {
         items.push(BreadcrumbItem {
             title: home_title.clone(),
-            route: "/".to_string(),
+            route: config.public_url_path("/"),
             active: false,
             linkable: shared.linkable_breadcrumb_routes.contains("/"),
         });
@@ -305,7 +329,7 @@ fn breadcrumbs_for_route(shared: &SharedTemplateData, route: &str) -> Vec<Breadc
                 .get(&crumb_route)
                 .cloned()
                 .unwrap_or_else(|| titleize_segment(segment)),
-            route: crumb_route.clone(),
+            route: config.public_url_path(&crumb_route),
             active: crumb_route == route,
             linkable: shared.linkable_breadcrumb_routes.contains(&crumb_route),
         });
@@ -329,12 +353,16 @@ fn breadcrumb_segments(route: &str) -> Option<Vec<String>> {
     Some(segments)
 }
 
-fn configured_menu_for_route(entries: &[ConfiguredMenuEntry], route: &str) -> Vec<NavItem> {
+fn configured_menu_for_route(
+    entries: &[ConfiguredMenuEntry],
+    config: &SiteConfig,
+    route: &str,
+) -> Vec<NavItem> {
     entries
         .iter()
         .map(|entry| NavItem {
             title: entry.title.clone(),
-            route: entry.route.clone(),
+            route: config.public_url_path(&entry.route),
             active: configured_menu_entry_is_active(entry, route),
         })
         .collect()

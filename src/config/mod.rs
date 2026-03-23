@@ -56,6 +56,10 @@ pub struct LayoutOptions {
 }
 
 impl SiteConfig {
+    pub fn public_url_path(&self, path: &str) -> String {
+        crate::url::public_url_path(&self.base_url, path)
+    }
+
     pub fn posts_per_page(&self) -> usize {
         self.site
             .as_ref()
@@ -69,17 +73,17 @@ impl SiteConfig {
         let static_dir = project_root.join("static");
 
         let mut links = FaviconLinks {
-            icon_href: Some("/favicon.ico".to_string()),
-            ico_href: Some("/favicon.ico".to_string()),
+            icon_href: Some(self.public_url_path("/favicon.ico")),
+            ico_href: Some(self.public_url_path("/favicon.ico")),
             svg_href: None,
             apple_touch_icon_href: None,
         };
 
         if static_dir.join("favicon.svg").is_file() {
-            links.svg_href = Some("/favicon.svg".to_string());
+            links.svg_href = Some(self.public_url_path("/favicon.svg"));
         }
         if static_dir.join("apple-touch-icon.png").is_file() {
-            links.apple_touch_icon_href = Some("/apple-touch-icon.png".to_string());
+            links.apple_touch_icon_href = Some(self.public_url_path("/apple-touch-icon.png"));
         }
 
         if let Some(configured) = self
@@ -99,13 +103,13 @@ impl SiteConfig {
                 );
             }
 
-            links.icon_href = Some(href.clone());
+            links.icon_href = Some(self.public_url_path(&href));
             if href.ends_with(".svg") {
-                links.svg_href = Some(href);
+                links.svg_href = Some(self.public_url_path(&href));
             } else if href.ends_with(".ico") {
-                links.ico_href = Some(href);
+                links.ico_href = Some(self.public_url_path(&href));
             } else if href.ends_with("apple-touch-icon.png") {
-                links.apple_touch_icon_href = Some(href);
+                links.apple_touch_icon_href = Some(self.public_url_path(&href));
             }
         }
 
@@ -315,6 +319,15 @@ mod tests {
                 .to_string()
                 .contains("configured favicon file not found")
         );
+    }
+
+    #[test]
+    fn prefixes_public_paths_when_base_url_has_subpath() {
+        let mut config = base_config();
+        config.base_url = "https://example.com/docs/".to_string();
+
+        assert_eq!(config.public_url_path("/guides/"), "/docs/guides/");
+        assert_eq!(config.public_url_path("style.css"), "/docs/style.css");
     }
 
     #[test]

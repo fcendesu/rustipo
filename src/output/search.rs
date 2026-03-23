@@ -16,12 +16,19 @@ struct SearchDocument {
     content: String,
 }
 
-pub fn write_search_index(dist_dir: impl AsRef<Path>, pages: &[Page]) -> Result<usize> {
+pub fn write_search_index(
+    dist_dir: impl AsRef<Path>,
+    base_url: &str,
+    pages: &[Page],
+) -> Result<usize> {
     let dist_dir = dist_dir.as_ref();
     fs::create_dir_all(dist_dir)
         .with_context(|| format!("failed to create output directory: {}", dist_dir.display()))?;
 
-    let mut docs = pages.iter().map(to_search_document).collect::<Vec<_>>();
+    let mut docs = pages
+        .iter()
+        .map(|page| to_search_document(page, base_url))
+        .collect::<Vec<_>>();
     docs.sort_by(|a, b| a.route.cmp(&b.route));
 
     let output = dist_dir.join("search-index.json");
@@ -33,9 +40,9 @@ pub fn write_search_index(dist_dir: impl AsRef<Path>, pages: &[Page]) -> Result<
     Ok(docs.len())
 }
 
-fn to_search_document(page: &Page) -> SearchDocument {
+fn to_search_document(page: &Page, base_url: &str) -> SearchDocument {
     SearchDocument {
-        route: page.route.clone(),
+        route: crate::url::public_url_path(base_url, &page.route),
         title: page
             .frontmatter
             .title
@@ -87,7 +94,8 @@ mod tests {
         .expect("post should be written");
 
         let pages = build_pages(&content_dir).expect("pages should build");
-        let count = write_search_index(&dist_dir, &pages).expect("search index should write");
+        let count = write_search_index(&dist_dir, "https://example.com/docs/", &pages)
+            .expect("search index should write");
         assert_eq!(count, 2);
 
         let raw =
@@ -99,7 +107,9 @@ mod tests {
 
         let blog_doc = docs
             .iter()
-            .find(|doc| doc.get("route").and_then(|route| route.as_str()) == Some("/blog/post/"))
+            .find(|doc| {
+                doc.get("route").and_then(|route| route.as_str()) == Some("/docs/blog/post/")
+            })
             .expect("blog route should be present");
         assert_eq!(
             blog_doc.get("title").and_then(|v| v.as_str()),
