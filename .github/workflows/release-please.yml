@@ -13,6 +13,8 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -51,6 +53,8 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true' && needs.release-please.outputs.tag_name != '' }}
     runs-on: ${{ matrix.runner }}
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -131,6 +135,8 @@ jobs:
       - release-please
       - release-binaries
     if: ${{ needs.release-please.outputs.release_created == 'true' && needs.release-please.outputs.tag_name != '' }}
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Download packaged release archives
         uses: actions/download-artifact@v8
