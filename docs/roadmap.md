@@ -21,6 +21,7 @@ Current shipped post-MVP capabilities:
 - completed `v0.8.0` core authoring release
 - completed `v0.9.0` publishing and site structure release
 - completed `v0.10.0` product identity and examples release
+- completed `v0.11.0` distribution and docs release
 - flagship example sites for blog and docs-style use cases
 - built-in `atlas` and `journal` layout themes
 - generated publishing/search artifacts during build:
@@ -59,13 +60,15 @@ For historical post-MVP batch planning, see:
   - broader Markdown-first site-generator positioning
   - flagship `journal` and `knowledge-base` examples
   - built-in `atlas` and `journal` layout themes
-
-## Upcoming milestones
-
 - `v0.11.0`: distribution and docs
   - docs site built with Rustipo
   - prebuilt binaries
   - Homebrew distribution
+
+## Upcoming milestones
+
+- `v0.12.0`: maintenance and workflow compatibility
+  - audit GitHub Actions workflows for Node 24 compatibility
 
 ## Milestone 1: Foundation
 
