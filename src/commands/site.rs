@@ -1,4 +1,8 @@
-use anyhow::Result;
+use std::fs;
+use std::path::Path;
+
+use anyhow::{Context, Result};
+use walkdir::WalkDir;
 
 use crate::config::SiteConfig;
 use crate::content::pages::{Page, PublicationMode, build_pages, build_pages_for_mode};
@@ -45,6 +49,7 @@ pub(crate) fn prepare_site(
     let site_font_faces_css =
         (!font_faces.is_empty()).then(|| crate::config::fonts::render_font_faces_css(&font_faces));
     let site_has_custom_css = config.has_custom_css(".");
+    let asset_version = compute_asset_version(".", &theme.static_dirs, &palette)?;
     let pages = match publication_mode {
         PublicationMode::Production => build_pages("content")?,
         PublicationMode::Preview => build_pages_for_mode("content", PublicationMode::Preview)?,
@@ -58,6 +63,7 @@ pub(crate) fn prepare_site(
         site_style: &site_style,
         site_has_custom_css,
         site_font_faces_css: site_font_faces_css.as_deref(),
+        asset_version: &asset_version,
         palette: &palette,
     };
     let rendered_pages =
@@ -77,4 +83,63 @@ pub(crate) fn prepare_site(
         rendered_pages,
         not_found_html,
     })
+}
+
+fn compute_asset_version(
+    project_root: impl AsRef<Path>,
+    theme_static_dirs: &[std::path::PathBuf],
+    palette: &Palette,
+) -> Result<String> {
+    let mut hash = 0xcbf29ce484222325_u64;
+    hash_static_dir(&mut hash, project_root.as_ref().join("static"))?;
+
+    for dir in theme_static_dirs {
+        hash_static_dir(&mut hash, dir)?;
+    }
+
+    let palette_json = serde_json::to_vec(palette).context("failed to serialize palette")?;
+    hash_bytes(&mut hash, &palette_json);
+
+    Ok(format!("{hash:016x}"))
+}
+
+fn hash_static_dir(hash: &mut u64, dir: impl AsRef<Path>) -> Result<()> {
+    let dir = dir.as_ref();
+    if !dir.exists() {
+        return Ok(());
+    }
+
+    let mut files = WalkDir::new(dir)
+        .into_iter()
+        .collect::<std::result::Result<Vec<_>, _>>()
+        .with_context(|| format!("failed to walk static asset directory: {}", dir.display()))?;
+    files.sort_by(|left, right| left.path().cmp(right.path()));
+
+    for entry in files {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+
+        let relative = entry.path().strip_prefix(dir).with_context(|| {
+            format!(
+                "failed to compute static asset relative path: {}",
+                entry.path().display()
+            )
+        })?;
+        hash_bytes(hash, relative.to_string_lossy().as_bytes());
+        hash_bytes(hash, &[0]);
+        let bytes = fs::read(entry.path())
+            .with_context(|| format!("failed to read static asset: {}", entry.path().display()))?;
+        hash_bytes(hash, &bytes);
+        hash_bytes(hash, &[0xff]);
+    }
+
+    Ok(())
+}
+
+fn hash_bytes(hash: &mut u64, bytes: &[u8]) {
+    for byte in bytes {
+        *hash ^= u64::from(*byte);
+        *hash = hash.wrapping_mul(0x100000001b3);
+    }
 }

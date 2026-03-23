@@ -79,40 +79,51 @@
 
         const mobileQuery = window.matchMedia("(max-width: 860px)");
 
-        const setDrawerOpen = (open) => {
-          document.body.classList.toggle("docs-sidebar-open", open);
+        const isMobile = () => mobileQuery.matches;
+
+        const isSidebarOpen = () => {
+          if (isMobile()) {
+            return document.body.classList.contains("docs-sidebar-open");
+          }
+
+          return !document.body.classList.contains("docs-sidebar-collapsed");
+        };
+
+        const setSidebarOpen = (open) => {
+          if (isMobile()) {
+            document.body.classList.toggle("docs-sidebar-open", open);
+            document.body.classList.remove("docs-sidebar-collapsed");
+            overlay.hidden = !open;
+          } else {
+            document.body.classList.remove("docs-sidebar-open");
+            document.body.classList.toggle("docs-sidebar-collapsed", !open);
+            overlay.hidden = true;
+          }
+
           menuToggle.setAttribute("aria-expanded", String(open));
-          overlay.hidden = !open;
         };
 
         const syncDrawerMode = () => {
-          setDrawerOpen(false);
-          if (!mobileQuery.matches) {
-            overlay.hidden = true;
-          }
+          setSidebarOpen(!isMobile());
         };
 
         menuToggle.addEventListener("click", () => {
-          if (!mobileQuery.matches) {
-            return;
-          }
-
-          setDrawerOpen(!document.body.classList.contains("docs-sidebar-open"));
+          setSidebarOpen(!isSidebarOpen());
         });
 
-        sidebarClose.addEventListener("click", () => setDrawerOpen(false));
-        overlay.addEventListener("click", () => setDrawerOpen(false));
+        sidebarClose.addEventListener("click", () => setSidebarOpen(false));
+        overlay.addEventListener("click", () => setSidebarOpen(false));
 
         document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            setDrawerOpen(false);
+          if (event.key === "Escape" && isSidebarOpen()) {
+            setSidebarOpen(false);
           }
         });
 
         sidebar.querySelectorAll("a").forEach((link) => {
           link.addEventListener("click", () => {
-            if (mobileQuery.matches) {
-              setDrawerOpen(false);
+            if (isMobile()) {
+              setSidebarOpen(false);
             }
           });
         });

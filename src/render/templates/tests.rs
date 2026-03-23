@@ -82,6 +82,7 @@ fn renders_pages_with_theme_templates() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -198,6 +199,7 @@ fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -306,6 +308,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -384,6 +387,7 @@ fn exposes_page_toc_to_templates() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -474,6 +478,7 @@ fn renders_archive_groups_for_dated_posts() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -572,6 +577,7 @@ fn exposes_frontmatter_metadata_in_page_templates() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -690,6 +696,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -835,6 +842,7 @@ fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -941,6 +949,7 @@ fn exposes_breadcrumbs_for_top_level_and_nested_pages() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1046,6 +1055,7 @@ fn injects_mermaid_runtime_only_for_pages_with_mermaid() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1139,6 +1149,7 @@ fn injects_math_runtime_only_for_pages_with_math() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1237,6 +1248,7 @@ fn renders_not_found_page_with_page_template_fallback() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1317,6 +1329,7 @@ fn prefers_dedicated_not_found_template_when_present() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1346,7 +1359,7 @@ fn prefixes_rendered_public_urls_when_base_url_has_subpath() {
 
     fs::write(
         theme_root.join("templates/base.html"),
-        "<html><head><link rel=\"stylesheet\" href=\"{{ asset_url(path='style.css') }}\"></head><body><a class=\"home\" href=\"{{ site_root }}\">Home</a>{% block body %}{% endblock body %}</body></html>",
+        "<html><head><link rel=\"stylesheet\" href=\"{{ asset_url(path='style.css') }}?v={{ site_asset_version }}\"></head><body><a class=\"home\" href=\"{{ site_root }}\">Home</a>{% block body %}{% endblock body %}</body></html>",
     )
     .expect("base template should be written");
     for template in [
@@ -1398,6 +1411,7 @@ fn prefixes_rendered_public_urls_when_base_url_has_subpath() {
             site_style: &site_style,
             site_has_custom_css,
             site_font_faces_css: None,
+            asset_version: "test",
             palette: &palette,
         },
     )
@@ -1408,7 +1422,11 @@ fn prefixes_rendered_public_urls_when_base_url_has_subpath() {
         .find(|page| page.route == "/")
         .expect("index page should render");
 
-    assert!(index.html.contains("href=\"&#x2F;rustipo&#x2F;style.css\""));
+    assert!(
+        index
+            .html
+            .contains("href=\"&#x2F;rustipo&#x2F;style.css?v=test\"")
+    );
     assert!(
         index
             .html
