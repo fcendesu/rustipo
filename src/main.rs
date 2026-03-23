@@ -7,6 +7,7 @@ mod palette;
 mod render;
 mod server;
 mod theme;
+mod url;
 
 use anyhow::Result;
 use clap::Parser;

@@ -15,8 +15,18 @@ pub(super) fn register(tera: &mut Tera, config: &SiteConfig) {
             base_url: config.base_url.clone(),
         },
     );
-    tera.register_function("asset_url", AssetUrlFunction);
-    tera.register_function("tag_url", TagUrlFunction);
+    tera.register_function(
+        "asset_url",
+        AssetUrlFunction {
+            base_url: config.base_url.clone(),
+        },
+    );
+    tera.register_function(
+        "tag_url",
+        TagUrlFunction {
+            base_url: config.base_url.clone(),
+        },
+    );
 }
 
 struct SlugifyFilter;
@@ -39,8 +49,12 @@ struct AbsUrlFunction {
 }
 
 struct FormatDateFilter;
-struct AssetUrlFunction;
-struct TagUrlFunction;
+struct AssetUrlFunction {
+    base_url: String,
+}
+struct TagUrlFunction {
+    base_url: String,
+}
 
 impl Function for AbsUrlFunction {
     fn call(&self, args: &HashMap<String, Value>) -> TeraResult<Value> {
@@ -92,7 +106,10 @@ impl Function for AssetUrlFunction {
             .and_then(Value::as_str)
             .ok_or_else(|| TeraError::msg("asset_url requires a string 'path' argument"))?;
 
-        Ok(Value::String(normalize_url_path(path)))
+        Ok(Value::String(crate::url::public_url_path(
+            &self.base_url,
+            path,
+        )))
     }
 }
 
@@ -109,19 +126,10 @@ impl Function for TagUrlFunction {
             ));
         }
 
-        Ok(Value::String(format!("/tags/{slug}/")))
-    }
-}
-
-fn normalize_url_path(path: &str) -> String {
-    if path.starts_with("http://") || path.starts_with("https://") {
-        return path.to_string();
-    }
-
-    if path.starts_with('/') {
-        path.to_string()
-    } else {
-        format!("/{path}")
+        Ok(Value::String(crate::url::public_url_path(
+            &self.base_url,
+            &format!("/tags/{slug}/"),
+        )))
     }
 }
 
@@ -166,7 +174,9 @@ mod tests {
 
     #[test]
     fn normalizes_asset_urls() {
-        let function = AssetUrlFunction;
+        let function = AssetUrlFunction {
+            base_url: "https://example.com/docs/".to_string(),
+        };
         let mut args = HashMap::new();
         args.insert(
             "path".to_string(),
@@ -174,16 +184,18 @@ mod tests {
         );
 
         let value = function.call(&args).expect("asset url should render");
-        assert_eq!(value, Value::String("/img/logo.svg".to_string()));
+        assert_eq!(value, Value::String("/docs/img/logo.svg".to_string()));
     }
 
     #[test]
     fn builds_tag_urls() {
-        let function = TagUrlFunction;
+        let function = TagUrlFunction {
+            base_url: "https://example.com/docs/".to_string(),
+        };
         let mut args = HashMap::new();
         args.insert("name".to_string(), Value::String("Site Gen".to_string()));
 
         let value = function.call(&args).expect("tag url should render");
-        assert_eq!(value, Value::String("/tags/site-gen/".to_string()));
+        assert_eq!(value, Value::String("/docs/tags/site-gen/".to_string()));
     }
 }

@@ -1325,3 +1325,95 @@ fn prefers_dedicated_not_found_template_when_present() {
     assert!(html.contains("Custom 404 for My Site"));
     assert!(!html.contains("Return home"));
 }
+
+#[test]
+fn prefixes_rendered_public_urls_when_base_url_has_subpath() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/guides")).expect("content dir should be created");
+    fs::write(
+        project_root.join("content/index.md"),
+        "# Welcome\n\n[Guide](/guides/start/)\n\n![Logo](/img/logo.svg)",
+    )
+    .expect("index should be written");
+    fs::write(project_root.join("content/guides/start.md"), "# Start")
+        .expect("guide page should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<html><head><link rel=\"stylesheet\" href=\"{{ asset_url(path='style.css') }}\"></head><body><a class=\"home\" href=\"{{ site_root }}\">Home</a>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}<article>{{ content_html | safe }}</article>{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "Docs".to_string(),
+        base_url: "https://example.com/rustipo/".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index page should render");
+
+    assert!(index.html.contains("href=\"&#x2F;rustipo&#x2F;style.css\""));
+    assert!(
+        index
+            .html
+            .contains("class=\"home\" href=\"&#x2F;rustipo&#x2F;\"")
+    );
+    assert!(index.html.contains("href=\"/rustipo/guides/start/\""));
+    assert!(index.html.contains("src=\"/rustipo/img/logo.svg\""));
+}

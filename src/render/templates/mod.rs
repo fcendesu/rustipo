@@ -91,6 +91,7 @@ fn insert_common_site_context(
 ) {
     context.insert("site_title", &config.title);
     context.insert("site_description", &config.description);
+    context.insert("site_root", &config.public_url_path("/"));
     context.insert("site_favicon", &render_context.site.favicon_links.icon_href);
     context.insert(
         "site_favicon_svg",
@@ -116,11 +117,63 @@ fn insert_common_site_context(
     );
     context::insert_page_context(
         context,
+        config,
         render_context.shared,
         render_context.route,
         render_context.page_kind,
         render_context.current_section,
     );
+}
+
+pub(super) fn rewrite_public_html_urls(html: &str, config: &SiteConfig) -> String {
+    let base_path = crate::url::base_path(&config.base_url);
+    if base_path == "/" {
+        return html.to_string();
+    }
+
+    let mut rewritten = html.to_string();
+    for attr in ["href", "src", "poster", "action"] {
+        rewritten = rewrite_attr_urls(&rewritten, attr, '"', &base_path);
+        rewritten = rewrite_attr_urls(&rewritten, attr, '\'', &base_path);
+    }
+
+    rewritten
+}
+
+fn rewrite_attr_urls(html: &str, attr: &str, quote: char, base_path: &str) -> String {
+    let needle = format!("{attr}={quote}/");
+    let prefix = base_path.trim_start_matches('/');
+    if prefix.is_empty() {
+        return html.to_string();
+    }
+
+    let mut output = String::with_capacity(html.len() + 32);
+    let mut remaining = html;
+
+    while let Some(index) = remaining.find(&needle) {
+        let (before, rest) = remaining.split_at(index);
+        output.push_str(before);
+        output.push_str(&needle);
+
+        let value = &rest[needle.len()..];
+        if !already_prefixed(value, prefix, quote) {
+            output.push_str(prefix);
+            output.push('/');
+        }
+
+        remaining = value;
+    }
+
+    output.push_str(remaining);
+    output
+}
+
+fn already_prefixed(value: &str, prefix: &str, quote: char) -> bool {
+    let Some(rest) = value.strip_prefix(prefix) else {
+        return false;
+    };
+
+    rest.starts_with('/') || rest.starts_with(quote)
 }
 
 fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {

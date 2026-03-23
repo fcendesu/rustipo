@@ -40,7 +40,7 @@ fn render_blog_section_pages(
                 .title
                 .clone()
                 .unwrap_or_else(|| page.slug.clone()),
-            route: page.route.clone(),
+            route: env.config.public_url_path(&page.route),
             summary: page.frontmatter.summary.clone(),
             date: page.frontmatter.date.as_ref().map(ToString::to_string),
         })
@@ -68,18 +68,24 @@ fn render_blog_section_pages(
         let prev_url = if page_number <= 1 {
             None
         } else if page_number == 2 {
-            Some("/blog/".to_string())
+            Some(env.config.public_url_path("/blog/"))
         } else {
-            Some(format!("/blog/page/{}/", page_number - 1))
+            Some(
+                env.config
+                    .public_url_path(&format!("/blog/page/{}/", page_number - 1)),
+            )
         };
         let next_url = if page_number < total_pages {
-            Some(format!("/blog/page/{}/", page_number + 1))
+            Some(
+                env.config
+                    .public_url_path(&format!("/blog/page/{}/", page_number + 1)),
+            )
         } else {
             None
         };
 
         let mut context = TeraContext::new();
-        context.insert("route", &route);
+        context.insert("route", &env.config.public_url_path(&route));
         context.insert("section_name", "blog");
         context.insert("section_title", "Blog");
         context.insert("items", &paged_items);
@@ -124,14 +130,14 @@ fn render_projects_section_page(
                 .title
                 .clone()
                 .unwrap_or_else(|| page.slug.clone()),
-            route: page.route.clone(),
+            route: env.config.public_url_path(&page.route),
             summary: page.frontmatter.summary.clone(),
             date: page.frontmatter.date.as_ref().map(ToString::to_string),
         })
         .collect::<Vec<_>>();
 
     let mut context = TeraContext::new();
-    context.insert("route", "/projects/");
+    context.insert("route", &env.config.public_url_path("/projects/"));
     context.insert("section_name", "projects");
     context.insert("section_title", "Projects");
     context.insert("items", &items);
