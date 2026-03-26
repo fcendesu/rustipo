@@ -66,6 +66,12 @@ For historical post-MVP batch planning, see:
 
 ## Upcoming milestones
 
+Current release-train note:
+
+- the next published Rustipo release is still expected to be `0.12.0`
+- some hosting and metadata work originally grouped under `v0.13.0` has already landed on `master`
+- milestone labels are used for planning themes and can drift from the next crate version when upstream blockers delay a batch
+
 - `v0.12.0`: maintenance and workflow compatibility
   - audit GitHub Actions workflows for Node 24 compatibility
 - `v0.13.0`: hosting and metadata polish
