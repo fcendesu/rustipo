@@ -314,6 +314,37 @@ Current behavior:
 - Workflow runs `rustipo build` and deploys `dist/` using Pages actions
 - Refuses to overwrite existing workflow unless `--force` is provided
 
+## `rustipo deploy cloudflare-pages`
+
+Generates a GitHub Actions workflow for deploying `dist/` to Cloudflare Pages using Wrangler.
+
+Example:
+
+```bash
+rustipo deploy cloudflare-pages
+```
+
+```bash
+rustipo deploy cloudflare-pages --force
+```
+
+Current behavior:
+
+- Writes `.github/workflows/deploy-cloudflare-pages.yml`
+- Workflow installs Rustipo from crates.io with `cargo install rustipo --locked`
+- Workflow runs `rustipo build`
+- Workflow deploys `dist/` with `cloudflare/wrangler-action`
+- Expects these repository settings before the workflow can run:
+  - secret: `CLOUDFLARE_API_TOKEN`
+  - secret: `CLOUDFLARE_ACCOUNT_ID`
+  - variable: `CLOUDFLARE_PAGES_PROJECT`
+- Refuses to overwrite existing workflow unless `--force` is provided
+
+If you prefer Cloudflare Pages Git integration instead of direct uploads, use:
+
+- build command: `cargo install rustipo --locked && rustipo build`
+- build output directory: `dist`
+
 ## Style Options (`config.toml`)
 
 You can control default layout behavior without editing theme CSS:

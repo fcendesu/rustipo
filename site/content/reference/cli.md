@@ -56,6 +56,21 @@ For the theme and palette model behind those commands, continue to [Themes and p
 
 Generates a GitHub Pages workflow that installs the published `rustipo` binary and runs `rustipo build`.
 
+### `rustipo deploy cloudflare-pages`
+
+Generates a Cloudflare Pages workflow that builds `dist/` and deploys it with Wrangler.
+
+The generated workflow expects:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_PAGES_PROJECT`
+
+If you prefer Cloudflare Pages Git integration, use:
+
+- build command: `cargo install rustipo --locked && rustipo build`
+- build output directory: `dist`
+
 ## Recommended Local Workflow
 
 ```bash
