@@ -22,6 +22,7 @@ Current shipped post-MVP capabilities:
 - completed `v0.9.0` publishing and site structure release
 - completed `v0.10.0` product identity and examples release
 - completed `v0.11.0` distribution and docs release
+- completed `v0.12.0` docs polish and deployment release
 - flagship example sites for blog and docs-style use cases
 - built-in `atlas` and `journal` layout themes
 - generated publishing/search artifacts during build:
@@ -63,24 +64,22 @@ For historical post-MVP batch planning, see:
 - `v0.11.0`: distribution and docs
   - docs site built with Rustipo and published with GitHub Pages
   - prebuilt binaries
+- `v0.12.0`: docs polish and deployment
+  - docs-site visual and subpath fixes
+  - built-in default meta descriptions
+  - Cloudflare Pages deployment helper
+  - Netlify deployment helper
 
 ## Upcoming milestones
 
-Current release-train note:
-
-- the next published Rustipo release is still expected to be `0.12.0`
-- some hosting and metadata work originally grouped under `v0.13.0` has already landed on `master`
-- milestone labels are used for planning themes and can drift from the next crate version when upstream blockers delay a batch
-
-- `v0.12.0`: maintenance and workflow compatibility
-  - audit GitHub Actions workflows for Node 24 compatibility
-- `v0.13.0`: hosting and metadata polish
-  - built-in default meta description support for themes
-  - Cloudflare Pages deployment support
-  - Netlify deployment support
 - `v0.14.0`: rich content and media
   - reusable embeds or shortcodes for interactive content
   - built-in image processing and resize helpers
+
+Tracked maintenance follow-up:
+
+- audit GitHub Actions workflows for Node 24 compatibility
+  - kept separate because the remaining warning is blocked on upstream action updates
 
 ## Milestone 1: Foundation
 
