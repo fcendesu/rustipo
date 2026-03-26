@@ -33,6 +33,9 @@ fn main() -> Result<()> {
         },
         cli::Commands::Deploy { command } => match command {
             cli::DeployCommands::GithubPages { force } => commands::deploy::github_pages(force),
+            cli::DeployCommands::CloudflarePages { force } => {
+                commands::deploy::cloudflare_pages(force)
+            }
         },
     }
 }

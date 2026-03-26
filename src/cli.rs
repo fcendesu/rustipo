@@ -90,13 +90,19 @@ pub enum DeployCommands {
         #[arg(long, default_value_t = false)]
         force: bool,
     },
+    /// Generate Cloudflare Pages deployment workflow
+    CloudflarePages {
+        /// Overwrite existing workflow file if present
+        #[arg(long, default_value_t = false)]
+        force: bool,
+    },
 }
 
 #[cfg(test)]
 mod tests {
     use clap::Parser;
 
-    use super::{Cli, Commands, PaletteCommands};
+    use super::{Cli, Commands, DeployCommands, PaletteCommands};
 
     #[test]
     fn parses_dev_command_with_host_and_port() {
@@ -131,6 +137,19 @@ mod tests {
                 other => panic!("expected palette use command, got {other:?}"),
             },
             other => panic!("expected palette command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parses_deploy_cloudflare_pages_command() {
+        let cli = Cli::parse_from(["rustipo", "deploy", "cloudflare-pages", "--force"]);
+
+        match cli.command {
+            Commands::Deploy { command } => match command {
+                DeployCommands::CloudflarePages { force } => assert!(force),
+                other => panic!("expected cloudflare-pages deploy command, got {other:?}"),
+            },
+            other => panic!("expected deploy command, got {other:?}"),
         }
     }
 }

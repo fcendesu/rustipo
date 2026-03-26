@@ -22,6 +22,7 @@ MVP complete, active post-MVP development.
 - `rustipo palette use <id>`
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
+- `rustipo deploy cloudflare-pages`
 
 ## Installation And Quick Start
 

@@ -22,6 +22,8 @@
 - `rustipo palette use <id>`
 - `rustipo deploy github-pages`
   - `--force`
+- `rustipo deploy cloudflare-pages`
+  - `--force`
 
 ## Distribution And Release
 

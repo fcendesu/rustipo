@@ -55,8 +55,70 @@ jobs:
         uses: actions/deploy-pages@v4
 "#;
 
+const CLOUDFLARE_PAGES_WORKFLOW: &str = r#"name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rustipo
+        run: cargo install rustipo --locked
+
+      - name: Build Site
+        run: rustipo build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+"#;
+
 pub fn github_pages(force: bool) -> Result<()> {
     let workflow_path = Path::new(".github/workflows/deploy-pages.yml");
+    write_workflow_file(workflow_path, GITHUB_PAGES_WORKFLOW, force)?;
+
+    println!("Created GitHub Pages workflow: {}", workflow_path.display());
+    println!("Next: push to master, then enable Pages in repository settings.");
+    Ok(())
+}
+
+pub fn cloudflare_pages(force: bool) -> Result<()> {
+    let workflow_path = Path::new(".github/workflows/deploy-cloudflare-pages.yml");
+    write_workflow_file(workflow_path, CLOUDFLARE_PAGES_WORKFLOW, force)?;
+
+    println!(
+        "Created Cloudflare Pages workflow: {}",
+        workflow_path.display()
+    );
+    println!("Next: create a Cloudflare Pages project, then add these repository settings:");
+    println!("- secret: CLOUDFLARE_API_TOKEN");
+    println!("- secret: CLOUDFLARE_ACCOUNT_ID");
+    println!("- variable: CLOUDFLARE_PAGES_PROJECT");
+    Ok(())
+}
+
+fn write_workflow_file(workflow_path: &Path, content: &str, force: bool) -> Result<()> {
     if workflow_path.exists() && !force {
         bail!(
             "workflow already exists: {} (use --force to overwrite)",
@@ -69,10 +131,8 @@ pub fn github_pages(force: bool) -> Result<()> {
         .context("failed to resolve workflow parent directory")?;
     fs::create_dir_all(parent)
         .with_context(|| format!("failed to create workflow directory: {}", parent.display()))?;
-    fs::write(workflow_path, GITHUB_PAGES_WORKFLOW)
+    fs::write(workflow_path, content)
         .with_context(|| format!("failed to write workflow file: {}", workflow_path.display()))?;
 
-    println!("Created GitHub Pages workflow: {}", workflow_path.display());
-    println!("Next: push to master, then enable Pages in repository settings.");
     Ok(())
 }
