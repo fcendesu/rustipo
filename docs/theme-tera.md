@@ -70,6 +70,7 @@ Rustipo injects common values such as:
 - `page_title`
 - `page_date`
 - `page_summary`
+- `page_description`
 - `page_tags`
 - `page_has_math`
 - `page_toc`
@@ -77,6 +78,13 @@ Rustipo injects common values such as:
 - `site_description`
 - `site_asset_version`
 - `site_style.*`
+
+`page_description` is the built-in convenience value for metadata tags. Rustipo resolves it with this fallback order:
+
+- `page_summary`
+- `site_description`
+
+If both are empty, `page_description` is omitted.
 
 Rustipo also injects stable navigation and page-state values:
 

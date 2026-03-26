@@ -44,6 +44,10 @@ pub(super) fn render_content_pages(
         context.insert("frontmatter", &page.frontmatter);
         context.insert("page_summary", &page.frontmatter.summary);
         context.insert(
+            "page_description",
+            &super::resolved_page_description(page.frontmatter.summary.as_deref(), env.config),
+        );
+        context.insert(
             "page_date",
             &page.frontmatter.date.as_ref().map(ToString::to_string),
         );

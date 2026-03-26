@@ -127,6 +127,20 @@ fn insert_common_site_context(
     );
 }
 
+pub(super) fn resolved_page_description(
+    page_summary: Option<&str>,
+    config: &SiteConfig,
+) -> Option<String> {
+    page_summary
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(ToOwned::to_owned)
+        .or_else(|| {
+            let site_description = config.description.trim();
+            (!site_description.is_empty()).then(|| site_description.to_string())
+        })
+}
+
 pub(super) fn rewrite_public_html_urls(html: &str, config: &SiteConfig) -> String {
     let base_path = crate::url::base_path(&config.base_url);
     if base_path == "/" {
