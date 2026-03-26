@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.11.0...rustipo-v0.12.0) (2026-03-26)
+
+
+### Features
+
+* **deploy:** add cloudflare pages workflow helper ([09cd257](https://github.com/fcendesu/rustipo/commit/09cd257293f1d6dd77e52a93b04cfbb9f3876362))
+* **deploy:** add cloudflare pages workflow helper ([02e2eb2](https://github.com/fcendesu/rustipo/commit/02e2eb2d193c996ab35b056841974ad3d4ad67c0))
+* **deploy:** add netlify workflow helper ([d1e90c7](https://github.com/fcendesu/rustipo/commit/d1e90c7064808e94b0bc04bc2573601e66331f30))
+* **deploy:** add netlify workflow helper ([e3ce858](https://github.com/fcendesu/rustipo/commit/e3ce8584642a1d7cc6b08cac99d7556f45be6f96))
+* **docs:** publish docs site with github pages ([26cf0d7](https://github.com/fcendesu/rustipo/commit/26cf0d7345e5b2e8d4f187ef9ec95319fada3e4a))
+* **docs:** publish docs site with github pages ([83c1e69](https://github.com/fcendesu/rustipo/commit/83c1e694f746614714d4fc1200e869f3c4466a7b))
+* **theme:** add atlas drawer nav and back-to-top ([5c9b5ee](https://github.com/fcendesu/rustipo/commit/5c9b5eefcd1cbd1182bda3759ca04324d80d5fb7))
+* **theme:** add atlas drawer nav and back-to-top ([00eee98](https://github.com/fcendesu/rustipo/commit/00eee982ec96889e8beb9aa15cad52965d6d2793))
+* **theme:** add default meta description support ([d52c22b](https://github.com/fcendesu/rustipo/commit/d52c22bca1650f27c5c81d753040432763096644))
+* **theme:** add default meta description support ([cdb689d](https://github.com/fcendesu/rustipo/commit/cdb689d7e8a4ec881ff7b53a18c7808435b96ce3))
+
+
+### Bug Fixes
+
+* **ci:** use supported intel macos runner ([52b4c04](https://github.com/fcendesu/rustipo/commit/52b4c0464bb6c46365f2b51b495591aff7419302))
+* **ci:** use supported intel macos runner ([5a418a7](https://github.com/fcendesu/rustipo/commit/5a418a708f4258469cb09044246e2c17b0b99acd))
+* **render:** honor base_url subpaths in public urls ([df6ae03](https://github.com/fcendesu/rustipo/commit/df6ae03e49fc83f09b1b5cc892136a10520ae59c))
+* **render:** honor base_url subpaths in public urls ([fe37b21](https://github.com/fcendesu/rustipo/commit/fe37b21035262f1bd5981be972221fc65daa4307))
+* **theme:** make atlas sidebar toggleable and bust asset cache ([a67f28a](https://github.com/fcendesu/rustipo/commit/a67f28a2d22b6b0f0293fcc7a462c01fbc9c6dc8))
+* **theme:** make atlas sidebar toggleable and bust asset cache ([56ca273](https://github.com/fcendesu/rustipo/commit/56ca273246e124b221bd9ce63ec9bbb68fb56c09))
+* **theme:** remove atlas breadcrumb header ([da3080d](https://github.com/fcendesu/rustipo/commit/da3080dfad61c3f3a8b88abbb9f17e2239a2c115))
+* **theme:** remove atlas breadcrumb header ([7c04077](https://github.com/fcendesu/rustipo/commit/7c040774ce23cb1b1173db6395209c10f6d625bc))
+* **theme:** restore atlas static sidebar ([b039add](https://github.com/fcendesu/rustipo/commit/b039addd590f0381ffcbf34a4516c2e3a2ba1b29))
+* **theme:** restore atlas static sidebar ([368aabf](https://github.com/fcendesu/rustipo/commit/368aabf4dc51a0d073ba6a82dc97f676d4656ccc))
+
 ## [0.11.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.10.0...rustipo-v0.11.0) (2026-03-22)
 
 
