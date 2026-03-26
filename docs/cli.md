@@ -345,6 +345,32 @@ If you prefer Cloudflare Pages Git integration instead of direct uploads, use:
 - build command: `cargo install rustipo --locked && rustipo build`
 - build output directory: `dist`
 
+## `rustipo deploy netlify`
+
+Generates a GitHub Actions workflow for deploying `dist/` to Netlify with Netlify CLI.
+
+Example:
+
+```bash
+rustipo deploy netlify
+```
+
+```bash
+rustipo deploy netlify --force
+```
+
+Current behavior:
+
+- Writes `.github/workflows/deploy-netlify.yml`
+- Workflow installs Rustipo from crates.io with `cargo install rustipo --locked`
+- Workflow installs Netlify CLI with `npm install -g netlify-cli`
+- Workflow runs `rustipo build`
+- Workflow deploys `dist/` with `netlify deploy --dir=dist --prod`
+- Expects these repository secrets before the workflow can run:
+  - `NETLIFY_AUTH_TOKEN`
+  - `NETLIFY_SITE_ID`
+- Refuses to overwrite existing workflow unless `--force` is provided
+
 ## Style Options (`config.toml`)
 
 You can control default layout behavior without editing theme CSS:

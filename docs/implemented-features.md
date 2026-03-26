@@ -24,6 +24,8 @@
   - `--force`
 - `rustipo deploy cloudflare-pages`
   - `--force`
+- `rustipo deploy netlify`
+  - `--force`
 
 ## Distribution And Release
 

@@ -36,6 +36,7 @@ fn main() -> Result<()> {
             cli::DeployCommands::CloudflarePages { force } => {
                 commands::deploy::cloudflare_pages(force)
             }
+            cli::DeployCommands::Netlify { force } => commands::deploy::netlify(force),
         },
     }
 }
