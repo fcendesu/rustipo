@@ -5,7 +5,7 @@ summary: Recent Rustipo releases and the next planned milestone batches for Rust
 
 # Roadmap
 
-Rustipo has shipped five post-MVP releases in a row, each focused on a clear product slice.
+Rustipo has shipped six post-MVP releases in a row, each focused on a clear product slice.
 
 ## Recent Releases
 
@@ -53,32 +53,28 @@ Distribution and docs release:
 - docs site with Rustipo
 - prebuilt release binaries
 
-## Next Up: `v0.12.0`
+## `v0.12.0`
 
-Maintenance and workflow compatibility:
+Docs polish and deployment:
 
-- audit GitHub Actions workflows for Node 24 compatibility
-
-Release-train note:
-
-- the next published Rustipo release is still expected to be `0.12.0`
-- some hosting and metadata work originally grouped under `v0.13.0` is already merged on `master`
-- milestone labels are planning buckets, so they can drift from the next crate version when a blocked item holds the release train
-
-## After That: `v0.13.0`
-
-Hosting and metadata polish:
-
-- built-in default meta description support for themes
+- docs-site visual and subpath fixes
+- built-in default meta descriptions
 - Cloudflare Pages deployment support
 - Netlify deployment support
 
-## Looking Ahead: `v0.14.0`
+## Next Up: `v0.14.0`
 
 Rich content and media:
 
 - reusable embeds or shortcodes for interactive content
 - built-in image processing and resize helpers
+
+## Tracked Follow-up
+
+Maintenance and workflow compatibility:
+
+- audit GitHub Actions workflows for Node 24 compatibility
+- this is still open because the remaining warning is blocked on upstream GitHub Action updates rather than Rustipo code changes
 
 ## Later
 
