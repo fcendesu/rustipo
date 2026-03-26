@@ -96,6 +96,12 @@ pub enum DeployCommands {
         #[arg(long, default_value_t = false)]
         force: bool,
     },
+    /// Generate Netlify deployment workflow
+    Netlify {
+        /// Overwrite existing workflow file if present
+        #[arg(long, default_value_t = false)]
+        force: bool,
+    },
 }
 
 #[cfg(test)]
@@ -148,6 +154,19 @@ mod tests {
             Commands::Deploy { command } => match command {
                 DeployCommands::CloudflarePages { force } => assert!(force),
                 other => panic!("expected cloudflare-pages deploy command, got {other:?}"),
+            },
+            other => panic!("expected deploy command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parses_deploy_netlify_command() {
+        let cli = Cli::parse_from(["rustipo", "deploy", "netlify", "--force"]);
+
+        match cli.command {
+            Commands::Deploy { command } => match command {
+                DeployCommands::Netlify { force } => assert!(force),
+                other => panic!("expected netlify deploy command, got {other:?}"),
             },
             other => panic!("expected deploy command, got {other:?}"),
         }

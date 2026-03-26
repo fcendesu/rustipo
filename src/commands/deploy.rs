@@ -94,6 +94,51 @@ jobs:
           command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
 "#;
 
+const NETLIFY_WORKFLOW: &str = r#"name: Deploy Netlify
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rustipo
+        run: cargo install rustipo --locked
+
+      - name: Build Site
+        run: rustipo build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: netlify deploy --dir=dist --prod
+"#;
+
 pub fn github_pages(force: bool) -> Result<()> {
     let workflow_path = Path::new(".github/workflows/deploy-pages.yml");
     write_workflow_file(workflow_path, GITHUB_PAGES_WORKFLOW, force)?;
@@ -115,6 +160,17 @@ pub fn cloudflare_pages(force: bool) -> Result<()> {
     println!("- secret: CLOUDFLARE_API_TOKEN");
     println!("- secret: CLOUDFLARE_ACCOUNT_ID");
     println!("- variable: CLOUDFLARE_PAGES_PROJECT");
+    Ok(())
+}
+
+pub fn netlify(force: bool) -> Result<()> {
+    let workflow_path = Path::new(".github/workflows/deploy-netlify.yml");
+    write_workflow_file(workflow_path, NETLIFY_WORKFLOW, force)?;
+
+    println!("Created Netlify workflow: {}", workflow_path.display());
+    println!("Next: connect or create your Netlify site, then add these repository secrets:");
+    println!("- secret: NETLIFY_AUTH_TOKEN");
+    println!("- secret: NETLIFY_SITE_ID");
     Ok(())
 }
 

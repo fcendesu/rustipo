@@ -23,6 +23,7 @@ MVP complete, active post-MVP development.
 - `rustipo theme install <source>`
 - `rustipo deploy github-pages`
 - `rustipo deploy cloudflare-pages`
+- `rustipo deploy netlify`
 
 ## Installation And Quick Start
 

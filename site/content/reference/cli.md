@@ -71,6 +71,15 @@ If you prefer Cloudflare Pages Git integration, use:
 - build command: `cargo install rustipo --locked && rustipo build`
 - build output directory: `dist`
 
+### `rustipo deploy netlify`
+
+Generates a Netlify deployment workflow that installs Rustipo, builds `dist/`, and deploys it with Netlify CLI.
+
+The generated workflow expects:
+
+- `NETLIFY_AUTH_TOKEN`
+- `NETLIFY_SITE_ID`
+
 ## Recommended Local Workflow
 
 ```bash

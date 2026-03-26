@@ -756,6 +756,60 @@ fn deploy_cloudflare_pages_refuses_overwrite_without_force() {
 }
 
 #[test]
+fn deploy_netlify_generates_workflow_file() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let output = run_cli(root, &["deploy", "netlify"]);
+    assert!(
+        output.status.success(),
+        "deploy helper failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let workflow = root.join(".github/workflows/deploy-netlify.yml");
+    assert!(workflow.is_file());
+    let content = fs::read_to_string(workflow).expect("workflow should be readable");
+    assert!(content.contains("name: Deploy Netlify"));
+    assert!(content.contains("actions/setup-node@v6"));
+    assert!(content.contains("node-version: 22"));
+    assert!(content.contains("npm install -g netlify-cli"));
+    assert!(content.contains("netlify deploy --dir=dist --prod"));
+    assert!(content.contains("NETLIFY_AUTH_TOKEN"));
+    assert!(content.contains("NETLIFY_SITE_ID"));
+    assert!(content.contains("cargo install rustipo --locked"));
+    assert!(content.contains("run: rustipo build"));
+}
+
+#[test]
+fn deploy_netlify_refuses_overwrite_without_force() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    fs::create_dir_all(root.join(".github/workflows")).expect("workflow dir should be created");
+    fs::write(
+        root.join(".github/workflows/deploy-netlify.yml"),
+        "name: existing",
+    )
+    .expect("existing workflow should be written");
+
+    let output = run_cli(root, &["deploy", "netlify"]);
+    assert!(
+        !output.status.success(),
+        "deploy helper should fail without --force"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("workflow already exists"));
+
+    let force_output = run_cli(root, &["deploy", "netlify", "--force"]);
+    assert!(
+        force_output.status.success(),
+        "deploy helper should overwrite with --force: {}",
+        String::from_utf8_lossy(&force_output.stderr)
+    );
+}
+
+#[test]
 fn bundled_examples_build_successfully() {
     let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let examples_root = repo_root.join("examples");
