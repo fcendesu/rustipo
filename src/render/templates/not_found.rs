@@ -42,6 +42,10 @@ pub(super) fn render_not_found_page(tera: &Tera, env: &RenderEnvironment<'_>) ->
     context.insert("frontmatter", &frontmatter);
     context.insert("page_summary", &frontmatter.summary);
     context.insert(
+        "page_description",
+        &super::resolved_page_description(frontmatter.summary.as_deref(), env.config),
+    );
+    context.insert(
         "page_date",
         &frontmatter.date.as_ref().map(ToString::to_string),
     );

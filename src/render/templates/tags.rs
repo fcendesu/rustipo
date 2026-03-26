@@ -73,6 +73,10 @@ pub(super) fn render_tag_pages(
             "page_title",
             &format!("Tag: {tag_slug} | {}", env.config.title),
         );
+        context.insert(
+            "page_description",
+            &super::resolved_page_description(None, env.config),
+        );
         context.insert("content_html", "");
         context.insert("page_has_mermaid", &false);
         context.insert("page_has_math", &false);

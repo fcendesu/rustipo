@@ -90,6 +90,7 @@ pub const HEAD_ASSETS_PARTIAL: &str = r#"{% if site_favicon_svg %}<link rel="ico
 {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}" sizes="any" />{% endif %}
 {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}" />{% endif %}
 {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}" />{% endif %}
+{% if page_description %}<meta name="description" content="{{ page_description }}" />{% endif %}
 <style>
   :root {
     --rustipo-content-width: {{ site_style.content_width | default(value="98%") }};

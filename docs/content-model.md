@@ -47,7 +47,9 @@ Supported fields for MVP:
 - `order`
 - `links`
 
-These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_tags`).
+These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_description`, `page_tags`).
+
+`summary` is also the first input Rustipo uses for built-in meta description rendering in themes. If `summary` is empty, Rustipo falls back to the site-level `description` from `config.toml`.
 
 ## Content vs layout
 

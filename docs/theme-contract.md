@@ -156,6 +156,7 @@ Rustipo injects common site variables into template contexts, including:
 - page-state helpers:
   - `page_kind`
   - `current_section`
+  - `page_description`
   - `site_nav`
   - `site_menus`
   - `breadcrumbs`
@@ -179,6 +180,13 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.mono_font`
 - `site_has_custom_css` (boolean, true when `static/custom.css` exists)
 - `site_font_faces_css` (optional rendered `@font-face` rules for configured local fonts)
+
+`page_description` is the stable convenience field for theme metadata output. It resolves with this fallback order:
+
+- `page_summary`
+- `site_description`
+
+If both values are empty, Rustipo leaves `page_description` unset so themes can omit the tag cleanly.
 
 Rustipo also registers small Tera helpers for theme authors:
 

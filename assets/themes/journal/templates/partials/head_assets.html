@@ -2,6 +2,7 @@
 {% if site_favicon_ico %}<link rel="icon" href="{{ site_favicon_ico }}?v={{ site_asset_version }}" sizes="any" />{% endif %}
 {% if site_apple_touch_icon %}<link rel="apple-touch-icon" href="{{ site_apple_touch_icon }}?v={{ site_asset_version }}" />{% endif %}
 {% if site_favicon and not site_favicon_svg and not site_favicon_ico %}<link rel="icon" href="{{ site_favicon }}?v={{ site_asset_version }}" />{% endif %}
+{% if page_description %}<meta name="description" content="{{ page_description }}" />{% endif %}
 <style>
   :root {
     --rustipo-content-width: {{ site_style.content_width | default(value="1120px") }};

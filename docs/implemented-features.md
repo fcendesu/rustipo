@@ -237,6 +237,7 @@
 - `page_title`
 - `page_date`
 - `page_summary`
+- `page_description`
 - `page_tags`
 - `page_has_math`
 - `page_toc`
@@ -248,6 +249,13 @@
 - `previous_post`
 - `next_post`
 - `page_has_mermaid`
+
+## Built-in Metadata Output
+
+- default `<meta name="description">` support in built-in themes
+- resolution order:
+  - `page_summary`
+  - `site_description`
 - `route`
 - `section_name`
 - `section_title`
