@@ -59,6 +59,12 @@ Maintenance and workflow compatibility:
 
 - audit GitHub Actions workflows for Node 24 compatibility
 
+Release-train note:
+
+- the next published Rustipo release is still expected to be `0.12.0`
+- some hosting and metadata work originally grouped under `v0.13.0` is already merged on `master`
+- milestone labels are planning buckets, so they can drift from the next crate version when a blocked item holds the release train
+
 ## After That: `v0.13.0`
 
 Hosting and metadata polish:
