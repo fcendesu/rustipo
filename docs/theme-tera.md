@@ -78,6 +78,7 @@ Rustipo injects common values such as:
 - `site_title`
 - `site_description`
 - `site_asset_version`
+- `site_analytics_head_html`
 - `site_taxonomies`
 - `site_style.*`
 
@@ -87,6 +88,19 @@ Rustipo injects common values such as:
 - `site_description`
 
 If both are empty, `page_description` is omitted.
+
+`site_analytics_head_html` is the stable convenience value for built-in analytics output. In
+`v0.15`, Rustipo supports opt-in Plausible configuration from `config.toml`:
+
+```toml
+[site.analytics.plausible]
+domain = "docs.example.com"
+# Optional for self-hosted Plausible:
+# script_src = "https://stats.example.com/js/script.js"
+```
+
+When configured, `site_analytics_head_html` contains a ready-to-render `<script defer ...>`
+snippet. Built-in themes already include it in their shared head partials.
 
 Rustipo also injects stable navigation and page-state values:
 

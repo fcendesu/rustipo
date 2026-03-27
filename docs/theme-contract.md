@@ -198,6 +198,7 @@ Rustipo injects common site variables into template contexts, including:
   - `next_url`
 - favicon helpers: `site_favicon`, `site_favicon_svg`, `site_favicon_ico`, `site_apple_touch_icon`
 - asset helper: `site_asset_version` (stable cache-busting fingerprint for generated asset URLs)
+- analytics helper: `site_analytics_head_html` (optional provider-agnostic head snippet for configured analytics)
 - style helpers from config:
   - `site_style.content_width`
   - `site_style.top_gap`
@@ -215,6 +216,25 @@ Rustipo injects common site variables into template contexts, including:
 - `site_description`
 
 If both values are empty, Rustipo leaves `page_description` unset so themes can omit the tag cleanly.
+
+`site_analytics_head_html` is the stable hook for built-in analytics integrations. In `v0.15`,
+Rustipo supports opt-in Plausible analytics via:
+
+```toml
+[site.analytics.plausible]
+domain = "docs.example.com"
+# Optional for self-hosted Plausible:
+# script_src = "https://stats.example.com/js/script.js"
+```
+
+When present, Rustipo renders a ready-to-include head snippet. Themes can inherit the built-in
+head partial behavior or explicitly render:
+
+```html
+{% if site_analytics_head_html %}
+{{ site_analytics_head_html | safe }}
+{% endif %}
+```
 
 Rustipo also registers small Tera helpers for theme authors:
 
