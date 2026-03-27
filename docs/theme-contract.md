@@ -66,7 +66,9 @@ Rustipo can load either built-in themes shipped with the binary or local project
 Color presets such as `catppuccin-mocha` and `tokyonight-storm` belong in the palette system, not
 in theme IDs. Themes define structure; palettes define color tokens.
 
-Generated `palette.css` always includes the stable semantic variables used by the default theme:
+Generated `palette.css` always includes the stable semantic variables used by the default theme.
+These are the required palette contract fields all palettes must provide, either directly through
+their top-level TOML fields or through Rustipo's generated CSS layer:
 
 - `--rustipo-bg`
 - `--rustipo-text`
@@ -80,11 +82,13 @@ Generated `palette.css` always includes the stable semantic variables used by th
 - `--rustipo-table-header-bg`
 
 Palettes can also expose additional token variables. Rustipo writes those as
-`--rustipo-token-<name>`, which lets richer themes use full palette vocabularies such as the
-official Catppuccin flavor tokens.
+`--rustipo-token-<name>`.
 
-Rustipo also derives a small richer theme contract from those tokens so themes can style more
-expressively without depending on palette-family-specific names:
+These raw extra tokens are useful for palette-family-specific vocabularies such as Catppuccin
+flavor names, but they are not the primary cross-theme contract.
+
+Rustipo also emits a canonical richer token layer so themes can style more expressively without
+depending on palette-family-specific names:
 
 - `--rustipo-base`
 - `--rustipo-mantle`
@@ -103,7 +107,29 @@ expressively without depending on palette-family-specific names:
 - `--rustipo-warning`
 - `--rustipo-danger`
 
-Theme authors should prefer these richer variables with fallbacks to the stable semantic ones.
+Theme authors should prefer these canonical richer variables with fallbacks to the stable semantic
+ones.
+
+For serious palette implementations, Rustipo expects palette authors to map their palette family
+into this richer layer when they have good source values available. The preferred extra-token
+mapping guidance is:
+
+- `base`, `mantle`, `crust`
+- `surface0`, `surface1`, `surface2`
+- `overlay0`, `overlay1`, `overlay2`
+- `subtext0`, `subtext1`
+- `accent` or palette-family accent aliases such as `blue`
+- `accent-strong` or palette-family accent aliases such as `mauve` / `lavender`
+- `success` or `green`
+- `warning` or `yellow`
+- `danger` or `red`
+
+If a palette does not define those extra tokens, Rustipo still emits the canonical richer
+variables by falling back to the stable semantic fields. That means:
+
+- stable semantic tokens are the required baseline
+- canonical richer tokens are always available to themes
+- raw `--rustipo-token-*` extras remain optional and palette-family-specific
 
 Example:
 

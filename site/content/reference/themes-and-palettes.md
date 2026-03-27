@@ -63,19 +63,42 @@ Palette CSS is generated into `dist/palette.css` during builds.
 
 ## Theme Contract
 
-Themes consume stable semantic variables such as:
+Themes consume two palette layers:
+
+1. a stable semantic baseline that every palette must satisfy
+2. a canonical richer layer that Rustipo always emits for stronger themes
+
+### Stable semantic baseline
+
+Themes can always rely on variables such as:
 
 - `--rustipo-bg`
 - `--rustipo-text`
 - `--rustipo-link`
 - `--rustipo-code-bg`
 
-They can also use richer derived tokens such as:
+### Canonical richer layer
+
+Themes can also use richer canonical tokens such as:
 
 - `--rustipo-base`
 - `--rustipo-surface-0`
 - `--rustipo-accent`
 - `--rustipo-success`
+
+Rustipo derives those from palette-specific extra tokens when available, and otherwise falls back to the stable semantic fields.
+
+### Raw family-specific extras
+
+Palette files may also define extra tokens such as:
+
+- `base`
+- `surface0`
+- `blue`
+- `mauve`
+- `green`
+
+Rustipo exposes those as raw CSS variables like `--rustipo-token-blue`, but themes should treat those as optional family-specific extras rather than the core contract.
 
 ## Image Processing Helper
 
@@ -101,3 +124,4 @@ Rustipo writes those generated files into `dist/processed-images/`.
 
 - [CLI reference](/reference/cli/#theme-and-palette-commands)
 - [Examples](/examples/)
+- [Theme contract](/reference/themes-and-palettes/)
