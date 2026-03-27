@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.13.0...rustipo-v0.14.0) (2026-03-27)
+
+
+### Features
+
+* **config:** add optional analytics integration ([7b8fc1e](https://github.com/fcendesu/rustipo/commit/7b8fc1e0fcbb3623203d5246837acbfcfa5314b9))
+* **palette:** formalize canonical token contract ([7ff02ca](https://github.com/fcendesu/rustipo/commit/7ff02ca8cd58bb28cf4e3900fd7214645fe5a43f))
+* **render:** formalize taxonomy context ([00db5d2](https://github.com/fcendesu/rustipo/commit/00db5d2e440e6ce1eebff7eff85d0005a7905100))
+
 ## [0.13.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.12.0...rustipo-v0.13.0) (2026-03-27)
 
 
