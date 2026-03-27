@@ -4,6 +4,9 @@ use std::path::Path;
 
 use anyhow::{Context, Result, bail};
 
+use crate::palette::contract::{
+    CANONICAL_RICH_TOKENS, STABLE_SEMANTIC_TOKENS, canonical_token_value,
+};
 use crate::palette::models::{Palette, PaletteSource, PaletteSummary};
 
 const BUILTIN_PALETTE_FILES: &[(&str, &str)] = &[
@@ -225,22 +228,15 @@ struct PaletteEntry {
 }
 
 pub fn render_palette_css(palette: &Palette) -> String {
-    let mut lines = vec![
-        format!("  color-scheme: {};", palette.color_scheme),
-        format!("  --rustipo-bg: {};", palette.bg),
-        format!("  --rustipo-text: {};", palette.text),
-        format!("  --rustipo-surface-muted: {};", palette.surface_muted),
-        format!("  --rustipo-border: {};", palette.border),
-        format!(
-            "  --rustipo-blockquote-border: {};",
-            palette.blockquote_border
-        ),
-        format!("  --rustipo-link: {};", palette.link),
-        format!("  --rustipo-link-hover: {};", palette.link_hover),
-        format!("  --rustipo-code-bg: {};", palette.code_bg),
-        format!("  --rustipo-code-text: {};", palette.code_text),
-        format!("  --rustipo-table-header-bg: {};", palette.table_header_bg),
-    ];
+    let mut lines = vec![format!("  color-scheme: {};", palette.color_scheme)];
+
+    for token in STABLE_SEMANTIC_TOKENS {
+        lines.push(format!(
+            "  --{}: {};",
+            token.css_name,
+            (token.value)(palette)
+        ));
+    }
 
     if !palette.extra_tokens.is_empty() {
         for (token_name, value) in &palette.extra_tokens {
@@ -248,88 +244,15 @@ pub fn render_palette_css(palette: &Palette) -> String {
         }
     }
 
-    let derived_aliases = [
-        ("rustipo-base", token_or(palette, &["base"], &palette.bg)),
-        (
-            "rustipo-mantle",
-            token_or(palette, &["mantle"], &palette.surface_muted),
-        ),
-        (
-            "rustipo-crust",
-            token_or(palette, &["crust"], &palette.code_bg),
-        ),
-        (
-            "rustipo-surface-0",
-            token_or(palette, &["surface0"], &palette.surface_muted),
-        ),
-        (
-            "rustipo-surface-1",
-            token_or(palette, &["surface1"], &palette.table_header_bg),
-        ),
-        (
-            "rustipo-surface-2",
-            token_or(palette, &["surface2"], &palette.border),
-        ),
-        (
-            "rustipo-overlay-0",
-            token_or(palette, &["overlay0"], &palette.border),
-        ),
-        (
-            "rustipo-overlay-1",
-            token_or(palette, &["overlay1"], &palette.code_text),
-        ),
-        (
-            "rustipo-overlay-2",
-            token_or(palette, &["overlay2"], &palette.code_text),
-        ),
-        (
-            "rustipo-subtext-0",
-            token_or(palette, &["subtext0"], &palette.code_text),
-        ),
-        (
-            "rustipo-subtext-1",
-            token_or(palette, &["subtext1"], &palette.code_text),
-        ),
-        (
-            "rustipo-accent",
-            token_or(palette, &["accent", "blue"], &palette.link),
-        ),
-        (
-            "rustipo-accent-strong",
-            token_or(
-                palette,
-                &["accent-strong", "mauve", "lavender"],
-                &palette.link_hover,
-            ),
-        ),
-        (
-            "rustipo-success",
-            token_or(palette, &["success", "green"], &palette.link),
-        ),
-        (
-            "rustipo-warning",
-            token_or(palette, &["warning", "yellow"], &palette.link_hover),
-        ),
-        (
-            "rustipo-danger",
-            token_or(palette, &["danger", "red"], &palette.blockquote_border),
-        ),
-    ];
-
-    for (name, value) in derived_aliases {
-        lines.push(format!("  --{}: {};", name, value));
+    for token in CANONICAL_RICH_TOKENS {
+        lines.push(format!(
+            "  --{}: {};",
+            token.css_name,
+            canonical_token_value(palette, &token)
+        ));
     }
 
     format!(":root {{\n{}\n}}\n", lines.join("\n"))
-}
-
-fn token_or<'a>(palette: &'a Palette, names: &[&str], fallback: &'a str) -> &'a str {
-    for name in names {
-        if let Some(value) = palette.extra_tokens.get(*name) {
-            return value;
-        }
-    }
-    fallback
 }
 
 #[cfg(test)]
@@ -337,6 +260,8 @@ mod tests {
     use std::fs;
 
     use tempfile::tempdir;
+
+    use crate::palette::contract::{CANONICAL_RICH_TOKENS, STABLE_SEMANTIC_TOKENS};
 
     use super::{list_available_palettes, load_palette, render_palette_css};
 
@@ -389,6 +314,29 @@ mod tests {
     }
 
     #[test]
+    fn emits_entire_canonical_palette_contract() {
+        let dir = tempdir().expect("tempdir should be created");
+        let palette = load_palette(dir.path(), "default").expect("palette should load");
+        let css = render_palette_css(&palette);
+
+        for token in STABLE_SEMANTIC_TOKENS {
+            assert!(
+                css.contains(&format!("--{}:", token.css_name)),
+                "missing stable semantic token {}",
+                token.css_name
+            );
+        }
+
+        for token in CANONICAL_RICH_TOKENS {
+            assert!(
+                css.contains(&format!("--{}:", token.css_name)),
+                "missing canonical token {}",
+                token.css_name
+            );
+        }
+    }
+
+    #[test]
     fn default_palette_emits_richer_aliases_from_generic_tokens() {
         let dir = tempdir().expect("tempdir should be created");
         let palette = load_palette(dir.path(), "default").expect("palette should load");
@@ -398,5 +346,21 @@ mod tests {
         assert!(css.contains("--rustipo-accent: #1d4ed8;"));
         assert!(css.contains("--rustipo-success: #15803d;"));
         assert!(css.contains("--rustipo-danger: #b91c1c;"));
+    }
+
+    #[test]
+    fn catppuccin_palette_maps_family_tokens_into_canonical_contract() {
+        let dir = tempdir().expect("tempdir should be created");
+        let palette =
+            load_palette(dir.path(), "catppuccin-macchiato").expect("palette should load");
+
+        let css = render_palette_css(&palette);
+        assert!(css.contains("--rustipo-accent: #8aadf4;"));
+        assert!(css.contains("--rustipo-accent-strong: #c6a0f6;"));
+        assert!(css.contains("--rustipo-success: #a6da95;"));
+        assert!(css.contains("--rustipo-warning: #eed49f;"));
+        assert!(css.contains("--rustipo-danger: #ed8796;"));
+        assert!(css.contains("--rustipo-surface-0: #363a4f;"));
+        assert!(css.contains("--rustipo-overlay-1: #8087a2;"));
     }
 }
