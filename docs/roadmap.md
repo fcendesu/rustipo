@@ -23,6 +23,7 @@ Current shipped post-MVP capabilities:
 - completed `v0.10.0` product identity and examples release
 - completed `v0.11.0` distribution and docs release
 - completed `v0.12.0` docs polish and deployment release
+- completed `v0.14.0` rich content and media release
 - flagship example sites for blog and docs-style use cases
 - built-in `atlas` and `journal` layout themes
 - generated publishing/search artifacts during build:
@@ -69,19 +70,20 @@ For historical post-MVP batch planning, see:
   - built-in default meta descriptions
   - Cloudflare Pages deployment helper
   - Netlify deployment helper
-
-## Completed upcoming batch work
-
 - `v0.14.0`: rich content and media
   - reusable embeds or shortcodes for interactive content
   - built-in image processing and resize helpers
 
-## Upcoming milestones
+## Completed batch work
 
 - `v0.15.0`: ecosystem consistency and reusable site conventions
   - formalize and expand taxonomy support
   - formalize the canonical palette token contract
   - optional analytics integration
+
+## Upcoming milestones
+
+- next implementation batch not defined yet
 
 Tracked maintenance follow-up:
 
@@ -132,7 +134,5 @@ Tracked maintenance follow-up:
   - more helper functions/filters
   - stronger macro/partial conventions and examples
 - continue growing the layout theme ecosystem now that palette/font foundations are in place
-- consider optional analytics integration for common hosted and self-hosted setups
-- formalize taxonomy and palette token contracts as the ecosystem grows
 - evaluate optional SCSS support for theme authoring while keeping plain CSS as the default
 - consider multilingual support only after the single-language publishing model is more mature
