@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use crate::content::frontmatter::Frontmatter;
+use crate::content::shortcodes::ShortcodeAssets;
 use crate::content::toc::TocItem;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,6 +22,7 @@ pub struct Page {
     pub kind: PageKind,
     pub has_mermaid: bool,
     pub has_math: bool,
+    pub shortcode_assets: ShortcodeAssets,
     pub toc: Vec<TocItem>,
     pub frontmatter: Frontmatter,
     pub markdown: String,

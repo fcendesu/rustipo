@@ -51,7 +51,7 @@ pub fn validate_internal_links(pages: &[Page], rendered_pages: &[RenderedPage]) 
 }
 
 fn collect_markdown_links(markdown: &str) -> Vec<String> {
-    let markdown = crate::content::shortcodes::preprocess(markdown);
+    let markdown = crate::content::shortcodes::preprocess(markdown).markdown;
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
     options.insert(Options::ENABLE_TABLES);
@@ -212,6 +212,7 @@ mod tests {
 
     use crate::content::frontmatter::Frontmatter;
     use crate::content::pages::{Page, PageKind};
+    use crate::content::shortcodes::ShortcodeAssets;
     use crate::content::toc::TocItem;
     use crate::render::templates::RenderedPage;
 
@@ -225,6 +226,7 @@ mod tests {
             kind: PageKind::Page,
             has_mermaid: false,
             has_math: false,
+            shortcode_assets: ShortcodeAssets::default(),
             toc,
             frontmatter: Frontmatter::default(),
             markdown: markdown.to_string(),

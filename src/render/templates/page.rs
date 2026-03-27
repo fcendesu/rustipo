@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use tera::{Context as TeraContext, Tera};
 
 use crate::content::pages::{Page, PageKind};
+use crate::content::shortcodes::ShortcodeAssets;
 
 use super::{CommonRenderContext, RenderEnvironment, RenderedPage};
 
@@ -80,6 +81,7 @@ pub(super) fn render_content_pages(
                 page.route
             )
         })?;
+        let html = inject_shortcode_assets(html, &page.shortcode_assets, env.config);
         let html = inject_math_runtime(html, page.has_math);
         let html = inject_mermaid_runtime(html, page.has_mermaid);
 
@@ -90,6 +92,34 @@ pub(super) fn render_content_pages(
     }
 
     Ok(rendered)
+}
+
+fn inject_shortcode_assets(
+    html: String,
+    assets: &ShortcodeAssets,
+    config: &crate::config::SiteConfig,
+) -> String {
+    let mut html = html;
+
+    for stylesheet in &assets.stylesheets {
+        let stylesheet = public_shortcode_asset_path(stylesheet, config);
+        let snippet = format!(
+            "<link rel=\"stylesheet\" href=\"{}\" data-rustipo-shortcode-asset>",
+            escape_html_attr(&stylesheet)
+        );
+        html = inject_before_head_end(html, &snippet);
+    }
+
+    for script in &assets.scripts {
+        let script = public_shortcode_asset_path(script, config);
+        let snippet = format!(
+            "<script type=\"module\" src=\"{}\" data-rustipo-shortcode-asset></script>",
+            escape_html_attr(&script)
+        );
+        html = inject_before_body_end(html, &snippet);
+    }
+
+    html
 }
 
 fn inject_mermaid_runtime(html: String, page_has_mermaid: bool) -> String {
@@ -129,6 +159,22 @@ fn inject_before_body_end(html: String, snippet: &str) -> String {
         output.push_str(snippet);
         output
     }
+}
+
+fn public_shortcode_asset_path(path: &str, config: &crate::config::SiteConfig) -> String {
+    if path.starts_with('/') {
+        config.public_url_path(path)
+    } else {
+        path.to_string()
+    }
+}
+
+fn escape_html_attr(input: &str) -> String {
+    input
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
 
 fn template_for_kind(kind: PageKind) -> &'static str {

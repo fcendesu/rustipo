@@ -8,6 +8,7 @@ use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
 
+use crate::content::shortcodes::ShortcodeAssets;
 use crate::content::toc::{
     FlatTocItem, TocItem, build_nested_toc, normalize_heading_title, unique_heading_id,
 };
@@ -18,10 +19,11 @@ pub struct RenderedMarkdown {
     pub has_mermaid: bool,
     pub has_math: bool,
     pub toc: Vec<TocItem>,
+    pub shortcode_assets: ShortcodeAssets,
 }
 
 pub fn render_html(markdown: &str) -> RenderedMarkdown {
-    let markdown = crate::content::shortcodes::preprocess(markdown);
+    let preprocessed = crate::content::shortcodes::preprocess(markdown);
 
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
@@ -29,7 +31,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
     options.insert(Options::ENABLE_MATH);
     options.insert(Options::ENABLE_GFM);
 
-    let parser = Parser::new_ext(&markdown, options);
+    let parser = Parser::new_ext(&preprocessed.markdown, options);
     let rendered = replace_code_blocks_with_highlighted_html(parser);
     let mut output = String::new();
     html::push_html(&mut output, rendered.events.into_iter());
@@ -38,6 +40,7 @@ pub fn render_html(markdown: &str) -> RenderedMarkdown {
         has_mermaid: rendered.has_mermaid,
         has_math: rendered.has_math,
         toc: rendered.toc,
+        shortcode_assets: preprocessed.assets,
     }
 }
 
@@ -452,6 +455,8 @@ mod tests {
         assert_eq!(rendered.toc.len(), 1);
         assert_eq!(rendered.toc[0].id, "hello");
         assert_eq!(rendered.toc[0].title, "Hello");
+        assert!(rendered.shortcode_assets.scripts.is_empty());
+        assert!(rendered.shortcode_assets.stylesheets.is_empty());
     }
 
     #[test]
@@ -477,6 +482,31 @@ mod tests {
     fn escapes_html_inside_mermaid_code_block() {
         let rendered = render_html("```mermaid\ngraph TD\n  A[<b>x</b>] --> B\n```");
         assert!(rendered.html.contains("&lt;b&gt;x&lt;/b&gt;"));
+    }
+
+    #[test]
+    fn collects_shortcode_assets_during_markdown_render() {
+        let rendered = render_html(
+            "{{< demo id=\"counter-demo\" script=\"/demos/counter.js\" style=\"/demos/counter.css\" >}}",
+        );
+
+        assert!(rendered.html.contains("data-rustipo-demo=\"counter-demo\""));
+        assert_eq!(rendered.shortcode_assets.scripts, vec!["/demos/counter.js"]);
+        assert_eq!(
+            rendered.shortcode_assets.stylesheets,
+            vec!["/demos/counter.css"]
+        );
+    }
+
+    #[test]
+    fn renders_live_demo_mount_from_docs_guide_source() {
+        let source = include_str!("../../site/content/guides/interactive-embeds.md");
+        let parsed = crate::content::frontmatter::parse(source).expect("frontmatter should parse");
+        let rendered = render_html(&parsed.content);
+
+        assert!(rendered.html.contains("data-rustipo-demo=\"counter-demo\""));
+        assert!(rendered.shortcode_assets.scripts.is_empty());
+        assert!(rendered.shortcode_assets.stylesheets.is_empty());
     }
 
     #[test]
