@@ -165,6 +165,7 @@
 - `/blog/`
 - `/projects/`
 - `/blog/archive/`
+- `/tags/`
 - `/tags/<tag>/`
 
 ## Theme System
@@ -249,12 +250,14 @@
 - `page_summary`
 - `page_description`
 - `page_tags`
+- `page_taxonomies`
 - `page_has_math`
 - `page_toc`
 - `page_kind`
 - `current_section`
 - `site_nav`
 - `site_menus`
+- `site_taxonomies`
 - `breadcrumbs`
 - `previous_post`
 - `next_post`
@@ -284,6 +287,7 @@
 - `asset_url`
 - `resize_image`
 - `tag_url`
+- `taxonomy_url`
 
 ## Navigation and Page State
 
@@ -412,6 +416,7 @@
 - `/blog/` section index
 - `/projects/` section index
 - `/blog/archive/` page
+- `/tags/` page
 - `/tags/<tag>/` pages
 
 ## RSS

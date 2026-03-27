@@ -5,6 +5,7 @@ use tera::Context as TeraContext;
 
 use crate::config::SiteConfig;
 use crate::content::pages::{Page, PageKind};
+use crate::taxonomy::{TAGS_TAXONOMY, frontmatter_tags, taxonomy_definitions};
 
 #[derive(Clone, Serialize)]
 pub(super) struct NavItem {
@@ -29,10 +30,18 @@ pub(super) struct BreadcrumbItem {
     pub linkable: bool,
 }
 
+#[derive(Clone, Serialize)]
+pub(super) struct SiteTaxonomy {
+    pub name: String,
+    pub title: String,
+    pub route: String,
+}
+
 #[derive(Default)]
 pub(in crate::render) struct SharedTemplateData {
     auto_nav_entries: Vec<NavEntry>,
     configured_menus: BTreeMap<String, Vec<ConfiguredMenuEntry>>,
+    site_taxonomies: Vec<SiteTaxonomy>,
     breadcrumb_titles: BTreeMap<String, String>,
     linkable_breadcrumb_routes: BTreeSet<String>,
     adjacent_posts: BTreeMap<String, AdjacentPosts>,
@@ -72,6 +81,7 @@ pub(super) fn build_shared_template_data(
     SharedTemplateData {
         auto_nav_entries: build_nav_entries(pages),
         configured_menus: build_configured_menus(config),
+        site_taxonomies: build_site_taxonomies(pages),
         breadcrumb_titles: build_breadcrumb_titles(pages),
         linkable_breadcrumb_routes: build_linkable_breadcrumb_routes(pages),
         adjacent_posts: build_adjacent_posts(pages),
@@ -93,6 +103,10 @@ pub(super) fn insert_page_context(
         &site_nav_for_route(shared, config, route, current_section),
     );
     context.insert("site_menus", &site_menus_for_route(shared, config, route));
+    context.insert(
+        "site_taxonomies",
+        &site_taxonomies_for_config(shared, config),
+    );
     context.insert("breadcrumbs", &breadcrumbs_for_route(shared, config, route));
 
     let adjacent = shared
@@ -114,6 +128,27 @@ pub(super) fn insert_page_context(
             ..post
         }),
     );
+}
+
+fn build_site_taxonomies(pages: &[Page]) -> Vec<SiteTaxonomy> {
+    let has_tags = pages
+        .iter()
+        .filter(|page| page.kind == PageKind::BlogPost)
+        .any(|page| !frontmatter_tags(&page.frontmatter).is_empty());
+
+    if !has_tags {
+        return Vec::new();
+    }
+
+    taxonomy_definitions()
+        .into_iter()
+        .filter(|taxonomy| taxonomy.name == TAGS_TAXONOMY)
+        .map(|taxonomy| SiteTaxonomy {
+            name: taxonomy.name,
+            title: taxonomy.title,
+            route: taxonomy.route,
+        })
+        .collect()
 }
 
 fn build_nav_entries(pages: &[Page]) -> Vec<NavEntry> {
@@ -207,21 +242,13 @@ fn build_breadcrumb_titles(pages: &[Page]) -> BTreeMap<String, String> {
         titles
             .entry("/blog/archive/".to_string())
             .or_insert_with(|| "Archive".to_string());
+        titles
+            .entry("/tags/".to_string())
+            .or_insert_with(|| "Tags".to_string());
 
         for page in pages.iter().filter(|page| page.kind == PageKind::BlogPost) {
-            let Some(tags) = page.frontmatter.tags.as_ref() else {
-                continue;
-            };
-
-            for tag in tags {
-                let slug = normalize_tag_slug(tag);
-                if slug.is_empty() {
-                    continue;
-                }
-
-                titles
-                    .entry(format!("/tags/{slug}/"))
-                    .or_insert_with(|| tag.clone());
+            for tag in frontmatter_tags(&page.frontmatter) {
+                titles.entry(tag.route).or_insert_with(|| tag.name);
             }
         }
     }
@@ -404,21 +431,18 @@ fn titleize_word(word: &str) -> String {
     )
 }
 
-fn normalize_tag_slug(input: &str) -> String {
-    let mut slug = String::with_capacity(input.len());
-    let mut previous_dash = false;
-
-    for ch in input.chars() {
-        if ch.is_ascii_alphanumeric() {
-            slug.push(ch.to_ascii_lowercase());
-            previous_dash = false;
-        } else if !previous_dash {
-            slug.push('-');
-            previous_dash = true;
-        }
-    }
-
-    slug.trim_matches('-').to_string()
+fn site_taxonomies_for_config(
+    shared: &SharedTemplateData,
+    config: &SiteConfig,
+) -> Vec<SiteTaxonomy> {
+    shared
+        .site_taxonomies
+        .iter()
+        .map(|taxonomy| SiteTaxonomy {
+            route: config.public_url_path(&taxonomy.route),
+            ..taxonomy.clone()
+        })
+        .collect()
 }
 
 fn nav_entry_is_active(entry: &NavEntry, route: &str, current_section: &str) -> bool {

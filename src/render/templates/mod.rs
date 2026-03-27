@@ -16,7 +16,7 @@ mod helpers;
 mod not_found;
 mod page;
 mod section;
-mod tags;
+mod taxonomy;
 
 #[derive(Debug)]
 pub struct RenderedPage {
@@ -85,7 +85,7 @@ fn render_pages_with_runtime(
     let mut rendered = page::render_content_pages(&tera, pages, &env)?;
     rendered.extend(section::render_sections(&tera, pages, &env)?);
     rendered.extend(archive::render_blog_archive_page(&tera, pages, &env)?);
-    rendered.extend(tags::render_tag_pages(&tera, pages, &env)?);
+    rendered.extend(taxonomy::render_taxonomy_pages(&tera, pages, &env)?);
 
     Ok(rendered)
 }

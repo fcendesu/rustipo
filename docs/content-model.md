@@ -47,7 +47,7 @@ Supported fields for MVP:
 - `order`
 - `links`
 
-These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_description`, `page_tags`).
+These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_description`, `page_tags`, and `page_taxonomies`).
 
 `summary` is also the first input Rustipo uses for built-in meta description rendering in themes. If `summary` is empty, Rustipo falls back to the site-level `description` from `config.toml`.
 
@@ -111,6 +111,25 @@ Duplicate headings are de-duplicated with numeric suffixes such as `-2` and `-3`
 During `rustipo build` and `rustipo check`, Rustipo validates internal Markdown links against
 generated routes and validates heading fragments for content pages when possible.
 External links and asset-like paths are left alone.
+
+## Taxonomy model
+
+In `v0.15`, Rustipo formalizes `tags` as the only built-in taxonomy.
+
+Current behavior:
+
+- `tags` in frontmatter remain the authoring field
+- Rustipo exposes raw `page_tags` for compatibility
+- Rustipo also exposes generic `page_taxonomies.tags` entries with:
+  - `name`
+  - `slug`
+  - `route`
+- Rustipo generates:
+  - `/tags/` taxonomy index page
+  - `/tags/<tag>/` term pages
+- taxonomy listing pages are currently derived from blog post tags
+
+This keeps the current product simple while giving theme authors a stable template contract for future taxonomy expansion.
 
 ## Draft and scheduled publishing behavior
 

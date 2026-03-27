@@ -50,6 +50,10 @@ pub(super) fn render_not_found_page(tera: &Tera, env: &RenderEnvironment<'_>) ->
         &frontmatter.date.as_ref().map(ToString::to_string),
     );
     context.insert("page_tags", &frontmatter.tags);
+    context.insert(
+        "page_taxonomies",
+        &crate::taxonomy::page_taxonomies(&frontmatter, env.config),
+    );
     context.insert("page_links", &frontmatter.links);
     context.insert("page_order", &frontmatter.order);
     context.insert("page_has_mermaid", &false);

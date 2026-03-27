@@ -164,7 +164,7 @@ Current behavior:
 - Applies child-over-parent precedence when inherited themes provide the same template/asset path
 - Fails on static asset path collisions
 - Generates section index pages for `/blog/` and `/projects/`
-- Generates tag index pages at `/tags/<tag>/` from blog post tags
+- Generates taxonomy listing pages at `/tags/` and `/tags/<tag>/` from blog post tags
 - Generates RSS feed at `dist/rss.xml` from dated blog posts
 - Generates sitemap at `dist/sitemap.xml` from rendered site routes
 - Generates search index at `dist/search-index.json` from site content

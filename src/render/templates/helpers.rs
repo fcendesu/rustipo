@@ -7,6 +7,7 @@ use tera::{Error as TeraError, Filter, Function, Result as TeraResult, Tera};
 
 use crate::config::SiteConfig;
 use crate::images::{ImageProcessor, OutputFormat, ResizeOperation, ResizeRequest};
+use crate::taxonomy::{TAGS_TAXONOMY, slugify_term, taxonomy_route, taxonomy_term_route};
 
 pub(super) fn register(
     tera: &mut Tera,
@@ -30,6 +31,12 @@ pub(super) fn register(
     tera.register_function(
         "tag_url",
         TagUrlFunction {
+            base_url: config.base_url.clone(),
+        },
+    );
+    tera.register_function(
+        "taxonomy_url",
+        TaxonomyUrlFunction {
             base_url: config.base_url.clone(),
         },
     );
@@ -62,6 +69,9 @@ struct AssetUrlFunction {
     base_url: String,
 }
 struct TagUrlFunction {
+    base_url: String,
+}
+struct TaxonomyUrlFunction {
     base_url: String,
 }
 struct ResizeImageFunction {
@@ -127,21 +137,34 @@ impl Function for AssetUrlFunction {
 
 impl Function for TagUrlFunction {
     fn call(&self, args: &HashMap<String, Value>) -> TeraResult<Value> {
-        let name = args
+        let term = args
             .get("name")
             .and_then(Value::as_str)
             .ok_or_else(|| TeraError::msg("tag_url requires a string 'name' argument"))?;
-        let slug = slugify(name);
-        if slug.is_empty() {
-            return Err(TeraError::msg(
-                "tag_url requires at least one ASCII letter or digit",
-            ));
-        }
+        taxonomy_url_value(&self.base_url, TAGS_TAXONOMY, term, "tag_url")
+    }
+}
 
-        Ok(Value::String(crate::url::public_url_path(
-            &self.base_url,
-            &format!("/tags/{slug}/"),
-        )))
+impl Function for TaxonomyUrlFunction {
+    fn call(&self, args: &HashMap<String, Value>) -> TeraResult<Value> {
+        let taxonomy = args
+            .get("taxonomy")
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .ok_or_else(|| {
+                TeraError::msg("taxonomy_url requires a non-empty string 'taxonomy' argument")
+            })?;
+        let term = args
+            .get("term")
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .ok_or_else(|| {
+                TeraError::msg("taxonomy_url requires a non-empty string 'term' argument")
+            })?;
+
+        taxonomy_url_value(&self.base_url, taxonomy, term, "taxonomy_url")
     }
 }
 
@@ -251,21 +274,34 @@ fn parse_optional_output_format(args: &HashMap<String, Value>) -> TeraResult<Opt
     }
 }
 
-fn slugify(input: &str) -> String {
-    let mut slug = String::with_capacity(input.len());
-    let mut previous_dash = false;
-
-    for ch in input.chars() {
-        if ch.is_ascii_alphanumeric() {
-            slug.push(ch.to_ascii_lowercase());
-            previous_dash = false;
-        } else if !previous_dash {
-            slug.push('-');
-            previous_dash = true;
-        }
+fn taxonomy_url_value(
+    base_url: &str,
+    taxonomy: &str,
+    term: &str,
+    helper_name: &str,
+) -> TeraResult<Value> {
+    if taxonomy_route(taxonomy).is_none() {
+        return Err(TeraError::msg(format!(
+            "{helper_name} does not support taxonomy '{taxonomy}'; supported taxonomies: {TAGS_TAXONOMY}"
+        )));
     }
 
-    slug.trim_matches('-').to_string()
+    let slug = slugify_term(term);
+    if slug.is_empty() {
+        return Err(TeraError::msg(format!(
+            "{helper_name} requires at least one ASCII letter or digit in 'term'"
+        )));
+    }
+
+    Ok(Value::String(crate::url::public_url_path(
+        base_url,
+        &taxonomy_term_route(taxonomy, &slug)
+            .expect("taxonomy term route should exist for supported taxonomy"),
+    )))
+}
+
+fn slugify(input: &str) -> String {
+    slugify_term(input)
 }
 
 #[cfg(test)]
@@ -275,7 +311,7 @@ mod tests {
     use serde_json::Value;
     use tera::{Filter, Function};
 
-    use super::{AssetUrlFunction, FormatDateFilter, TagUrlFunction};
+    use super::{AssetUrlFunction, FormatDateFilter, TagUrlFunction, TaxonomyUrlFunction};
 
     #[test]
     fn formats_iso_dates() {
@@ -315,5 +351,36 @@ mod tests {
 
         let value = function.call(&args).expect("tag url should render");
         assert_eq!(value, Value::String("/docs/tags/site-gen/".to_string()));
+    }
+
+    #[test]
+    fn builds_taxonomy_urls() {
+        let function = TaxonomyUrlFunction {
+            base_url: "https://example.com/docs/".to_string(),
+        };
+        let mut args = HashMap::new();
+        args.insert("taxonomy".to_string(), Value::String("tags".to_string()));
+        args.insert("term".to_string(), Value::String("Rust Tips".to_string()));
+
+        let value = function.call(&args).expect("taxonomy url should render");
+        assert_eq!(value, Value::String("/docs/tags/rust-tips/".to_string()));
+    }
+
+    #[test]
+    fn rejects_unknown_taxonomy_urls() {
+        let function = TaxonomyUrlFunction {
+            base_url: "https://example.com/docs/".to_string(),
+        };
+        let mut args = HashMap::new();
+        args.insert(
+            "taxonomy".to_string(),
+            Value::String("categories".to_string()),
+        );
+        args.insert("term".to_string(), Value::String("Rust Tips".to_string()));
+
+        let error = function
+            .call(&args)
+            .expect_err("taxonomy should be rejected");
+        assert!(error.to_string().contains("supported taxonomies: tags"));
     }
 }
