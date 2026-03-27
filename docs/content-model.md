@@ -214,9 +214,13 @@ Supported shortcodes:
 
 - `{{< youtube id="VIDEO_ID" >}}`
 - `{{< link href="URL" text="Label" >}}`
+- `{{< iframe src="URL" title="Label" height="420" >}}`
+- `{{< demo id="NAME" script="/demo.js" style="/demo.css" title="Label" >}}`
 
 Notes:
 
 - Shortcodes are rendered before Markdown conversion.
+- `demo` shortcodes can declare page-scoped script and stylesheet assets, which Rustipo injects
+  once for the rendered page.
 - Unknown or malformed shortcodes are left as plain text.
 - Shortcodes inside fenced code blocks are not rendered.

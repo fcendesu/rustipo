@@ -147,6 +147,10 @@
 - shortcodes
   - `youtube`
   - `link`
+  - `iframe`
+  - `demo`
+- page-scoped shortcode stylesheet injection
+- page-scoped shortcode script injection
 
 ## Routing and Generated Page Types
 
