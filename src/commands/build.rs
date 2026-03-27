@@ -20,6 +20,8 @@ pub(crate) fn build_site_for_preview_quiet() -> Result<()> {
 fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> Result<()> {
     let prepared = crate::commands::site::prepare_site(verbose, publication_mode)?;
     crate::output::writer::write_rendered_pages("dist", &prepared.rendered_pages)?;
+    let generated_images =
+        crate::images::copy_generated_outputs(prepared.generated_image_output_root.path(), "dist")?;
     crate::output::palette::ensure_palette_output_path_available(
         "static",
         &prepared.theme.static_dirs,
@@ -50,6 +52,7 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
             "Generated palette CSS: dist/palette.css ({})",
             prepared.palette.id
         );
+        println!("Generated processed images: {}", generated_images);
         println!("Copied assets: {}", copied_assets);
         println!("Generated RSS items: {}", rss_items);
         println!("Generated search documents: {}", search_documents);

@@ -1,12 +1,18 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use chrono::NaiveDate;
 use serde_json::Value;
 use tera::{Error as TeraError, Filter, Function, Result as TeraResult, Tera};
 
 use crate::config::SiteConfig;
+use crate::images::{ImageProcessor, OutputFormat, ResizeOperation, ResizeRequest};
 
-pub(super) fn register(tera: &mut Tera, config: &SiteConfig) {
+pub(super) fn register(
+    tera: &mut Tera,
+    config: &SiteConfig,
+    image_processor: Option<Arc<ImageProcessor>>,
+) {
     tera.register_filter("slugify", SlugifyFilter);
     tera.register_filter("format_date", FormatDateFilter);
     tera.register_function(
@@ -27,6 +33,9 @@ pub(super) fn register(tera: &mut Tera, config: &SiteConfig) {
             base_url: config.base_url.clone(),
         },
     );
+    if let Some(processor) = image_processor {
+        tera.register_function("resize_image", ResizeImageFunction { processor });
+    }
 }
 
 struct SlugifyFilter;
@@ -54,6 +63,9 @@ struct AssetUrlFunction {
 }
 struct TagUrlFunction {
     base_url: String,
+}
+struct ResizeImageFunction {
+    processor: Arc<ImageProcessor>,
 }
 
 impl Function for AbsUrlFunction {
@@ -130,6 +142,112 @@ impl Function for TagUrlFunction {
             &self.base_url,
             &format!("/tags/{slug}/"),
         )))
+    }
+}
+
+impl Function for ResizeImageFunction {
+    fn call(&self, args: &HashMap<String, Value>) -> TeraResult<Value> {
+        let path = required_string_arg(args, "path")?;
+        let op = parse_optional_resize_op(args)?.unwrap_or(ResizeOperation::Fill);
+        let format = parse_optional_output_format(args)?.unwrap_or(OutputFormat::Auto);
+        let request = ResizeRequest {
+            path,
+            width: optional_u32_arg(args, "width")?,
+            height: optional_u32_arg(args, "height")?,
+            op,
+            format,
+            quality: optional_u8_arg(args, "quality")?,
+        };
+
+        let processed = self
+            .processor
+            .resize(&request)
+            .map_err(|error| TeraError::msg(error.to_string()))?;
+        serde_json::to_value(processed).map_err(|error| {
+            TeraError::msg(format!("resize_image failed to serialize result: {error}"))
+        })
+    }
+}
+
+fn required_string_arg(args: &HashMap<String, Value>, name: &str) -> TeraResult<String> {
+    args.get(name)
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(ToOwned::to_owned)
+        .ok_or_else(|| {
+            TeraError::msg(format!(
+                "resize_image requires a non-empty string '{name}' argument"
+            ))
+        })
+}
+
+fn optional_string_arg(args: &HashMap<String, Value>, name: &str) -> Option<String> {
+    args.get(name)
+        .and_then(Value::as_str)
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(ToOwned::to_owned)
+}
+
+fn optional_u32_arg(args: &HashMap<String, Value>, name: &str) -> TeraResult<Option<u32>> {
+    match args.get(name) {
+        None => Ok(None),
+        Some(value) => {
+            let Some(raw) = value.as_u64() else {
+                return Err(TeraError::msg(format!(
+                    "resize_image '{name}' must be a positive integer"
+                )));
+            };
+            let converted = u32::try_from(raw).map_err(|_| {
+                TeraError::msg(format!(
+                    "resize_image '{name}' must fit into a 32-bit integer"
+                ))
+            })?;
+            if converted == 0 {
+                return Err(TeraError::msg(format!(
+                    "resize_image '{name}' must be greater than zero"
+                )));
+            }
+            Ok(Some(converted))
+        }
+    }
+}
+
+fn optional_u8_arg(args: &HashMap<String, Value>, name: &str) -> TeraResult<Option<u8>> {
+    match args.get(name) {
+        None => Ok(None),
+        Some(value) => {
+            let Some(raw) = value.as_u64() else {
+                return Err(TeraError::msg(format!(
+                    "resize_image '{name}' must be a positive integer"
+                )));
+            };
+            let converted = u8::try_from(raw).map_err(|_| {
+                TeraError::msg(format!(
+                    "resize_image '{name}' must fit into an 8-bit integer"
+                ))
+            })?;
+            Ok(Some(converted))
+        }
+    }
+}
+
+fn parse_optional_resize_op(args: &HashMap<String, Value>) -> TeraResult<Option<ResizeOperation>> {
+    match optional_string_arg(args, "op") {
+        None => Ok(None),
+        Some(value) => ResizeOperation::parse(&value).map(Some).ok_or_else(|| {
+            TeraError::msg("resize_image 'op' must be one of: fit_width, fit_height, fit, fill")
+        }),
+    }
+}
+
+fn parse_optional_output_format(args: &HashMap<String, Value>) -> TeraResult<Option<OutputFormat>> {
+    match optional_string_arg(args, "format") {
+        None => Ok(None),
+        Some(value) => OutputFormat::parse(&value).map(Some).ok_or_else(|| {
+            TeraError::msg("resize_image 'format' must be one of: auto, jpg, png, webp")
+        }),
     }
 }
 

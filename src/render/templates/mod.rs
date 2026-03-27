@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use tera::{Context as TeraContext, Tera};
 use walkdir::WalkDir;
 
@@ -46,13 +47,34 @@ pub(super) struct RenderEnvironment<'a> {
     pub(super) site: &'a SiteRenderContext<'a>,
 }
 
+#[cfg_attr(not(test), allow(dead_code))]
 pub fn render_pages(
     theme: &Theme,
     config: &SiteConfig,
     pages: &[Page],
     site: &SiteRenderContext<'_>,
 ) -> Result<Vec<RenderedPage>> {
-    let tera = load_theme_templates(theme, config)?;
+    render_pages_with_runtime(theme, config, pages, site, None)
+}
+
+pub(crate) fn render_pages_with_image_processing(
+    theme: &Theme,
+    config: &SiteConfig,
+    pages: &[Page],
+    site: &SiteRenderContext<'_>,
+    image_processor: Arc<crate::images::ImageProcessor>,
+) -> Result<Vec<RenderedPage>> {
+    render_pages_with_runtime(theme, config, pages, site, Some(image_processor))
+}
+
+fn render_pages_with_runtime(
+    theme: &Theme,
+    config: &SiteConfig,
+    pages: &[Page],
+    site: &SiteRenderContext<'_>,
+    image_processor: Option<Arc<crate::images::ImageProcessor>>,
+) -> Result<Vec<RenderedPage>> {
+    let tera = load_theme_templates(theme, config, image_processor)?;
     let shared = context::build_shared_template_data(pages, config);
     let env = RenderEnvironment {
         config,
@@ -68,13 +90,34 @@ pub fn render_pages(
     Ok(rendered)
 }
 
+#[cfg_attr(not(test), allow(dead_code))]
 pub fn render_not_found_page(
     theme: &Theme,
     config: &SiteConfig,
     pages: &[Page],
     site: &SiteRenderContext<'_>,
 ) -> Result<String> {
-    let tera = load_theme_templates(theme, config)?;
+    render_not_found_page_with_runtime(theme, config, pages, site, None)
+}
+
+pub(crate) fn render_not_found_page_with_image_processing(
+    theme: &Theme,
+    config: &SiteConfig,
+    pages: &[Page],
+    site: &SiteRenderContext<'_>,
+    image_processor: Arc<crate::images::ImageProcessor>,
+) -> Result<String> {
+    render_not_found_page_with_runtime(theme, config, pages, site, Some(image_processor))
+}
+
+fn render_not_found_page_with_runtime(
+    theme: &Theme,
+    config: &SiteConfig,
+    pages: &[Page],
+    site: &SiteRenderContext<'_>,
+    image_processor: Option<Arc<crate::images::ImageProcessor>>,
+) -> Result<String> {
+    let tera = load_theme_templates(theme, config, image_processor)?;
     let shared = context::build_shared_template_data(pages, config);
     let env = RenderEnvironment {
         config,
@@ -192,7 +235,11 @@ fn already_prefixed(value: &str, prefix: &str, quote: char) -> bool {
     rest.starts_with('/') || rest.starts_with(quote)
 }
 
-fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {
+fn load_theme_templates(
+    theme: &Theme,
+    config: &SiteConfig,
+    image_processor: Option<Arc<crate::images::ImageProcessor>>,
+) -> Result<Tera> {
     let mut template_map: BTreeMap<String, PathBuf> = BTreeMap::new();
 
     for dir in &theme.template_dirs {
@@ -227,7 +274,7 @@ fn load_theme_templates(theme: &Theme, config: &SiteConfig) -> Result<Tera> {
     let mut tera = Tera::default();
     tera.add_template_files(template_files)
         .context("failed to load theme templates into Tera")?;
-    helpers::register(&mut tera, config);
+    helpers::register(&mut tera, config, image_processor);
 
     Ok(tera)
 }

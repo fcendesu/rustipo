@@ -1,7 +1,9 @@
 use std::fs;
 use std::path::Path;
+use std::sync::Arc;
 
 use anyhow::{Context, Result};
+use tempfile::TempDir;
 use walkdir::WalkDir;
 
 use crate::config::SiteConfig;
@@ -17,11 +19,26 @@ pub(crate) struct PreparedSite {
     pub pages: Vec<Page>,
     pub rendered_pages: Vec<RenderedPage>,
     pub not_found_html: String,
+    pub generated_image_output_root: TempDir,
 }
 
 pub(crate) fn prepare_site(
     verbose: bool,
     publication_mode: PublicationMode,
+) -> Result<PreparedSite> {
+    let generated_image_output_root =
+        tempfile::tempdir().context("failed to create processed image staging directory")?;
+    prepare_site_with_generated_image_output_root(
+        verbose,
+        publication_mode,
+        generated_image_output_root,
+    )
+}
+
+fn prepare_site_with_generated_image_output_root(
+    verbose: bool,
+    publication_mode: PublicationMode,
+    generated_image_output_root: TempDir,
 ) -> Result<PreparedSite> {
     let config = crate::config::load("config.toml")?;
     if verbose {
@@ -35,6 +52,7 @@ pub(crate) fn prepare_site(
 
     let theme = crate::theme::loader::load_active_theme(".", &config.theme)?;
     let palette = crate::palette::loader::load_palette(".", config.selected_palette())?;
+    crate::images::ensure_output_path_available(Path::new("static"), &theme.static_dirs)?;
     if verbose {
         println!(
             "Loaded theme: {} ({})",
@@ -66,10 +84,26 @@ pub(crate) fn prepare_site(
         asset_version: &asset_version,
         palette: &palette,
     };
-    let rendered_pages =
-        crate::render::templates::render_pages(&theme, &config, &pages, &site_context)?;
-    let not_found_html =
-        crate::render::templates::render_not_found_page(&theme, &config, &pages, &site_context)?;
+    let image_processor = Arc::new(crate::images::ImageProcessor::new(
+        ".",
+        generated_image_output_root.path(),
+        &config.base_url,
+        &theme.static_dirs,
+    ));
+    let rendered_pages = crate::render::templates::render_pages_with_image_processing(
+        &theme,
+        &config,
+        &pages,
+        &site_context,
+        image_processor.clone(),
+    )?;
+    let not_found_html = crate::render::templates::render_not_found_page_with_image_processing(
+        &theme,
+        &config,
+        &pages,
+        &site_context,
+        image_processor,
+    )?;
     crate::content::links::validate_internal_links(&pages, &rendered_pages)?;
     if verbose {
         println!("Rendered pages with templates: {}", rendered_pages.len());
@@ -82,6 +116,7 @@ pub(crate) fn prepare_site(
         pages,
         rendered_pages,
         not_found_html,
+        generated_image_output_root,
     })
 }
 

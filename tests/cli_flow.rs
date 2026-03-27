@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
+use image::{ImageBuffer, Rgba};
 use tempfile::tempdir;
 
 fn run_cli(cwd: &Path, args: &[&str]) -> std::process::Output {
@@ -44,6 +45,15 @@ fn copy_dir_recursive_filtered(source: &Path, destination: &Path) {
             fs::copy(&path, &target).expect("file should be copied");
         }
     }
+}
+
+fn write_test_png(path: &Path, width: u32, height: u32) {
+    let image = ImageBuffer::from_fn(width, height, |x, y| {
+        let r = (x * 16) as u8;
+        let g = (y * 20) as u8;
+        Rgba([r, g, 180, 255])
+    });
+    image.save(path).expect("test png should write");
 }
 
 #[test]
@@ -147,6 +157,81 @@ fn check_succeeds_for_new_scaffold() {
     assert!(stdout.contains("Validated rendered routes:"));
     assert!(stdout.contains("Validated asset paths:"));
     assert!(stdout.contains("Check completed: project inputs are valid."));
+    assert!(
+        !project.join("dist").exists(),
+        "check should not write dist output"
+    );
+}
+
+#[test]
+fn build_generates_processed_images_from_resize_helper() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::create_dir_all(project.join("static/images")).expect("image dir should be created");
+    write_test_png(&project.join("static/images/cover.png"), 16, 8);
+    fs::write(
+        project.join("themes/default/templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{% set cover = resize_image(path=\"/images/cover.png\", width=8, height=8, op=\"fit\", format=\"png\") %}<img src=\"{{ cover.url }}\" width=\"{{ cover.width }}\" height=\"{{ cover.height }}\">{% endblock body %}",
+    )
+    .expect("index template should be updated");
+
+    let build_output = run_cli(&project, &["build"]);
+    assert!(
+        build_output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build_output.stderr)
+    );
+
+    let index_html =
+        fs::read_to_string(project.join("dist/index.html")).expect("index html should be readable");
+    assert!(index_html.contains("processed-images"));
+    assert!(index_html.contains("width=\"8\""));
+    assert!(index_html.contains("height=\"4\""));
+
+    let processed_dir = project.join("dist/processed-images");
+    let entries = fs::read_dir(&processed_dir)
+        .expect("processed images dir should exist")
+        .collect::<Result<Vec<_>, _>>()
+        .expect("processed images dir should be readable");
+    assert_eq!(entries.len(), 1);
+}
+
+#[test]
+fn check_supports_resize_helper_without_writing_dist() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::create_dir_all(project.join("static/images")).expect("image dir should be created");
+    write_test_png(&project.join("static/images/cover.png"), 16, 8);
+    fs::write(
+        project.join("themes/default/templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{% set cover = resize_image(path=\"/images/cover.png\", width=8, height=8, op=\"fit\", format=\"png\") %}<img src=\"{{ cover.url }}\" width=\"{{ cover.width }}\" height=\"{{ cover.height }}\">{% endblock body %}",
+    )
+    .expect("index template should be updated");
+
+    let check_output = run_cli(&project, &["check"]);
+    assert!(
+        check_output.status.success(),
+        "check failed: {}",
+        String::from_utf8_lossy(&check_output.stderr)
+    );
     assert!(
         !project.join("dist").exists(),
         "check should not write dist output"

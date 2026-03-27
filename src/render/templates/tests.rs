@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::fs;
 
+use image::{ImageBuffer, Rgba};
 use tempfile::tempdir;
 
 use crate::config::{MenuEntryConfig, SiteConfig, load as load_config};
@@ -8,7 +9,18 @@ use crate::content::pages::build_pages;
 use crate::palette::loader::load_palette;
 use crate::theme::loader::load_active_theme;
 
-use super::{SiteRenderContext, render_not_found_page, render_pages};
+use super::{
+    SiteRenderContext, render_not_found_page, render_pages, render_pages_with_image_processing,
+};
+
+fn write_test_png(path: &std::path::Path, width: u32, height: u32) {
+    let image = ImageBuffer::from_fn(width, height, |x, y| {
+        let r = (x * 16) as u8;
+        let g = (y * 20) as u8;
+        Rgba([r, g, 180, 255])
+    });
+    image.save(path).expect("test png should write");
+}
 
 #[test]
 fn renders_pages_with_theme_templates() {
@@ -230,6 +242,102 @@ fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
             .contains("<article><h1 id=\"blog-body\">Blog Body</h1>")
     );
     assert!(post.html.contains("data-slug=\"my-site\""));
+}
+
+#[test]
+fn resize_image_helper_writes_processed_derivative_and_returns_metadata() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::create_dir_all(project_root.join("static/images")).expect("static dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+    write_test_png(&project_root.join("static/images/cover.png"), 16, 8);
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<html><body>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    fs::write(
+        theme_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}{% set cover = resize_image(path=\"/images/cover.png\", width=8, height=8, op=\"fit\", format=\"png\") %}<img src=\"{{ cover.url }}\" data-static=\"{{ cover.static_path }}\" data-width=\"{{ cover.width }}\" data-height=\"{{ cover.height }}\" data-orig=\"{{ cover.orig_width }}x{{ cover.orig_height }}\">{% endblock body %}",
+    )
+    .expect("index template should be written");
+    for template in ["page.html", "post.html", "project.html", "section.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com/docs/".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages_with_image_processing(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            asset_version: "test",
+            palette: &palette,
+        },
+        std::sync::Arc::new(crate::images::ImageProcessor::new(
+            project_root,
+            project_root.join("dist"),
+            &config.base_url,
+            &theme.static_dirs,
+        )),
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index page should render");
+    assert!(index.html.contains("processed-images&#x2F;"));
+    assert!(index.html.contains("data-width=\"8\""));
+    assert!(index.html.contains("data-height=\"4\""));
+    assert!(index.html.contains("data-orig=\"16x8\""));
+
+    let processed_dir = project_root.join("dist/processed-images");
+    let entries = fs::read_dir(&processed_dir)
+        .expect("processed images dir should exist")
+        .collect::<Result<Vec<_>, _>>()
+        .expect("processed images dir should be readable");
+    assert_eq!(entries.len(), 1);
 }
 
 #[test]
