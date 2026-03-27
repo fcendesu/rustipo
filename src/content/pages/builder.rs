@@ -62,6 +62,7 @@ fn build_pages_for_date(
             kind: page_meta.kind,
             has_mermaid: rendered.has_mermaid,
             has_math: rendered.has_math,
+            shortcode_assets: rendered.shortcode_assets,
             toc: rendered.toc,
             frontmatter: parsed.frontmatter,
             markdown: parsed.content,

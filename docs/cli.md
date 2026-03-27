@@ -130,6 +130,7 @@ Current behavior:
 - Parses frontmatter, validates date format (`YYYY-MM-DD`), and excludes drafts and future-dated content from production output
 - Converts Markdown to HTML
 - Renders supported shortcodes in Markdown content
+- Injects page-scoped script and stylesheet assets declared by supported shortcodes
 - Applies syntax highlighting to fenced code blocks
 - Parses inline and block math nodes in Markdown
 - Parses GitHub-style alert blockquotes in Markdown

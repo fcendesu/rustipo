@@ -1,0 +1,47 @@
+.rustipo-demo {
+  margin: 1.5rem 0;
+}
+
+.rustipo-demo-card {
+  border: 1px solid var(--rustipo-overlay-0, #6c7086);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--rustipo-surface-0, #313244) 92%, white 8%);
+}
+
+.rustipo-demo-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.rustipo-demo-card p {
+  margin: 0 0 1rem;
+}
+
+.rustipo-demo-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rustipo-demo-controls button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  background: var(--rustipo-accent, #89b4fa);
+  color: var(--rustipo-crust, #11111b);
+}
+
+.rustipo-demo-controls button.secondary {
+  background: var(--rustipo-surface-0, #313244);
+  color: var(--rustipo-text, #cdd6f4);
+  border: 1px solid var(--rustipo-overlay-0, #6c7086);
+}
+
+.rustipo-demo-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}

@@ -51,6 +51,21 @@ Common frontmatter fields include:
 - `order`
 - `links`
 
+## Shortcodes And Interactive Embeds
+
+Rustipo supports reusable shortcodes inside Markdown content.
+
+Current built-ins include:
+
+- `youtube`
+- `link`
+- `iframe`
+- `demo`
+
+`demo` shortcodes can declare page-scoped script and stylesheet assets, which Rustipo injects once for the rendered page.
+
+For a real example, see [Interactive embeds](/guides/interactive-embeds/).
+
 ## Drafts And Scheduled Pages
 
 Production builds exclude:
