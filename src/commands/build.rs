@@ -27,6 +27,11 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
         &prepared.theme.static_dirs,
     )?;
     crate::output::palette::write_palette_css("dist", &prepared.palette)?;
+    let compiled_styles = crate::output::styles::compile_optional_scss(
+        "static",
+        &prepared.theme.static_dirs,
+        "dist",
+    )?;
     let copied_assets = crate::output::assets::copy_assets_with_collision_check(
         "static",
         &prepared.theme.static_dirs,
@@ -52,6 +57,7 @@ fn build_site_with_logging(verbose: bool, publication_mode: PublicationMode) -> 
             "Generated palette CSS: dist/palette.css ({})",
             prepared.palette.id
         );
+        println!("Generated compiled styles: {}", compiled_styles);
         println!("Generated processed images: {}", generated_images);
         println!("Copied assets: {}", copied_assets);
         println!("Generated RSS items: {}", rss_items);

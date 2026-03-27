@@ -5,4 +5,5 @@ pub mod robots;
 pub mod rss;
 pub mod search;
 pub mod sitemap;
+pub mod styles;
 pub mod writer;

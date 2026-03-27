@@ -160,6 +160,7 @@ Generator responsibilities:
 - Validate required templates across the full inheritance chain
 - Render content through merged templates (child overrides parent files by relative path)
 - Copy merged theme static assets to output (child overrides parent files by relative path)
+- Optionally compile `static/style.scss` into `dist/style.css` when a theme opts in
 
 ## How Tera fits the workflow
 
@@ -207,7 +208,7 @@ Rustipo injects common site variables into template contexts, including:
   - `site_style.body_font`
   - `site_style.heading_font`
   - `site_style.mono_font`
-- `site_has_custom_css` (boolean, true when `static/custom.css` exists)
+- `site_has_custom_css` (boolean, true when `static/custom.css` or `static/custom.scss` exists)
 - `site_font_faces_css` (optional rendered `@font-face` rules for configured local fonts)
 
 `page_description` is the stable convenience field for theme metadata output. It resolves with this fallback order:
@@ -257,6 +258,14 @@ Rustipo also registers small Tera helpers for theme authors:
 
 Rustipo writes generated image derivatives into `dist/processed-images/` and reserves that output
 path so user or theme static assets cannot collide with it.
+
+Rustipo keeps plain CSS as the default styling path, but a theme can opt into SCSS authoring by
+placing `static/style.scss` in the theme root. Rustipo compiles that file into the same
+`dist/style.css` output path that plain CSS themes already use.
+
+Site authors can do the same for overrides with `static/custom.scss`, which compiles into
+`dist/custom.css`. Rustipo rejects `style.css` + `style.scss` or `custom.css` + `custom.scss`
+when both exist for the same target so the final output path stays unambiguous.
 
 Rustipo currently formalizes one built-in taxonomy:
 

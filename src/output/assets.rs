@@ -75,6 +75,9 @@ fn collect_relative_files(root: &Path) -> Result<HashSet<PathBuf>> {
                 )
             })?
             .to_path_buf();
+        if crate::output::styles::should_skip_asset_copy(&rel) {
+            continue;
+        }
         files.insert(rel);
     }
 
@@ -92,12 +95,29 @@ fn prepare_asset_maps<'a>(
     theme_static_dirs: &[PathBuf],
 ) -> Result<PreparedAssetMaps<'a>> {
     let user_files = collect_relative_files(user_static_dir)?;
+    let theme_style_is_compiled = crate::output::styles::theme_style_uses_scss(theme_static_dirs)?;
+    let user_custom_is_compiled = crate::output::styles::user_custom_uses_scss(user_static_dir)?;
     let mut theme_files = BTreeMap::new();
     for theme_dir in theme_static_dirs {
         let rel_files = collect_relative_files(theme_dir)?;
         for rel in rel_files {
+            if theme_style_is_compiled && rel == Path::new("style.css") {
+                continue;
+            }
             theme_files.insert(rel.clone(), theme_dir.join(rel));
         }
+    }
+
+    if theme_style_is_compiled && user_files.contains(Path::new("style.css")) {
+        bail!(
+            "asset path collision detected: style.css is reserved for compiled theme SCSS output"
+        );
+    }
+
+    if user_custom_is_compiled && theme_files.contains_key(Path::new("custom.css")) {
+        bail!(
+            "asset path collision detected: custom.css is reserved for compiled site SCSS output"
+        );
     }
 
     if let Some(rel) = user_files.iter().find(|rel| theme_files.contains_key(*rel)) {
@@ -223,5 +243,94 @@ mod tests {
         assert_eq!(copied, 1);
         let written = fs::read_to_string(dist.join("style.css")).expect("style should exist");
         assert_eq!(written, "child");
+    }
+
+    #[test]
+    fn skips_scss_sources_when_copying_assets() {
+        let dir = tempdir().expect("tempdir should be created");
+        let root = dir.path();
+
+        let user_static = root.join("static");
+        let theme_static = root.join("themes/default/static");
+        let dist = root.join("dist");
+
+        fs::create_dir_all(&user_static).expect("user static should be created");
+        fs::create_dir_all(&theme_static).expect("theme static should be created");
+
+        fs::write(user_static.join("custom.scss"), "body { color: red; }")
+            .expect("scss should be written");
+        fs::write(theme_static.join("style.scss"), "body { color: blue; }")
+            .expect("scss should be written");
+        fs::write(theme_static.join("logo.svg"), "<svg/>").expect("svg should be written");
+
+        let copied = copy_assets_with_collision_check(
+            &user_static,
+            std::slice::from_ref(&theme_static),
+            &dist,
+        )
+        .expect("asset copy should succeed");
+
+        assert_eq!(copied, 1);
+        assert!(dist.join("logo.svg").is_file());
+        assert!(!dist.join("custom.scss").exists());
+        assert!(!dist.join("style.scss").exists());
+    }
+
+    #[test]
+    fn child_theme_scss_overrides_parent_style_css() {
+        let dir = tempdir().expect("tempdir should be created");
+        let root = dir.path();
+
+        let user_static = root.join("static");
+        let parent_static = root.join("themes/base/static");
+        let child_static = root.join("themes/child/static");
+        let dist = root.join("dist");
+
+        fs::create_dir_all(&parent_static).expect("parent static should be created");
+        fs::create_dir_all(&child_static).expect("child static should be created");
+
+        fs::write(parent_static.join("style.css"), "base").expect("base asset should be written");
+        fs::write(child_static.join("style.scss"), "body { color: blue; }")
+            .expect("child scss should be written");
+
+        let copied = copy_assets_with_collision_check(
+            &user_static,
+            &[parent_static.clone(), child_static.clone()],
+            &dist,
+        )
+        .expect("asset copy should succeed");
+
+        assert_eq!(copied, 0);
+        assert!(!dist.join("style.css").exists());
+    }
+
+    #[test]
+    fn fails_when_user_style_css_conflicts_with_compiled_theme_scss() {
+        let dir = tempdir().expect("tempdir should be created");
+        let root = dir.path();
+
+        let user_static = root.join("static");
+        let theme_static = root.join("themes/default/static");
+        let dist = root.join("dist");
+
+        fs::create_dir_all(&user_static).expect("user static should be created");
+        fs::create_dir_all(&theme_static).expect("theme static should be created");
+
+        fs::write(user_static.join("style.css"), "user").expect("user css should be written");
+        fs::write(theme_static.join("style.scss"), "body { color: blue; }")
+            .expect("theme scss should be written");
+
+        let error = copy_assets_with_collision_check(
+            &user_static,
+            std::slice::from_ref(&theme_static),
+            &dist,
+        )
+        .expect_err("collision should fail");
+
+        assert!(
+            error
+                .to_string()
+                .contains("style.css is reserved for compiled theme SCSS output")
+        );
     }
 }

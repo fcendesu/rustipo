@@ -406,10 +406,15 @@
 - `favicon.svg`
 - `apple-touch-icon.png`
 - optional `static/custom.css`
+- optional `static/custom.scss`
+- optional theme `static/style.scss`
+- SCSS validation during `rustipo check`
 
 ## Output Generation
 
 - pretty URL HTML output
+- compiled `dist/style.css` from optional theme SCSS
+- compiled `dist/custom.css` from optional site SCSS
 - generated `dist/palette.css`
 - generated `dist/rss.xml`
 - generated `dist/sitemap.xml`

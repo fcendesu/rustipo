@@ -83,6 +83,7 @@ Current behavior:
 - Validates internal Markdown links against generated routes and deep links when possible
 - Validates rendered route/output collisions
 - Validates generated `palette.css` would not collide with site or theme assets
+- Validates optional SCSS inputs when `themes/<theme>/static/style.scss` or `static/custom.scss` are used
 - Validates theme and user static asset paths would not collide
 - Exits with non-zero status when validation fails
 
@@ -169,6 +170,8 @@ Current behavior:
 - Exposes `site_font_faces_css` to templates for optional font-face injection
 - Exposes `site_analytics_head_html` to templates for opt-in analytics snippet output
 - Auto-includes `static/custom.css` in template context when present (`site_has_custom_css`)
+- Compiles optional `themes/<theme>/static/style.scss` into `dist/style.css`
+- Compiles optional `static/custom.scss` into `dist/custom.css`
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Writes generated palette variables to `dist/palette.css`
 - Fails with a readable error if generated `palette.css` would collide with a user/theme asset

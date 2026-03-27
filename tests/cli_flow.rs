@@ -155,6 +155,7 @@ fn check_succeeds_for_new_scaffold() {
 
     let stdout = String::from_utf8_lossy(&check_output.stdout);
     assert!(stdout.contains("Validated rendered routes:"));
+    assert!(stdout.contains("Validated optional SCSS inputs:"));
     assert!(stdout.contains("Validated asset paths:"));
     assert!(stdout.contains("Check completed: project inputs are valid."));
     assert!(
@@ -235,6 +236,77 @@ fn check_supports_resize_helper_without_writing_dist() {
     assert!(
         !project.join("dist").exists(),
         "check should not write dist output"
+    );
+}
+
+#[test]
+fn build_supports_theme_style_scss() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::remove_file(project.join("themes/default/static/style.css"))
+        .expect("default css should be removable");
+    fs::write(
+        project.join("themes/default/static/_tokens.scss"),
+        "$surface: #224466;",
+    )
+    .expect("scss partial should be written");
+    fs::write(
+        project.join("themes/default/static/style.scss"),
+        "@use \"tokens\";\nbody { background: tokens.$surface; }",
+    )
+    .expect("scss file should be written");
+
+    let build_output = run_cli(&project, &["build"]);
+    assert!(
+        build_output.status.success(),
+        "build failed: {}",
+        String::from_utf8_lossy(&build_output.stderr)
+    );
+
+    let style_css =
+        fs::read_to_string(project.join("dist/style.css")).expect("compiled style should exist");
+    assert!(style_css.contains("background: #224466;"));
+    assert!(!project.join("dist/style.scss").exists());
+    assert!(!project.join("dist/_tokens.scss").exists());
+}
+
+#[test]
+fn check_fails_for_invalid_theme_style_scss() {
+    let dir = tempdir().expect("tempdir should be created");
+    let root = dir.path();
+
+    let new_output = run_cli(root, &["new", "my-site"]);
+    assert!(
+        new_output.status.success(),
+        "new failed: {}",
+        String::from_utf8_lossy(&new_output.stderr)
+    );
+
+    let project = root.join("my-site");
+    fs::remove_file(project.join("themes/default/static/style.css"))
+        .expect("default css should be removable");
+    fs::write(
+        project.join("themes/default/static/style.scss"),
+        "body { color: $missing; }",
+    )
+    .expect("invalid scss should be written");
+
+    let output = run_cli(&project, &["check"]);
+    assert!(!output.status.success(), "check should fail");
+
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("failed to compile theme style SCSS"),
+        "unexpected stderr: {stderr}"
     );
 }
 

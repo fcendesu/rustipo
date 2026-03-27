@@ -175,7 +175,7 @@ impl SiteConfig {
 
     pub fn has_custom_css(&self, project_root: impl AsRef<Path>) -> bool {
         let _ = self;
-        project_root.as_ref().join("static/custom.css").is_file()
+        crate::output::styles::has_custom_stylesheet(project_root)
     }
 
     pub fn analytics_head_html(&self) -> Option<String> {
