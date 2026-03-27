@@ -359,7 +359,7 @@
   - `--rustipo-table-header-bg`
 - raw palette token CSS variables
   - `--rustipo-token-*`
-- derived palette token aliases
+- canonical richer palette token aliases
   - `--rustipo-base`
   - `--rustipo-mantle`
   - `--rustipo-crust`
