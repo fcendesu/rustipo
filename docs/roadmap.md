@@ -70,11 +70,18 @@ For historical post-MVP batch planning, see:
   - Cloudflare Pages deployment helper
   - Netlify deployment helper
 
-## Upcoming milestones
+## Completed upcoming batch work
 
 - `v0.14.0`: rich content and media
   - reusable embeds or shortcodes for interactive content
   - built-in image processing and resize helpers
+
+## Upcoming milestones
+
+- `v0.15.0`: ecosystem consistency and reusable site conventions
+  - formalize and expand taxonomy support
+  - formalize the canonical palette token contract
+  - optional analytics integration
 
 Tracked maintenance follow-up:
 

@@ -62,12 +62,22 @@ Docs polish and deployment:
 - Cloudflare Pages deployment support
 - Netlify deployment support
 
-## Next Up: `v0.14.0`
+## Completed Upcoming Batch Work
+
+### `v0.14.0`
 
 Rich content and media:
 
 - reusable embeds or shortcodes for interactive content
 - built-in image processing and resize helpers
+
+## Next Up: `v0.15.0`
+
+Ecosystem consistency and reusable site conventions:
+
+- expanded taxonomy support
+- formalized palette token contract
+- optional analytics integration
 
 ## Tracked Follow-up
 
@@ -78,9 +88,6 @@ Maintenance and workflow compatibility:
 
 ## Later
 
-- optional analytics integration
-- expanded taxonomy support
-- formalized palette token contract
 - optional SCSS support
 - multilingual site support
 
