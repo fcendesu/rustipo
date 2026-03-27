@@ -25,6 +25,7 @@ Rustipo projects are organized around a simple model:
   static/
     favicon.svg
     custom.css (optional)
+    custom.scss (optional)
   themes/
     default/
       templates/
@@ -54,7 +55,7 @@ Rustipo projects are organized around a simple model:
   - `blog/` and `projects/` stay special one-level sections
 - `themes/`: layout themes
   - `templates/` contains reusable Tera templates
-  - `static/` contains theme CSS and theme assets
+  - `static/` contains theme CSS, optional `style.scss`, and theme assets
   - `theme.toml` contains theme metadata
   - local project themes live here when you want to override or add custom layouts
 - built-in themes are embedded in Rustipo and selectable without copying files into the project:
@@ -72,8 +73,9 @@ Rustipo projects are organized around a simple model:
   - `tokyonight-storm`
   - `tokyonight-moon`
 - `static/`: user-provided assets copied into the output
-  - images, fonts, JavaScript files, favicons, and optional `custom.css` belong here
-  - `static/custom.css` (optional) is loaded after theme CSS when present for user overrides
+  - images, fonts, JavaScript files, favicons, and optional `custom.css` or `custom.scss` belong here
+  - `static/custom.css` remains the plain CSS default for site overrides
+  - `static/custom.scss` is optional and compiles to `dist/custom.css`
 - `dist/`: generated static output (created by build step)
 
 ## Layout and typography configuration

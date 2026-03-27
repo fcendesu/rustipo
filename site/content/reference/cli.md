@@ -32,6 +32,8 @@ Creates a starter project with content, a local default theme, and starter confi
 ### `rustipo check`
 
 Validates config, content, palettes, themes, routes, asset paths, and internal links without writing `dist/`.
+It also validates optional `themes/<theme>/static/style.scss` and `static/custom.scss` inputs when
+those files are present.
 
 ### `rustipo dev`
 
@@ -40,6 +42,8 @@ Builds, serves, watches, and live-reloads the site during development.
 ### `rustipo build`
 
 Writes generated output into `dist/`.
+When a theme provides `static/style.scss` or a site provides `static/custom.scss`, Rustipo compiles
+them into `dist/style.css` and `dist/custom.css`.
 
 ### `rustipo serve`
 

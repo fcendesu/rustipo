@@ -31,6 +31,13 @@ Rustipo currently ships these built-in themes:
 
 Local themes can still live under `themes/<name>/` when you want custom layouts or inheritance.
 
+Theme authors can keep using plain `style.css`, or opt into SCSS by adding
+`themes/<name>/static/style.scss`. Rustipo compiles that into the same `dist/style.css` output
+path, so templates do not need a different asset reference.
+
+Site-level overrides can follow the same pattern with `static/custom.scss`, which compiles into
+`dist/custom.css`.
+
 ## Built-In Palettes
 
 Rustipo currently ships these built-in palettes:
