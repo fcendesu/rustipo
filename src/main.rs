@@ -7,6 +7,7 @@ mod output;
 mod palette;
 mod render;
 mod server;
+mod taxonomy;
 mod theme;
 mod url;
 

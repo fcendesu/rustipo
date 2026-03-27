@@ -99,13 +99,14 @@ fn renders_pages_with_theme_templates() {
         },
     )
     .expect("pages should render");
-    assert_eq!(rendered.len(), 8);
+    assert_eq!(rendered.len(), 9);
     assert!(rendered.iter().any(|p| p.route == "/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/post/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/post-with-tags/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/"));
     assert!(rendered.iter().any(|p| p.route == "/blog/archive/"));
     assert!(rendered.iter().any(|p| p.route == "/projects/"));
+    assert!(rendered.iter().any(|p| p.route == "/tags/"));
     assert!(rendered.iter().any(|p| p.route == "/tags/rust/"));
     assert!(rendered.iter().any(|p| p.route == "/tags/site-gen/"));
     assert!(rendered.iter().all(|p| p.html.contains("<h1>")));
@@ -868,7 +869,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
     .expect("page template should be written");
     fs::write(
         theme_root.join("templates/post.html"),
-        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}|{{ page_date | format_date(format=\"%B %d, %Y\") }}|{{ tag_url(name=page_tags[0]) }}|{{ asset_url(path=\"img/logo.svg\") }}|{% if previous_post %}prev={{ previous_post.title }}{% endif %}|{% if next_post %}next={{ next_post.title }}{% endif %}{% endblock body %}",
+        "{% extends \"base.html\" %}{% block body %}{{ page_kind }}|{{ current_section }}|{% for item in site_nav %}[{{ item.title }}:{{ item.route }}:{{ item.active }}]{% endfor %}|{% for taxonomy in site_taxonomies %}[taxonomy={{ taxonomy.name }}:{{ taxonomy.route }}]{% endfor %}|{{ page_date | format_date(format=\"%B %d, %Y\") }}|{{ tag_url(name=page_tags[0]) }}|{{ taxonomy_url(taxonomy=\"tags\", term=page_taxonomies.tags[0].name) }}|{{ asset_url(path=\"img/logo.svg\") }}|{% if previous_post %}prev={{ previous_post.title }}{% endif %}|{% if next_post %}next={{ next_post.title }}{% endif %}{% endblock body %}",
     )
     .expect("post template should be written");
     fs::write(
@@ -929,6 +930,7 @@ fn exposes_navigation_adjacency_and_helper_context() {
     assert!(newer.html.contains("post|blog|"));
     assert!(newer.html.contains("[Blog:&#x2F;blog&#x2F;:true]"));
     assert!(newer.html.contains("[Projects:&#x2F;projects&#x2F;:false]"));
+    assert!(newer.html.contains("[taxonomy=tags:&#x2F;tags&#x2F;]"));
     assert!(newer.html.contains("March 19, 2026"));
     assert!(newer.html.contains("&#x2F;tags&#x2F;rust-tips&#x2F;"));
     assert!(newer.html.contains("&#x2F;img&#x2F;logo.svg"));
@@ -1086,6 +1088,105 @@ fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
         .find(|page| page.route == "/blog/post/")
         .expect("post route should be rendered");
     assert!(post.html.contains("[nav:Writing:&#x2F;blog&#x2F;:true]"));
+}
+
+#[test]
+fn renders_taxonomy_index_and_term_context() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/blog")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        project_root.join("content/blog/post.md"),
+        "---\ntitle: Tagged\ndate: 2026-03-19\ntags: [\"Rust Tips\", \"Site Gen\"]\n---\n\n# Tagged",
+    )
+    .expect("post should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in ["index.html", "page.html", "post.html", "project.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("templates/section.html"),
+        "{% extends \"base.html\" %}{% block body %}{{ section_name }}|{{ section_title }}|{{ taxonomy_name | default(value=\"\") }}|{% if taxonomy_term %}term={{ taxonomy_term.name }}|{% endif %}{% for term in taxonomy_terms | default(value=[]) %}[{{ term.name }}:{{ term.route }}:{{ term.count }}]{% endfor %}{% for item in taxonomy_items | default(value=items | default(value=[])) %}<a href=\"{{ item.route }}\">{{ item.title }}</a>{% endfor %}{% endblock body %}",
+    )
+    .expect("section template should be written");
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            asset_version: "test",
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let taxonomy_index = rendered
+        .iter()
+        .find(|page| page.route == "/tags/")
+        .expect("taxonomy index should exist");
+    assert!(taxonomy_index.html.contains("tags|Tags|tags|"));
+    assert!(
+        taxonomy_index
+            .html
+            .contains("[Rust Tips:&#x2F;tags&#x2F;rust-tips&#x2F;:1]")
+    );
+    assert!(
+        taxonomy_index
+            .html
+            .contains("[Site Gen:&#x2F;tags&#x2F;site-gen&#x2F;:1]")
+    );
+
+    let rust_tips = rendered
+        .iter()
+        .find(|page| page.route == "/tags/rust-tips/")
+        .expect("taxonomy term page should exist");
+    assert!(rust_tips.html.contains("term=Rust Tips|"));
+    assert!(rust_tips.html.contains("&#x2F;blog&#x2F;post&#x2F;"));
 }
 
 #[test]

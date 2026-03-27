@@ -53,6 +53,10 @@ pub(super) fn render_content_pages(
             &page.frontmatter.date.as_ref().map(ToString::to_string),
         );
         context.insert("page_tags", &page.frontmatter.tags);
+        context.insert(
+            "page_taxonomies",
+            &crate::taxonomy::page_taxonomies(&page.frontmatter, env.config),
+        );
         context.insert("page_links", &page.frontmatter.links);
         context.insert("page_order", &page.frontmatter.order);
         context.insert("page_has_mermaid", &page.has_mermaid);
