@@ -232,6 +232,7 @@
 - `site_favicon_ico`
 - `site_apple_touch_icon`
 - `site_asset_version`
+- `site_analytics_head_html`
 - `site_style`
   - `content_width`
   - `top_gap`
@@ -269,6 +270,8 @@
 - resolution order:
   - `page_summary`
   - `site_description`
+- opt-in Plausible analytics snippet support in built-in themes
+- optional self-hosted Plausible `script_src` override
 - `route`
 - `section_name`
 - `section_title`

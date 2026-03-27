@@ -8,6 +8,21 @@ order: 1
 
 Rustipo currently centers on a small CLI surface that covers the full authoring loop.
 
+## Config-Driven Extras
+
+### Analytics
+
+Rustipo supports opt-in Plausible analytics from `config.toml`:
+
+```toml
+[site.analytics.plausible]
+domain = "docs.example.com"
+# Optional for self-hosted Plausible:
+# script_src = "https://stats.example.com/js/script.js"
+```
+
+Built-in themes render that snippet automatically through their shared head partials.
+
 ## Core Commands
 
 ### `rustipo new <site-name>`

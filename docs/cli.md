@@ -49,6 +49,18 @@ Project validation:
 rustipo check
 ```
 
+Analytics configuration is opt-in. For the first built-in integration, Rustipo supports Plausible
+with an optional self-hosted script override:
+
+```toml
+[site.analytics.plausible]
+domain = "docs.example.com"
+# Optional for self-hosted Plausible:
+# script_src = "https://stats.example.com/js/script.js"
+```
+
+Built-in themes render the analytics snippet automatically when configured.
+
 Theme discovery:
 
 ```bash
@@ -155,6 +167,7 @@ Current behavior:
   - `site.typography.heading_font`
   - `site.typography.mono_font`
 - Exposes `site_font_faces_css` to templates for optional font-face injection
+- Exposes `site_analytics_head_html` to templates for opt-in analytics snippet output
 - Auto-includes `static/custom.css` in template context when present (`site_has_custom_css`)
 - Writes rendered pages to `dist/` using pretty URL output paths
 - Writes generated palette variables to `dist/palette.css`

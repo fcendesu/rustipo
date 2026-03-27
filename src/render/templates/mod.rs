@@ -160,6 +160,7 @@ fn insert_common_site_context(
         &render_context.site.site_font_faces_css,
     );
     context.insert("site_asset_version", &render_context.site.asset_version);
+    context.insert("site_analytics_head_html", &config.analytics_head_html());
     context::insert_page_context(
         context,
         config,

@@ -44,8 +44,20 @@ pub struct AuthorConfig {
 pub struct SiteOptions {
     pub posts_per_page: Option<usize>,
     pub favicon: Option<String>,
+    pub analytics: Option<AnalyticsOptions>,
     pub layout: Option<LayoutOptions>,
     pub typography: Option<TypographyOptions>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct AnalyticsOptions {
+    pub plausible: Option<PlausibleAnalyticsOptions>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct PlausibleAnalyticsOptions {
+    pub domain: String,
+    pub script_src: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -165,6 +177,31 @@ impl SiteConfig {
         let _ = self;
         project_root.as_ref().join("static/custom.css").is_file()
     }
+
+    pub fn analytics_head_html(&self) -> Option<String> {
+        let analytics = self
+            .site
+            .as_ref()
+            .and_then(|site| site.analytics.as_ref())?;
+        let plausible = analytics.plausible.as_ref()?;
+        let domain = plausible.domain.trim();
+        if domain.is_empty() {
+            return None;
+        }
+
+        let script_src = plausible
+            .script_src
+            .as_deref()
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .unwrap_or("https://plausible.io/js/script.js");
+
+        Some(format!(
+            "<script defer data-domain=\"{}\" src=\"{}\"></script>",
+            escape_html_attr(domain),
+            escape_html_attr(script_src)
+        ))
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
@@ -229,6 +266,12 @@ pub fn load(path: impl AsRef<Path>) -> Result<SiteConfig> {
             path.display()
         )
     })?;
+    validate_analytics(&config).map_err(|error| {
+        anyhow!(
+            "invalid analytics configuration in config file: {}: {error}",
+            path.display()
+        )
+    })?;
 
     Ok(config)
 }
@@ -260,13 +303,59 @@ fn validate_menus(config: &SiteConfig) -> Result<()> {
     Ok(())
 }
 
+fn validate_analytics(config: &SiteConfig) -> Result<()> {
+    let Some(analytics) = config
+        .site
+        .as_ref()
+        .and_then(|site| site.analytics.as_ref())
+    else {
+        return Ok(());
+    };
+
+    if let Some(plausible) = &analytics.plausible {
+        if plausible.domain.trim().is_empty() {
+            bail!("site.analytics.plausible.domain must not be empty");
+        }
+
+        if plausible
+            .script_src
+            .as_deref()
+            .is_some_and(|value| value.trim().is_empty())
+        {
+            bail!("site.analytics.plausible.script_src must not be empty");
+        }
+    }
+
+    Ok(())
+}
+
+fn escape_html_attr(value: &str) -> String {
+    let mut escaped = String::with_capacity(value.len());
+
+    for ch in value.chars() {
+        match ch {
+            '&' => escaped.push_str("&amp;"),
+            '"' => escaped.push_str("&quot;"),
+            '\'' => escaped.push_str("&#39;"),
+            '<' => escaped.push_str("&lt;"),
+            '>' => escaped.push_str("&gt;"),
+            _ => escaped.push(ch),
+        }
+    }
+
+    escaped
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs;
 
     use tempfile::tempdir;
 
-    use super::{LayoutOptions, SiteConfig, SiteOptions, TypographyOptions, load};
+    use super::{
+        AnalyticsOptions, LayoutOptions, PlausibleAnalyticsOptions, SiteConfig, SiteOptions,
+        TypographyOptions, load,
+    };
 
     fn base_config() -> SiteConfig {
         SiteConfig {
@@ -307,6 +396,7 @@ mod tests {
         config.site = Some(SiteOptions {
             posts_per_page: None,
             favicon: Some("/favicon.ico".to_string()),
+            analytics: None,
             layout: None,
             typography: None,
         });
@@ -354,6 +444,7 @@ mod tests {
         config.site = Some(SiteOptions {
             posts_per_page: None,
             favicon: None,
+            analytics: None,
             layout: Some(LayoutOptions {
                 content_width: Some("98%".to_string()),
                 top_gap: Some("3rem".to_string()),
@@ -395,6 +486,66 @@ mod tests {
         fs::write(dir.path().join("static/custom.css"), "body{}")
             .expect("custom css should be written");
         assert!(config.has_custom_css(dir.path()));
+    }
+
+    #[test]
+    fn loads_plausible_analytics_from_config() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Rustipo"
+base_url = "https://example.com"
+theme = "default"
+description = "Example"
+
+[site.analytics.plausible]
+domain = "docs.example.com"
+"#,
+        )
+        .expect("config should be written");
+
+        let config = load(&config_path).expect("config should load");
+        let analytics = config
+            .site
+            .as_ref()
+            .and_then(|site| site.analytics.as_ref())
+            .and_then(|analytics| analytics.plausible.as_ref())
+            .expect("plausible analytics should be present");
+
+        assert_eq!(analytics.domain, "docs.example.com");
+        assert_eq!(analytics.script_src, None);
+        assert_eq!(
+            config.analytics_head_html().as_deref(),
+            Some(
+                "<script defer data-domain=\"docs.example.com\" src=\"https://plausible.io/js/script.js\"></script>"
+            )
+        );
+    }
+
+    #[test]
+    fn uses_custom_plausible_script_src_when_present() {
+        let mut config = base_config();
+        config.site = Some(SiteOptions {
+            posts_per_page: None,
+            favicon: None,
+            analytics: Some(AnalyticsOptions {
+                plausible: Some(PlausibleAnalyticsOptions {
+                    domain: "docs.example.com".to_string(),
+                    script_src: Some("https://stats.example.com/js/script.js".to_string()),
+                }),
+            }),
+            layout: None,
+            typography: None,
+        });
+
+        assert_eq!(
+            config.analytics_head_html().as_deref(),
+            Some(
+                "<script defer data-domain=\"docs.example.com\" src=\"https://stats.example.com/js/script.js\"></script>"
+            )
+        );
     }
 
     #[test]
@@ -455,6 +606,33 @@ main = [
             error
                 .to_string()
                 .contains("menu 'main' item 1 title must not be empty"),
+            "unexpected error: {error}"
+        );
+    }
+
+    #[test]
+    fn rejects_blank_plausible_domain() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Rustipo"
+base_url = "https://example.com"
+theme = "default"
+description = "Example"
+
+[site.analytics.plausible]
+domain = "   "
+"#,
+        )
+        .expect("config should be written");
+
+        let error = load(&config_path).expect_err("blank plausible domain should fail");
+        assert!(
+            error
+                .to_string()
+                .contains("site.analytics.plausible.domain must not be empty"),
             "unexpected error: {error}"
         );
     }

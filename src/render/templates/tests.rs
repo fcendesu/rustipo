@@ -393,6 +393,7 @@ fn paginates_blog_section_when_posts_exceed_page_size() {
         site: Some(crate::config::SiteOptions {
             posts_per_page: Some(2),
             favicon: None,
+            analytics: None,
             layout: None,
             typography: None,
         }),
@@ -809,6 +810,103 @@ fn page_description_falls_back_to_site_description_and_omits_empty_values() {
         !about_without_description
             .html
             .contains("meta name=\"description\"")
+    );
+}
+
+#[test]
+fn analytics_head_html_is_available_to_templates_when_plausible_is_configured() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Welcome").expect("index should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "<!doctype html><html><head>{% if site_analytics_head_html %}{{ site_analytics_head_html | safe }}{% endif %}</head><body>{% block body %}{% endblock body %}</body></html>",
+    )
+    .expect("base template should be written");
+    for template in [
+        "index.html",
+        "page.html",
+        "post.html",
+        "project.html",
+        "section.html",
+    ] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: Some(crate::config::SiteOptions {
+            posts_per_page: None,
+            favicon: None,
+            analytics: Some(crate::config::AnalyticsOptions {
+                plausible: Some(crate::config::PlausibleAnalyticsOptions {
+                    domain: "docs.example.com".to_string(),
+                    script_src: Some("https://stats.example.com/js/script.js".to_string()),
+                }),
+            }),
+            layout: None,
+            typography: None,
+        }),
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            asset_version: "test",
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index route should render");
+
+    assert!(
+        index
+            .html
+            .contains("<script defer data-domain=\"docs.example.com\" src=\"https://stats.example.com/js/script.js\"></script>"),
+        "expected analytics snippet in rendered head: {}",
+        index.html
     );
 }
 
