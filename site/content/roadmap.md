@@ -5,7 +5,7 @@ summary: Recent Rustipo releases and the next planned milestone batches for Rust
 
 # Roadmap
 
-Rustipo has shipped six post-MVP releases in a row, each focused on a clear product slice.
+Rustipo has shipped seven post-MVP releases in a row, each focused on a clear product slice.
 
 ## Recent Releases
 
@@ -62,22 +62,26 @@ Docs polish and deployment:
 - Cloudflare Pages deployment support
 - Netlify deployment support
 
-## Completed Upcoming Batch Work
-
-### `v0.14.0`
+## `v0.14.0`
 
 Rich content and media:
 
 - reusable embeds or shortcodes for interactive content
 - built-in image processing and resize helpers
 
-## Next Up: `v0.15.0`
+## Completed Batch Work
+
+### `v0.15.0`
 
 Ecosystem consistency and reusable site conventions:
 
 - expanded taxonomy support
 - formalized palette token contract
 - optional analytics integration
+
+## Next Up
+
+The next implementation batch has not been defined yet.
 
 ## Tracked Follow-up
 
