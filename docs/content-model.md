@@ -206,6 +206,10 @@ Supported image directives in v1:
 - `full`
 
 Supported standalone images render with stable `markdown-image*` classes for theme styling.
+
+For generated thumbnails, cover derivatives, or resized screenshots in templates, Rustipo also
+provides a built-in `resize_image(...)` Tera helper that writes processed derivatives into
+`dist/processed-images/`.
 Unknown directives degrade safely by leaving the full title text as the caption.
 
 ## Shortcodes

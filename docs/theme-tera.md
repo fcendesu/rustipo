@@ -109,6 +109,7 @@ Rustipo currently registers:
 - `abs_url(path="...")` function
 - `asset_url(path="...")` function
 - `tag_url(name="...")` function
+- `resize_image(path="...", ...)` function
 
 ### `slugify`
 
@@ -169,6 +170,31 @@ Output:
 ```text
 /tags/site-gen/
 ```
+
+### `resize_image`
+
+```html
+{% set cover = resize_image(path="/images/cover.png", width=640, height=360, op="fit", format="png") %}
+<img src="{{ cover.url }}" width="{{ cover.width }}" height="{{ cover.height }}" alt="Cover" />
+```
+
+Returned fields:
+
+- `url`
+- `static_path`
+- `width`
+- `height`
+- `orig_width`
+- `orig_height`
+
+Notes:
+
+- processed derivatives are generated during render and written into `dist/processed-images/`
+- source lookup checks the project root, `static/`, `content/`, `public/`, and inherited theme `static/` directories
+- supported ops in v1: `fit_width`, `fit_height`, `fit`, `fill`
+- supported formats in v1: `auto`, `jpg`, `png`, `webp`
+- `quality` currently affects JPEG output; lossless outputs ignore it
+- `fit` preserves aspect ratio and avoids upscaling when the source is already smaller than the requested box
 
 ## Stable template API
 

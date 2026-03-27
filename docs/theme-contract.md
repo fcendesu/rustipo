@@ -195,6 +195,19 @@ Rustipo also registers small Tera helpers for theme authors:
 - `abs_url(path="...")` function
 - `asset_url(path="...")` function
 - `tag_url(name="...")` function
+- `resize_image(path="...", ...)` function
+
+`resize_image` returns an object with:
+
+- `url`
+- `static_path`
+- `width`
+- `height`
+- `orig_width`
+- `orig_height`
+
+Rustipo writes generated image derivatives into `dist/processed-images/` and reserves that output
+path so user or theme static assets cannot collide with it.
 
 ### Markdown alert blockquotes
 
