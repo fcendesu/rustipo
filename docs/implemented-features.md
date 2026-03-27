@@ -142,6 +142,8 @@
   - `left`
   - `center`
   - `right`
+- built-in `resize_image(...)` template helper
+- generated processed image derivatives under `dist/processed-images/`
 - Mermaid fenced code blocks
 - page-scoped Mermaid runtime injection
 - shortcodes
@@ -280,6 +282,7 @@
 - `format_date`
 - `abs_url`
 - `asset_url`
+- `resize_image`
 - `tag_url`
 
 ## Navigation and Page State

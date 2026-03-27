@@ -77,6 +77,26 @@ They can also use richer derived tokens such as:
 - `--rustipo-accent`
 - `--rustipo-success`
 
+## Image Processing Helper
+
+Theme templates can also generate resized image derivatives during the build.
+
+```html
+{% set cover = resize_image(path="/images/cover.png", width=640, height=360, op="fit", format="png") %}
+<img src="{{ cover.url }}" width="{{ cover.width }}" height="{{ cover.height }}" alt="Cover" />
+```
+
+The helper returns:
+
+- `url`
+- `static_path`
+- `width`
+- `height`
+- `orig_width`
+- `orig_height`
+
+Rustipo writes those generated files into `dist/processed-images/`.
+
 ## Related Pages
 
 - [CLI reference](/reference/cli/#theme-and-palette-commands)

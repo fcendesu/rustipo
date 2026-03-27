@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod config;
 mod content;
+mod images;
 mod output;
 mod palette;
 mod render;
