@@ -83,7 +83,8 @@ For historical post-MVP batch planning, see:
 
 ## Upcoming milestones
 
-- next implementation batch not defined yet
+- `v0.16.0`: theme authoring ergonomics
+  - evaluate optional SCSS support for theme authoring
 
 Tracked maintenance follow-up:
 
@@ -134,5 +135,4 @@ Tracked maintenance follow-up:
   - more helper functions/filters
   - stronger macro/partial conventions and examples
 - continue growing the layout theme ecosystem now that palette/font foundations are in place
-- evaluate optional SCSS support for theme authoring while keeping plain CSS as the default
 - consider multilingual support only after the single-language publishing model is more mature
