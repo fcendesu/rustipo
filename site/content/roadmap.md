@@ -81,7 +81,11 @@ Ecosystem consistency and reusable site conventions:
 
 ## Next Up
 
-The next implementation batch has not been defined yet.
+### `v0.16.0`
+
+Theme authoring ergonomics:
+
+- optional SCSS support for theme authoring
 
 ## Tracked Follow-up
 
