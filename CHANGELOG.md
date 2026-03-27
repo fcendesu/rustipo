@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.12.0...rustipo-v0.13.0) (2026-03-27)
+
+
+### Features
+
+* **content:** add interactive embed shortcodes ([c372c94](https://github.com/fcendesu/rustipo/commit/c372c94826caa00a31688b08a4be6d14e67d0df8))
+* **content:** add interactive embed shortcodes ([065c6bf](https://github.com/fcendesu/rustipo/commit/065c6bfc32ec3f17fc77cb49543ecd3a4920bd3a))
+* **images:** add built-in resize helper ([d98e692](https://github.com/fcendesu/rustipo/commit/d98e6929747e8a9cfd996f20788cd6c20df39f94))
+* **images:** add built-in resize helper ([a830e41](https://github.com/fcendesu/rustipo/commit/a830e41d7440403cef24786ab6b4c8631990e663))
+
 ## [0.12.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.11.0...rustipo-v0.12.0) (2026-03-26)
 
 
