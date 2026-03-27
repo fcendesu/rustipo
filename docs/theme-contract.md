@@ -157,8 +157,10 @@ Rustipo injects common site variables into template contexts, including:
   - `page_kind`
   - `current_section`
   - `page_description`
+  - `page_taxonomies`
   - `site_nav`
   - `site_menus`
+  - `site_taxonomies`
   - `breadcrumbs`
   - `page_has_math`
   - `page_toc`
@@ -195,6 +197,7 @@ Rustipo also registers small Tera helpers for theme authors:
 - `abs_url(path="...")` function
 - `asset_url(path="...")` function
 - `tag_url(name="...")` function
+- `taxonomy_url(taxonomy="...", term="...")` function
 - `resize_image(path="...", ...)` function
 
 `resize_image` returns an object with:
@@ -208,6 +211,22 @@ Rustipo also registers small Tera helpers for theme authors:
 
 Rustipo writes generated image derivatives into `dist/processed-images/` and reserves that output
 path so user or theme static assets cannot collide with it.
+
+Rustipo currently formalizes one built-in taxonomy:
+
+- `tags`
+
+Stable taxonomy template fields are:
+
+- `page_taxonomies`
+- `site_taxonomies`
+- `taxonomy_name`
+- `taxonomy_title`
+- `taxonomy_terms`
+- `taxonomy_term`
+- `taxonomy_items`
+
+Rustipo still keeps `page_tags` and `tag_url(name="...")` as compatibility helpers for simple tag-oriented themes.
 
 ### Markdown alert blockquotes
 

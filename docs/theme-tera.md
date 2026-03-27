@@ -72,11 +72,13 @@ Rustipo injects common values such as:
 - `page_summary`
 - `page_description`
 - `page_tags`
+- `page_taxonomies`
 - `page_has_math`
 - `page_toc`
 - `site_title`
 - `site_description`
 - `site_asset_version`
+- `site_taxonomies`
 - `site_style.*`
 
 `page_description` is the built-in convenience value for metadata tags. Rustipo resolves it with this fallback order:
@@ -109,6 +111,7 @@ Rustipo currently registers:
 - `abs_url(path="...")` function
 - `asset_url(path="...")` function
 - `tag_url(name="...")` function
+- `taxonomy_url(taxonomy="...", term="...")` function
 - `resize_image(path="...", ...)` function
 
 ### `slugify`
@@ -171,6 +174,18 @@ Output:
 /tags/site-gen/
 ```
 
+### `taxonomy_url`
+
+```html
+<a href="{{ taxonomy_url(taxonomy="tags", term="Site Gen") }}">Site Gen</a>
+```
+
+Output:
+
+```text
+/tags/site-gen/
+```
+
 ### `resize_image`
 
 ```html
@@ -204,8 +219,23 @@ Theme authors can rely on these context keys being present in normal page templa
 - `current_section`: one of `home`, `pages`, `blog`, `projects`, `archive`, `tags`
 - `site_nav`: ordered navigation items with `title`, `route`, `active`
 - `site_menus`: named menus from `config.toml`, exposed as `{ menu_name -> [items...] }`
+- `site_taxonomies`: available built-in taxonomies with `name`, `title`, `route`
 - `breadcrumbs`: ordered breadcrumb items with `title`, `route`, `active`, `linkable`
 - `previous_post` / `next_post`: adjacent blog post metadata when rendering a blog post
+
+Rustipo still keeps `page_tags` for simple tag-oriented themes, but the broader taxonomy contract is:
+
+- `page_taxonomies`: map of taxonomy name to term entries
+- `taxonomy_name`: active taxonomy name on taxonomy section pages
+- `taxonomy_title`: active taxonomy display title on taxonomy section pages
+- `taxonomy_terms`: known terms for the active taxonomy on taxonomy pages
+- `taxonomy_term`: active term entry on taxonomy term pages
+- `taxonomy_items`: rendered items for the active taxonomy term page
+
+In `v0.15`, `tags` are the only built-in taxonomy, and Rustipo generates:
+
+- `/tags/`
+- `/tags/<term>/`
 
 Rustipo also renders a built-in not-found page to `dist/404.html`. When a theme provides
 `templates/404.html`, Rustipo uses it. Otherwise, Rustipo falls back to `page.html` with the

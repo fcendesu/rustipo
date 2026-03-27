@@ -51,6 +51,24 @@ Common frontmatter fields include:
 - `order`
 - `links`
 
+## Taxonomy Contract
+
+Rustipo currently formalizes one built-in taxonomy:
+
+- `tags`
+
+That means Rustipo now has both:
+
+- raw `page_tags` for compatibility
+- generic `page_taxonomies.tags` entries for theme code
+
+Generated taxonomy routes are:
+
+- `/tags/`
+- `/tags/<tag>/`
+
+In the current model, taxonomy listing pages are derived from blog post tags.
+
 ## Shortcodes And Interactive Embeds
 
 Rustipo supports reusable shortcodes inside Markdown content.
