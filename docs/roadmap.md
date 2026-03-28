@@ -96,6 +96,7 @@ For historical post-MVP batch planning, see:
   - theme authoring guide for the docs site
   - deployment guide for Rustipo sites
   - template context reference page for theme authors
+  - publishing outputs reference page for generated artifacts
 
 Tracked maintenance follow-up:
 
