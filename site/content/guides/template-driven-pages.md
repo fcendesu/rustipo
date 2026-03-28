@@ -279,6 +279,7 @@ Once the content and layout split feels right, continue to [Building the docs si
 ## Related Pages
 
 - [Getting started](/guides/getting-started/)
+- [Theme authoring](/guides/theme-authoring/)
 - [Building the docs site](/guides/building-the-docs-site/)
 - [Content model](/reference/content-model/)
 - [Themes and palettes](/reference/themes-and-palettes/)

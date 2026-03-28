@@ -1,6 +1,6 @@
 ---
 title: Guides
-summary: Step-by-step workflows for starting a Rustipo site, shaping custom pages, and understanding the in-repo docs project.
+summary: Step-by-step workflows for starting a Rustipo site, authoring themes, shaping custom pages, and understanding the in-repo docs project.
 ---
 
 Rustipo's guides are for workflow questions, not raw feature lookup. Start here when you want a practical path through the product and move to [Reference](/reference/) when you need exact behavior.
@@ -16,6 +16,10 @@ Create a site, preview it locally, and learn the normal authoring loop.
 Learn the split between Markdown content, frontmatter `extra`, and Tera layout for custom homepages and other designed pages.
 
 ## Build With Rustipo
+
+### [Theme authoring](/guides/theme-authoring/)
+
+Build or customize a Rustipo theme by splitting Tera layout, palettes, assets, and optional SCSS cleanly.
 
 ### [Interactive embeds](/guides/interactive-embeds/)
 
@@ -35,9 +39,10 @@ Understand how Rustipo's own docs project is structured, verified, and published
 
 ### Theme or landing-page author
 
-1. Start with [Template-driven pages](/guides/template-driven-pages/).
-2. Jump to [Themes and palettes](/reference/themes-and-palettes/) for the theme contract and palette model.
-3. Use [Images](/reference/images/) when you need processed image derivatives in templates.
+1. Start with [Theme authoring](/guides/theme-authoring/).
+2. Use [Template-driven pages](/guides/template-driven-pages/) when a single page needs structured layout data.
+3. Jump to [Themes and palettes](/reference/themes-and-palettes/) for the theme contract and palette model.
+4. Use [Images](/reference/images/) when you need processed image derivatives in templates.
 
 ### Docs-site contributor
 
@@ -48,6 +53,7 @@ Understand how Rustipo's own docs project is structured, verified, and published
 ## Guides Focus On
 
 - installation and first build workflows
+- theme authoring with Tera, palettes, assets, and optional SCSS
 - the split between content, layout, and structured page data
 - reusable embed authoring patterns
 - how Rustipo's own docs project is organized and published
