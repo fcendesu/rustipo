@@ -1,7 +1,7 @@
 ---
 title: Analytics
 summary: Understand Rustipo's generic analytics hook and the configuration shapes that feed it.
-order: 6
+order: 7
 ---
 
 # Analytics

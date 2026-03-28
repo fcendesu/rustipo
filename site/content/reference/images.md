@@ -1,7 +1,7 @@
 ---
 title: Images
 summary: How Rustipo handles Markdown images, figure rendering, and built-in image processing.
-order: 4
+order: 5
 ---
 
 # Images
