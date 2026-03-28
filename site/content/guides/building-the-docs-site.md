@@ -1,7 +1,7 @@
 ---
 title: Building The Docs Site
 summary: Understand the in-repo docs site project and how it is verified.
-order: 2
+order: 3
 ---
 
 # Building The Docs Site
@@ -79,6 +79,7 @@ The top-level navigation should make the product easy to approach in this order:
 
 ## Related Pages
 
+- [Template-driven pages](/guides/template-driven-pages/)
 - [CLI reference](/reference/cli/)
 - [Examples](/examples/)
 - [Roadmap](/roadmap/)

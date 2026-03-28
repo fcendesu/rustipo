@@ -80,11 +80,14 @@ For historical post-MVP batch planning, see:
   - formalize and expand taxonomy support
   - formalize the canonical palette token contract
   - optional analytics integration
+- `v0.16.0`: theme authoring ergonomics
+  - evaluate optional SCSS support for theme authoring
+- `v0.17.0`: template-driven page ergonomics
+  - extensible frontmatter data for template-driven pages
 
 ## Upcoming milestones
 
-- `v0.16.0`: theme authoring ergonomics
-  - evaluate optional SCSS support for theme authoring
+- next batch not defined yet
 
 Tracked maintenance follow-up:
 

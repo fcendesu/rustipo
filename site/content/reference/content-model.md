@@ -50,6 +50,14 @@ Common frontmatter fields include:
 - `slug`
 - `order`
 - `links`
+- `extra`
+
+`extra` is the structured frontmatter escape hatch for template-driven pages. It lets a page carry nested data such as hero content, actions, or custom cards without requiring Rustipo to add lots of one-off built-in fields.
+
+Rustipo exposes that data in templates as:
+
+- `frontmatter.extra`
+- `page_extra`
 
 ## Taxonomy Contract
 
@@ -106,3 +114,4 @@ For example:
 
 - [CLI reference](/reference/cli/)
 - [Themes and palettes](/reference/themes-and-palettes/)
+- [Template-driven pages](/guides/template-driven-pages/)

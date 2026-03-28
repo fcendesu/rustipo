@@ -83,6 +83,7 @@ pub(super) fn render_blog_archive_page(
     };
     super::insert_common_site_context(&mut context, env.config, &render_context);
     context.insert("page_title", &format!("Archive | {}", env.config.title));
+    context.insert("page_extra", &super::resolved_page_extra(None));
     context.insert(
         "page_description",
         &super::resolved_page_description(None, env.config),

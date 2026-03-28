@@ -104,10 +104,12 @@
 - `slug`
 - `order`
 - `links`
+- `extra`
 
 ## Content Pipeline
 
 - YAML frontmatter parsing
+- extensible nested frontmatter data under `extra`
 - Markdown to HTML
 - strict `YYYY-MM-DD` date parsing
 - draft exclusion
@@ -247,6 +249,7 @@
 - `site_font_faces_css`
 - `content_html`
 - `frontmatter`
+- `page_extra`
 - `page_title`
 - `page_date`
 - `page_summary`

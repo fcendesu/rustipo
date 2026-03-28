@@ -46,10 +46,45 @@ Supported fields for MVP:
 - `slug`
 - `order`
 - `links`
+- `extra`
 
 These frontmatter fields are exposed to page templates under `frontmatter` and page-level convenience keys (for example `page_date`, `page_summary`, `page_description`, `page_tags`, and `page_taxonomies`).
 
 `summary` is also the first input Rustipo uses for built-in meta description rendering in themes. If `summary` is empty, Rustipo falls back to the site-level `description` from `config.toml`.
+
+`extra` is the extensible structured-data escape hatch for template-driven pages. It lets page authors keep page-specific nested data in frontmatter without forcing Rustipo to grow lots of layout-specific core fields.
+
+Example:
+
+```yaml
+---
+title: Rustipo Docs
+summary: Publish with structure, not sprawl.
+extra:
+  eyebrow: Markdown-first publishing system
+  hero:
+    heading: Build a site with a point of view.
+    lead: Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl.
+  actions:
+    - label: Documentation
+      href: /guides/getting-started/
+    - label: GitHub
+      href: https://github.com/fcendesu/rustipo
+  install:
+    command: cargo install rustipo
+---
+```
+
+Rustipo exposes that data in templates as both:
+
+- `frontmatter.extra`
+- `page_extra`
+
+The intent is:
+
+- keep Rustipo's core frontmatter small and stable
+- allow different page types to carry different nested data shapes
+- keep highly designed pages content-driven without dumping layout HTML into Markdown
 
 ## Content vs layout
 

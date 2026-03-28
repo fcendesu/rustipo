@@ -15,6 +15,7 @@ pub struct Frontmatter {
     pub slug: Option<String>,
     pub order: Option<i64>,
     pub links: Option<serde_json::Value>,
+    pub extra: Option<serde_json::Value>,
 }
 
 #[derive(Debug)]
@@ -45,6 +46,10 @@ mod tests {
 title: Hello
 summary: Test
 draft: false
+extra:
+  eyebrow: Custom eyebrow
+  actions:
+    - label: Start
 ---
 
 # Heading
@@ -54,6 +59,15 @@ draft: false
         assert_eq!(parsed.frontmatter.title.as_deref(), Some("Hello"));
         assert_eq!(parsed.frontmatter.summary.as_deref(), Some("Test"));
         assert_eq!(parsed.frontmatter.draft, Some(false));
+        assert_eq!(
+            parsed
+                .frontmatter
+                .extra
+                .as_ref()
+                .and_then(|value| value.get("eyebrow"))
+                .and_then(|value| value.as_str()),
+            Some("Custom eyebrow")
+        );
         assert!(parsed.content.contains("# Heading"));
     }
 

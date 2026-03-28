@@ -14,6 +14,11 @@ use walkdir::WalkDir;
 
 pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
     let addr = format_addr(host, port);
+    if !Path::new("dist").is_dir() {
+        anyhow::bail!("build output directory not found: dist (run `rustipo build` first)");
+    }
+    let config = crate::config::load("config.toml")?;
+    let base_path = crate::url::base_path(&config.base_url);
     let live_reload_version = if watch {
         Some(Arc::new(AtomicU64::new(0)))
     } else {
@@ -42,6 +47,7 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
         "dist",
         &addr,
         live_reload_version,
+        &base_path,
     ))
 }
 
