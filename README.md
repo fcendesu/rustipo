@@ -10,7 +10,37 @@ controls the generated color tokens.
 
 MVP complete, active post-MVP development.
 
-## CLI
+## Why Rustipo
+
+Rustipo aims for a simpler shape than a full frontend framework:
+
+- Markdown-first authoring instead of component-heavy content pipelines
+- Tera themes for reusable layout without a JavaScript runtime requirement
+- palettes as a separate concern from layout, so visual identity can change without rewriting templates
+- built-in publishing outputs such as RSS, sitemap, search index, `robots.txt`, and `404.html`
+- a small CLI that covers the normal authoring loop from `new` to `build` and deployment helpers
+
+## Best For
+
+Rustipo is a strong fit when you want to build:
+
+- blogs and writing-focused sites
+- notes or knowledge-base sites
+- project or personal websites
+- documentation sites with a static publishing flow
+
+If you want a Markdown-first static generator with a smaller mental model than a full app
+framework, Rustipo is meant to feel approachable.
+
+## Quick Links
+
+- [Published docs site](https://fcendesu.github.io/rustipo/)
+- [Contributing guide](./CONTRIBUTING.md)
+- [Roadmap](./docs/roadmap.md)
+- [Example sites](#example-sites)
+- [GitHub Releases](https://github.com/fcendesu/rustipo/releases)
+
+## CLI Surface
 
 - `rustipo new <site-name>`
 - `rustipo check`
@@ -82,6 +112,29 @@ Current built-in themes:
 - `atlas`
 - `journal`
 
+## Core Strengths
+
+- Markdown content with YAML frontmatter and draft filtering
+- Tera-based theme templates with inheritance support (`extends`)
+- theme installation from GitHub shorthand, URLs, or local git repositories
+- palette-driven styling with built-in and local palettes
+- docs-oriented authoring features like:
+  - table of contents
+  - math rendering
+  - admonitions
+  - image captions and layout helpers
+  - internal link and deep-link validation
+- built-in publishing outputs:
+  - `dist/rss.xml`
+  - `dist/sitemap.xml`
+  - `dist/search-index.json`
+  - `dist/robots.txt`
+  - `dist/404.html`
+- deployment workflow generation for:
+  - GitHub Pages
+  - Cloudflare Pages
+  - Netlify
+
 ## Local Development From The Repository
 
 If you are working on Rustipo itself instead of the published crate:
@@ -115,39 +168,24 @@ weight = "400"
 style = "normal"
 ```
 
-## Current Features
+## Built-In Themes And Palettes
 
-- Markdown content pipeline with YAML frontmatter and draft filtering
-- Tera-based theme templates for reusable page layouts
-- Theme loading with inheritance support (`extends`) and contract validation
-- Explicit theme IDs for clearer selection and variant naming (`family-variant`)
-- Rich palette token aliases for expressive theme styling with semantic fallbacks
-- Config-driven custom font families and local `@font-face` injection
-- Refined default typography scale and prose rhythm for the starter theme
-- Built-in palettes:
-  - `dracula`
-  - `default`
-  - `catppuccin-frappe`
-  - `catppuccin-latte`
-  - `catppuccin-macchiato`
-  - `catppuccin-mocha`
-  - `gruvbox-dark`
-  - `tokyonight-storm`
-  - `tokyonight-moon`
-- Pretty URL output in `dist/`
-- Section/tag/archive generation:
-  - `/blog/`, `/projects/`
-  - `/tags/<tag>/`
-  - `/blog/archive/`
-- Output artifacts:
-  - `dist/rss.xml`
-  - `dist/sitemap.xml`
-  - `dist/search-index.json`
-- Local preview server with watch mode and live reload (`rustipo serve --watch`)
-- Theme installation from GitHub shorthand/URL or local git repo
-- GitHub Pages deploy workflow scaffolding
-- Config-driven layout knobs (`content_width`, `top_gap`, `vertical_align`, `line_height`)
-- Optional `static/custom.css` override loaded after theme CSS
+Built-in themes:
+
+- `atlas`
+- `journal`
+
+Built-in palettes:
+
+- `dracula`
+- `default`
+- `catppuccin-frappe`
+- `catppuccin-latte`
+- `catppuccin-macchiato`
+- `catppuccin-mocha`
+- `gruvbox-dark`
+- `tokyonight-storm`
+- `tokyonight-moon`
 
 ## Anatomy Of A Rustipo Site
 
