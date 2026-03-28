@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.15.0...rustipo-v0.16.0) (2026-03-28)
+
+
+### Miscellaneous Chores
+
+* **release:** prepare 0.16.0 ([61a043a](https://github.com/fcendesu/rustipo/commit/61a043a63968190eadf13c2f394f11a702adcb54))
+
 ## [0.15.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.14.0...rustipo-v0.15.0) (2026-03-28)
 
 
