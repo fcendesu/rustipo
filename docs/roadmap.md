@@ -92,7 +92,10 @@ For historical post-MVP batch planning, see:
   - optional SCSS support for theme authoring
   - extensible frontmatter data for template-driven pages
   - docs-site landing and information-architecture improvements
-- next roadmap batch not defined yet
+- `v0.18.0`: docs depth and theme guidance
+  - theme authoring guide for the docs site
+  - deployment guide for Rustipo sites
+  - template context reference page for theme authors
 
 Tracked maintenance follow-up:
 
