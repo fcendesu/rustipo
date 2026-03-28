@@ -79,13 +79,21 @@ Ecosystem consistency and reusable site conventions:
 - formalized palette token contract
 - optional analytics integration
 
-## Next Up
-
 ### `v0.16.0`
 
 Theme authoring ergonomics:
 
 - optional SCSS support for theme authoring
+
+### `v0.17.0`
+
+Template-driven page ergonomics:
+
+- extensible frontmatter data for template-driven pages
+
+## Next Up
+
+- next batch not defined yet
 
 ## Tracked Follow-up
 
@@ -96,7 +104,6 @@ Maintenance and workflow compatibility:
 
 ## Later
 
-- optional SCSS support
 - multilingual site support
 
 ## Related Pages

@@ -183,6 +183,7 @@ Rustipo injects common site variables into template contexts, including:
 - page-state helpers:
   - `page_kind`
   - `current_section`
+  - `page_extra`
   - `page_description`
   - `page_taxonomies`
   - `site_nav`
@@ -217,6 +218,25 @@ Rustipo injects common site variables into template contexts, including:
 - `site_description`
 
 If both values are empty, Rustipo leaves `page_description` unset so themes can omit the tag cleanly.
+
+`page_extra` is the stable convenience field for nested frontmatter data from `extra`. It gives theme authors a predictable object for page-specific structured content without expanding Rustipo's built-in frontmatter surface for every custom layout need.
+
+Example:
+
+```yaml
+---
+title: Docs Home
+extra:
+  hero:
+    heading: Build a site with a point of view.
+---
+```
+
+```html
+{% if page_extra.hero %}
+  <h1>{{ page_extra.hero.heading }}</h1>
+{% endif %}
+```
 
 `site_analytics_head_html` is the stable hook for built-in analytics integrations. In `v0.15`,
 Rustipo supports opt-in Plausible analytics via:

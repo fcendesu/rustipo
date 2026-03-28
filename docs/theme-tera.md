@@ -67,6 +67,7 @@ Rustipo injects common values such as:
 
 - `content_html`
 - `frontmatter`
+- `page_extra`
 - `page_title`
 - `page_date`
 - `page_summary`
@@ -88,6 +89,29 @@ Rustipo injects common values such as:
 - `site_description`
 
 If both are empty, `page_description` is omitted.
+
+`page_extra` is the stable convenience value for structured frontmatter data from `extra`. Rustipo also keeps the raw value available at `frontmatter.extra`, but `page_extra` is always present as an object so theme code can read nested values without defensive null checks everywhere.
+
+Example frontmatter:
+
+```yaml
+---
+title: Landing
+extra:
+  hero:
+    heading: Build a site with a point of view.
+    lead: Publish with structure, not sprawl.
+---
+```
+
+Example template:
+
+```html
+{% if page_extra.hero %}
+  <h1>{{ page_extra.hero.heading }}</h1>
+  <p>{{ page_extra.hero.lead }}</p>
+{% endif %}
+```
 
 `site_analytics_head_html` is the stable convenience value for built-in analytics output. In
 `v0.15`, Rustipo supports opt-in Plausible configuration from `config.toml`:
@@ -231,6 +255,7 @@ Theme authors can rely on these context keys being present in normal page templa
 
 - `page_kind`: one of `index`, `page`, `post`, `project`, `section`
 - `current_section`: one of `home`, `pages`, `blog`, `projects`, `archive`, `tags`
+- `page_extra`: structured page-specific data from frontmatter `extra`
 - `site_nav`: ordered navigation items with `title`, `route`, `active`
 - `site_menus`: named menus from `config.toml`, exposed as `{ menu_name -> [items...] }`
 - `site_taxonomies`: available built-in taxonomies with `name`, `title`, `route`
