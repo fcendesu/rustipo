@@ -270,6 +270,7 @@ What each part is for:
 ## Documentation
 
 - [published docs site](https://fcendesu.github.io/rustipo/)
+- [published llms.txt](https://fcendesu.github.io/rustipo/llms.txt)
 - [docs site source](./site)
 - [Contributing guide](./CONTRIBUTING.md)
 - [Code of Conduct](./CODE_OF_CONDUCT.md)

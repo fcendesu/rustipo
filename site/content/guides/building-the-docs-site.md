@@ -55,6 +55,7 @@ The docs site is published from this repository with GitHub Pages.
 
 - pushes to `master` rebuild and deploy the site automatically
 - the published URL is `https://fcendesu.github.io/rustipo/`
+- the docs site also publishes `https://fcendesu.github.io/rustipo/llms.txt` as a curated LLM-friendly entry point
 - the workflow lives at `.github/workflows/docs-site.yml`
 
 ## What This Site Should Showcase

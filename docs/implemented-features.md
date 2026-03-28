@@ -33,6 +33,7 @@
 - GitHub release generation
 - GitHub release notes synchronization
 - published docs site
+- published docs-site `llms.txt`
 - prebuilt release archives
   - `x86_64-unknown-linux-gnu`
   - `x86_64-apple-darwin`
@@ -487,6 +488,7 @@
 - GitHub Pages workflow generation
 - workflow overwrite protection
 - docs site GitHub Pages publish workflow
+- curated docs-site `llms.txt` for LLM-friendly discovery
 
 ## Validation and Failure Handling
 
