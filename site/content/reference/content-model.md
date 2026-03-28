@@ -114,3 +114,4 @@ For example:
 
 - [CLI reference](/reference/cli/)
 - [Themes and palettes](/reference/themes-and-palettes/)
+- [Template-driven pages](/guides/template-driven-pages/)
