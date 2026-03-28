@@ -114,4 +114,5 @@ rustipo build
 ## Related Reference
 
 - [Content model](/reference/content-model/)
+- [Publishing outputs](/reference/publishing-outputs/)
 - [Themes and palettes](/reference/themes-and-palettes/)

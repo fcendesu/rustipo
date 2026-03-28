@@ -107,5 +107,5 @@ Use:
 
 - [Deploying Rustipo sites](/guides/deploying-rustipo-sites/)
 - [Getting started](/guides/getting-started/)
-- [Building the docs site](/guides/building-the-docs-site/)
+- [Publishing outputs](/reference/publishing-outputs/)
 - [CLI reference](/reference/cli/)
