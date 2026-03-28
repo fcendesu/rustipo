@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.14.0...rustipo-v0.15.0) (2026-03-28)
+
+
+### Features
+
+* **atlas:** redesign and refine the docs-site landing and navigation ([62d7f1d](https://github.com/fcendesu/rustipo/commit/62d7f1d618ffeb45a995676b5c3ca1d7dd0ce40e), [a043829](https://github.com/fcendesu/rustipo/commit/a04382929c5bba5b5c10f5bf0b28324dfd0ecde1), [fcbc862](https://github.com/fcendesu/rustipo/commit/fcbc8626a2eb04bcc2b2feb1bdee19a24514c88a))
+* **config:** generalize analytics configuration ([f770bcc](https://github.com/fcendesu/rustipo/commit/f770bcca7e09d3399d9769c0de43e4b4966d7207))
+* **content:** add extensible frontmatter data ([d865020](https://github.com/fcendesu/rustipo/commit/d865020d7dca57942ee264e1f2c3aaeb04cbf5bf))
+* **styles:** add optional scss support ([6cca999](https://github.com/fcendesu/rustipo/commit/6cca999df048989a4b1c73b4da3c0fd7ee404c60), [a81db76](https://github.com/fcendesu/rustipo/commit/a81db7649208d134d3798f618cf7943ca3344086))
+
+
+### Bug Fixes
+
+* **dev:** serve projects from configured base path ([39591c8](https://github.com/fcendesu/rustipo/commit/39591c80aa86b91e4c173f2853cef7668bbea952))
+* **render:** satisfy clippy question-mark lint ([5c91b84](https://github.com/fcendesu/rustipo/commit/5c91b84e171cf2ea36dc56992f0f7dcf1d222b41))
+
 ## [0.14.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.13.0...rustipo-v0.14.0) (2026-03-27)
 
 
