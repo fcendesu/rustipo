@@ -73,6 +73,11 @@ For historical post-MVP batch planning, see:
 - `v0.14.0`: rich content and media
   - reusable embeds or shortcodes for interactive content
   - built-in image processing and resize helpers
+- `v0.16.0`: docs depth and theme guidance
+  - theme authoring guide for Rustipo theme builders
+  - template context reference page for Tera values and helpers
+  - deployment guide for GitHub Pages, Cloudflare Pages, and Netlify
+  - publishing outputs reference page for generated `dist/` artifacts
 
 ## Completed batch work
 
@@ -92,10 +97,8 @@ For historical post-MVP batch planning, see:
 
 ## Upcoming milestones
 
-- next published release candidate: `0.16.0`
-  - ship the completed docs depth and theme guidance work after `0.15.0`
 - next feature batch: not defined yet
-  - choose the next scope after the docs-depth release instead of inventing placeholder milestone work
+  - choose the next scope after the published docs-depth release instead of inventing placeholder milestone work
 
 Tracked maintenance follow-up:
 
