@@ -1,7 +1,97 @@
-{% extends "base.html" %}
-{% block body %}
-<article class="doc-card overview-card">
-  <p class="kicker">Docs + Notes Example</p>
-  {{ content_html | safe }}
-</article>
-{% endblock body %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    {% include "partials/head_assets.html" %}
+  </head>
+  <body class="landing-homepage">
+    <div class="landing-noise"></div>
+    <main class="landing-main">
+      <section class="hero-stage">
+        <div class="hero-glow hero-glow-a"></div>
+        <div class="hero-glow hero-glow-b"></div>
+
+        <div class="hero-copy">
+          <p class="landing-eyebrow">Markdown-first publishing system</p>
+          <h1>Build a site with a point of view.</h1>
+          <p class="hero-lead">
+            Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl.
+            Write in Markdown. Shape with Tera. Shift tone with palettes. Publish static output that stays legible.
+          </p>
+          <div class="hero-actions">
+            <a class="landing-button landing-button-primary" href="{{ site_root }}guides/getting-started/">Documentation</a>
+            <a class="landing-button landing-button-secondary" href="https://github.com/fcendesu/rustipo">GitHub</a>
+          </div>
+          <div class="hero-command-rack" aria-label="Quick install">
+            <button class="hero-copy-command" type="button" data-copy-text="cargo install rustipo" aria-label="Copy cargo install command">
+              <code>cargo install rustipo</code>
+              <span class="hero-copy-icon" aria-hidden="true"></span>
+              <span class="hero-copy-feedback" aria-live="polite">Copied</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Three Rustipo site shapes">
+          <div class="visual-orbit orbit-a"></div>
+          <div class="visual-orbit orbit-b"></div>
+          <div class="visual-orbit orbit-c"></div>
+
+          <article class="site-canvas canvas-docs" data-canvas-depth="0.55" data-canvas-key="docs" tabindex="0">
+            <div class="site-canvas-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="site-canvas-kicker">Docs</p>
+            <h2>Atlas</h2>
+            <div class="site-canvas-layout docs-layout">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <ul class="site-canvas-notes">
+              <li>Nested reference structure</li>
+              <li>TOCs and contributor guides</li>
+            </ul>
+          </article>
+
+          <article class="site-canvas canvas-journal" data-canvas-depth="0.85" data-canvas-key="journal" tabindex="0">
+            <div class="site-canvas-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="site-canvas-kicker">Journal</p>
+            <h2>Editorial</h2>
+            <div class="site-canvas-layout journal-layout">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <ul class="site-canvas-notes">
+              <li>Posts, archive, notes</li>
+              <li>Captions, embeds, math</li>
+            </ul>
+          </article>
+
+          <article class="site-canvas canvas-personal" data-canvas-depth="1.1" data-canvas-key="personal" tabindex="0">
+            <div class="site-canvas-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="site-canvas-kicker">Personal</p>
+            <h2>Identity</h2>
+            <div class="site-canvas-layout personal-layout">
+              <div></div>
+              <div></div>
+            </div>
+            <ul class="site-canvas-notes">
+              <li>Compact and fast</li>
+              <li>Portfolio-ready structure</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+    </main>
+    <script src="{{ asset_url(path='landing.js') }}?v={{ site_asset_version }}"></script>
+  </body>
+</html>

@@ -97,6 +97,13 @@ const ATLAS_FILES: &[BuiltInThemeFile] = &[
         )),
     },
     BuiltInThemeFile {
+        relative_path: "static/landing.js",
+        contents: include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/themes/atlas/static/landing.js"
+        )),
+    },
+    BuiltInThemeFile {
         relative_path: "templates/base.html",
         contents: include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),

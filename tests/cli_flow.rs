@@ -1046,7 +1046,9 @@ fn docs_site_builds_successfully() {
     let index_html =
         fs::read_to_string(project.join("dist/index.html")).expect("index html should exist");
     assert!(index_html.contains("Rustipo Docs"));
-    assert!(index_html.contains("Build the docs site"));
+    assert!(index_html.contains("Build a site with a point of view."));
+    assert!(index_html.contains("Documentation"));
+    assert!(index_html.contains("cargo install rustipo"));
 
     let cli_html = fs::read_to_string(project.join("dist/reference/cli/index.html"))
         .expect("cli page should exist");
