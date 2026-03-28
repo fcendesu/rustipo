@@ -364,9 +364,7 @@ fn sidebar_child_nav_for_route(
     config: &SiteConfig,
     route: &str,
 ) -> Option<SidebarChildNav> {
-    let Some(parent_route) = nearest_nav_parent_with_children(shared, route) else {
-        return None;
-    };
+    let parent_route = nearest_nav_parent_with_children(shared, route)?;
 
     let items = direct_child_pages(shared, &parent_route)
         .into_iter()
@@ -475,9 +473,7 @@ fn nearest_nav_parent_with_children(shared: &SharedTemplateData, route: &str) ->
             return Some(current);
         }
 
-        let Some(parent) = immediate_parent_route(&current) else {
-            return None;
-        };
+        let parent = immediate_parent_route(&current)?;
 
         if parent == "/" {
             return None;
