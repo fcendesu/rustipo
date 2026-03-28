@@ -24,7 +24,6 @@ main = [
   { title = "Guides", route = "/guides/" },
   { title = "Reference", route = "/reference/" },
   { title = "Examples", route = "/examples/" },
-  { title = "Roadmap", route = "/roadmap/" },
 ]
 
 footer = [

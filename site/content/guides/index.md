@@ -56,4 +56,3 @@ Understand how Rustipo's own docs project is structured, verified, and published
 
 - [Reference](/reference/) for exact behavior and stable template values
 - [Examples](/examples/) to compare finished site shapes
-- [Roadmap](/roadmap/) to understand where Rustipo is heading

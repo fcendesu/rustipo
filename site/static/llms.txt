@@ -20,7 +20,6 @@ Use the GitHub repository docs for contributor guidance, release workflow detail
 ## Docs And Deployment
 
 - [Build the docs site](https://fcendesu.github.io/rustipo/guides/building-the-docs-site/): How the in-repo documentation project is built and published.
-- [Roadmap](https://fcendesu.github.io/rustipo/roadmap/): Recent releases, current direction, and tracked follow-up work.
 - [GitHub releases](https://github.com/fcendesu/rustipo/releases): Release notes, binaries, and tagged versions.
 
 ## Contributing And Project Metadata
