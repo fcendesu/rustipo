@@ -1,45 +1,58 @@
-# Code of Conduct
+# Code Of Conduct
 
-## Our pledge
+Rustipo is an open-source project, and we want contributors, users, and maintainers to feel safe
+participating in it.
 
-We as contributors and maintainers pledge to make participation in this project
-a harassment-free experience for everyone.
+## Our standard
 
-## Our standards
+Please help keep the project respectful, constructive, and welcoming.
 
-Examples of behavior that contributes to a positive environment:
+We expect people in Rustipo spaces to:
 
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints and experiences
-- Giving and accepting constructive feedback
-- Focusing on what is best for the community
+- be respectful in disagreement
+- assume good intent, while still giving honest technical feedback
+- focus criticism on ideas, code, and behavior rather than people
+- be patient with newcomers and people asking basic questions
+- avoid harassment, insults, intimidation, or exclusionary behavior
 
-Examples of unacceptable behavior:
+## Unacceptable behavior
 
-- Harassment, trolling, or discriminatory language
-- Personal or political attacks
-- Publishing others' private information without permission
-- Any conduct inappropriate in a professional setting
+This project does not permit behavior such as:
 
-## Enforcement responsibilities
-
-Project maintainers are responsible for clarifying and enforcing standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to unacceptable behavior.
+- personal attacks or name-calling
+- harassment, threats, or sustained hostility
+- discriminatory or hateful language
+- sexualized language or unwanted attention
+- deliberately undermining or mocking contributors
+- publishing private information without permission
 
 ## Scope
 
-This Code of Conduct applies within all project spaces, and also applies when
-an individual is officially representing the project in public spaces.
+This code of conduct applies to:
+
+- GitHub issues
+- pull requests and review threads
+- discussions around Rustipo development
+- other project spaces where someone is representing Rustipo
+
+## Reporting
+
+If you experience or witness unacceptable behavior, contact the maintainer privately through
+[GitHub](https://github.com/fcendesu).
+
+When reporting, include:
+
+- what happened
+- where it happened
+- who was involved
+- any relevant links or screenshots
+
+Reports will be reviewed in good faith and handled as carefully as possible.
 
 ## Enforcement
 
-Report unacceptable behavior to the maintainers by opening a private security
-report as described in `SECURITY.md`.
+The maintainer may remove comments, close or lock conversations, reject contributions, or block
+participants whose behavior harms the project environment.
 
-All reports will be reviewed and investigated promptly and fairly.
-
-## Attribution
-
-This Code of Conduct is adapted from the
-[Contributor Covenant](https://www.contributor-covenant.org/), version 2.1.
+The goal is to protect a healthy contributor experience, not to punish good-faith mistakes more
+than necessary.
