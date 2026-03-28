@@ -12,16 +12,15 @@ Rustipo currently centers on a small CLI surface that covers the full authoring 
 
 ### Analytics
 
-Rustipo supports opt-in Plausible analytics from `config.toml`:
+Rustipo supports opt-in analytics from `config.toml`:
 
 ```toml
-[site.analytics.plausible]
+[site.analytics]
 domain = "docs.example.com"
-# Optional for self-hosted Plausible:
-# script_src = "https://stats.example.com/js/script.js"
+script_src = "https://stats.example.com/js/script.js"
 ```
 
-Built-in themes render that snippet automatically through their shared head partials.
+Built-in themes render the resulting snippet automatically through their shared head partials.
 
 ## Core Commands
 
