@@ -87,13 +87,11 @@ For historical post-MVP batch planning, see:
 
 ## Upcoming milestones
 
-- next release: `v0.15.0`
-  - aggregate the completed post-`v0.14.0` work into the next published crate release
-  - highlights:
-    - generic analytics configuration
-    - optional SCSS support for theme authoring
-    - extensible frontmatter data for template-driven pages
-    - docs-site landing and information-architecture improvements
+- completed `v0.15.0` release
+  - generic analytics configuration
+  - optional SCSS support for theme authoring
+  - extensible frontmatter data for template-driven pages
+  - docs-site landing and information-architecture improvements
 - next roadmap batch not defined yet
 
 Tracked maintenance follow-up:
