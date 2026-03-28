@@ -71,6 +71,14 @@ body {
   margin-top: 1.25rem;
 }
 
+.docs-subnav {
+  display: grid;
+  gap: 0.35rem;
+  margin: -0.1rem 0 0.5rem 0.9rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid color-mix(in srgb, var(--rustipo-surface-1, var(--rustipo-border)) 82%, transparent);
+}
+
 .back-to-top {
   font: inherit;
 }
@@ -122,8 +130,20 @@ body {
   border-radius: 0.8rem;
 }
 
+.docs-subnav a {
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.65rem;
+  font-size: 0.95rem;
+  color: var(--rustipo-subtext-0, var(--rustipo-text));
+}
+
 .docs-nav a[aria-current="page"] {
   background: color-mix(in srgb, var(--rustipo-accent) 20%, transparent);
+  color: var(--rustipo-accent);
+}
+
+.docs-subnav a[aria-current="page"] {
+  background: color-mix(in srgb, var(--rustipo-accent) 12%, transparent);
   color: var(--rustipo-accent);
 }
 
@@ -412,6 +432,31 @@ body {
   min-height: calc(100vh - 2rem);
 }
 
+.landing-brand-lockup {
+  position: absolute;
+  top: 1.35rem;
+  left: 1.5rem;
+  z-index: 2;
+  color: var(--rustipo-text);
+  text-decoration: none;
+  font-family: var(--rustipo-font-heading, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  opacity: 0.9;
+  transition:
+    opacity 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.landing-brand-lockup:hover,
+.landing-brand-lockup:focus-visible {
+  color: var(--rustipo-accent);
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
 .hero-stage::before,
 .hero-stage::after {
   content: "";
@@ -473,6 +518,7 @@ body {
   flex-direction: column;
   justify-content: center;
   min-height: 560px;
+  padding-top: 1.75rem;
 }
 
 .landing-eyebrow,
@@ -510,6 +556,11 @@ body {
 .hero-lead {
   max-width: 36rem;
   font-size: 1.12rem;
+}
+
+.hero-lead strong {
+  color: color-mix(in srgb, var(--rustipo-accent) 76%, white 24%);
+  font-weight: 700;
 }
 
 .hero-actions,

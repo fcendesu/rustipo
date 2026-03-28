@@ -5,7 +5,7 @@ extra:
   eyebrow: Markdown-first publishing system
   hero:
     heading: Build a site with a point of view.
-    lead: Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl. Write in Markdown. Shape with Tera. Shift tone with palettes. Publish static output that stays legible.
+    lead: Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl. <strong>Write</strong> in Markdown. <strong>Shape</strong> with Tera. <strong>Shift</strong> tone with palettes. <strong>Publish</strong> static output that stays legible.
   actions:
     - label: Documentation
       href: guides/getting-started/

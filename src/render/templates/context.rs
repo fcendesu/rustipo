@@ -15,6 +15,12 @@ pub(super) struct NavItem {
 }
 
 #[derive(Clone, Serialize)]
+pub(super) struct SidebarChildNav {
+    pub parent_route: String,
+    pub items: Vec<NavItem>,
+}
+
+#[derive(Clone, Serialize)]
 pub(super) struct AdjacentPost {
     pub title: String,
     pub route: String,
@@ -40,6 +46,7 @@ pub(super) struct SiteTaxonomy {
 #[derive(Default)]
 pub(in crate::render) struct SharedTemplateData {
     auto_nav_entries: Vec<NavEntry>,
+    page_entries: Vec<PageEntry>,
     configured_menus: BTreeMap<String, Vec<ConfiguredMenuEntry>>,
     site_taxonomies: Vec<SiteTaxonomy>,
     breadcrumb_titles: BTreeMap<String, String>,
@@ -58,6 +65,13 @@ struct NavEntry {
 struct ConfiguredMenuEntry {
     title: String,
     route: String,
+}
+
+#[derive(Clone)]
+struct PageEntry {
+    title: String,
+    route: String,
+    order: i64,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -80,6 +94,7 @@ pub(super) fn build_shared_template_data(
 ) -> SharedTemplateData {
     SharedTemplateData {
         auto_nav_entries: build_nav_entries(pages),
+        page_entries: build_page_entries(pages),
         configured_menus: build_configured_menus(config),
         site_taxonomies: build_site_taxonomies(pages),
         breadcrumb_titles: build_breadcrumb_titles(pages),
@@ -108,6 +123,10 @@ pub(super) fn insert_page_context(
         &site_taxonomies_for_config(shared, config),
     );
     context.insert("breadcrumbs", &breadcrumbs_for_route(shared, config, route));
+    context.insert(
+        "sidebar_child_nav",
+        &sidebar_child_nav_for_route(shared, config, route),
+    );
 
     let adjacent = shared
         .adjacent_posts
@@ -202,6 +221,31 @@ fn build_nav_entries(pages: &[Page]) -> Vec<NavEntry> {
             kind: NavEntryKind::Projects,
         });
     }
+
+    entries
+}
+
+fn build_page_entries(pages: &[Page]) -> Vec<PageEntry> {
+    let mut entries = pages
+        .iter()
+        .filter(|page| page.kind == PageKind::Page)
+        .map(|page| PageEntry {
+            title: page
+                .frontmatter
+                .title
+                .clone()
+                .unwrap_or_else(|| page.slug.clone()),
+            route: page.route.clone(),
+            order: page.frontmatter.order.unwrap_or(i64::MAX),
+        })
+        .collect::<Vec<_>>();
+
+    entries.sort_by(|a, b| {
+        a.order
+            .cmp(&b.order)
+            .then_with(|| a.title.cmp(&b.title))
+            .then_with(|| a.route.cmp(&b.route))
+    });
 
     entries
 }
@@ -315,6 +359,34 @@ fn site_menus_for_route(
         .collect()
 }
 
+fn sidebar_child_nav_for_route(
+    shared: &SharedTemplateData,
+    config: &SiteConfig,
+    route: &str,
+) -> Option<SidebarChildNav> {
+    let Some(parent_route) = nearest_nav_parent_with_children(shared, route) else {
+        return None;
+    };
+
+    let items = direct_child_pages(shared, &parent_route)
+        .into_iter()
+        .map(|entry| NavItem {
+            title: entry.title.clone(),
+            route: config.public_url_path(&entry.route),
+            active: route == entry.route,
+        })
+        .collect::<Vec<_>>();
+
+    if items.is_empty() {
+        return None;
+    }
+
+    Some(SidebarChildNav {
+        parent_route: config.public_url_path(&parent_route),
+        items,
+    })
+}
+
 fn breadcrumbs_for_route(
     shared: &SharedTemplateData,
     config: &SiteConfig,
@@ -393,6 +465,52 @@ fn configured_menu_for_route(
             active: configured_menu_entry_is_active(entry, route),
         })
         .collect()
+}
+
+fn nearest_nav_parent_with_children(shared: &SharedTemplateData, route: &str) -> Option<String> {
+    let mut current = route.to_string();
+
+    loop {
+        if !direct_child_pages(shared, &current).is_empty() {
+            return Some(current);
+        }
+
+        let Some(parent) = immediate_parent_route(&current) else {
+            return None;
+        };
+
+        if parent == "/" {
+            return None;
+        }
+
+        current = parent;
+    }
+}
+
+fn direct_child_pages<'a>(
+    shared: &'a SharedTemplateData,
+    parent_route: &str,
+) -> Vec<&'a PageEntry> {
+    shared
+        .page_entries
+        .iter()
+        .filter(|entry| entry.route != parent_route)
+        .filter(|entry| immediate_parent_route(&entry.route).as_deref() == Some(parent_route))
+        .collect()
+}
+
+fn immediate_parent_route(route: &str) -> Option<String> {
+    let segments = breadcrumb_segments(route)?;
+
+    if segments.is_empty() {
+        return None;
+    }
+
+    if segments.len() == 1 {
+        return Some("/".to_string());
+    }
+
+    Some(format!("/{}/", segments[..segments.len() - 1].join("/")))
 }
 
 fn configured_menu_entry_is_active(entry: &ConfiguredMenuEntry, route: &str) -> bool {

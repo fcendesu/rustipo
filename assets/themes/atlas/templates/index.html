@@ -13,11 +13,13 @@
         <div class="hero-glow hero-glow-a"></div>
         <div class="hero-glow hero-glow-b"></div>
 
+        <a class="landing-brand-lockup" href="{{ site_root }}" aria-label="Rustipo home">Rustipo</a>
+
         <div class="hero-copy">
           <p class="landing-eyebrow">{{ page_extra.eyebrow | default(value="Markdown-first publishing system") }}</p>
           <h1>{{ page_extra.hero.heading | default(value="Build a site with a point of view.") }}</h1>
           <p class="hero-lead">
-            {{ page_extra.hero.lead | default(value="Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl. Write in Markdown. Shape with Tera. Shift tone with palettes. Publish static output that stays legible.") }}
+            {{ page_extra.hero.lead | default(value="Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl. <strong>Write</strong> in Markdown. <strong>Shape</strong> with Tera. <strong>Shift</strong> tone with palettes. <strong>Publish</strong> static output that stays legible.") | safe }}
           </p>
           <div class="hero-actions">
             {% if page_extra.actions is defined and page_extra.actions | length > 0 %}

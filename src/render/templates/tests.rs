@@ -1273,6 +1273,133 @@ fn exposes_configured_site_menus_and_uses_main_for_site_nav() {
 }
 
 #[test]
+fn exposes_sidebar_child_nav_for_active_content_sections() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content/guides")).expect("guides dir should be created");
+    fs::write(project_root.join("content/index.md"), "# Home").expect("index should be written");
+    fs::write(
+        project_root.join("content/guides/index.md"),
+        "---\ntitle: Guides\n---\n\n# Guides",
+    )
+    .expect("guides index should be written");
+    fs::write(
+        project_root.join("content/guides/getting-started.md"),
+        "---\ntitle: Getting started\norder: 1\n---\n\n# Getting started",
+    )
+    .expect("getting-started page should be written");
+    fs::write(
+        project_root.join("content/guides/template-driven-pages.md"),
+        "---\ntitle: Template-driven pages\norder: 2\n---\n\n# Template-driven pages",
+    )
+    .expect("template-driven page should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in ["index.html", "page.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{% for item in site_nav %}[nav:{{ item.title }}:{{ item.route }}:{{ item.active }}]{% if item.active and sidebar_child_nav and sidebar_child_nav.parent_route == item.route %}{% for child in sidebar_child_nav.items %}[child:{{ child.title }}:{{ child.route }}:{{ child.active }}]{% endfor %}{% endif %}{% endfor %}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    for template in ["post.html", "project.html", "section.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: Some(BTreeMap::from([(
+            "main".to_string(),
+            vec![
+                MenuEntryConfig {
+                    title: "Home".to_string(),
+                    route: "/".to_string(),
+                },
+                MenuEntryConfig {
+                    title: "Guides".to_string(),
+                    route: "/guides/".to_string(),
+                },
+            ],
+        )])),
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            asset_version: "test",
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let guides = rendered
+        .iter()
+        .find(|page| page.route == "/guides/")
+        .expect("guides route should be rendered");
+    assert!(guides.html.contains("[nav:Guides:&#x2F;guides&#x2F;:true]"));
+    assert!(
+        guides
+            .html
+            .contains("[child:Getting started:&#x2F;guides&#x2F;getting-started&#x2F;:false]")
+    );
+    assert!(guides.html.contains(
+        "[child:Template-driven pages:&#x2F;guides&#x2F;template-driven-pages&#x2F;:false]"
+    ));
+
+    let template_driven = rendered
+        .iter()
+        .find(|page| page.route == "/guides/template-driven-pages/")
+        .expect("template-driven route should be rendered");
+    assert!(
+        template_driven
+            .html
+            .contains("[child:Getting started:&#x2F;guides&#x2F;getting-started&#x2F;:false]")
+    );
+    assert!(template_driven.html.contains(
+        "[child:Template-driven pages:&#x2F;guides&#x2F;template-driven-pages&#x2F;:true]"
+    ));
+}
+
+#[test]
 fn renders_taxonomy_index_and_term_context() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();

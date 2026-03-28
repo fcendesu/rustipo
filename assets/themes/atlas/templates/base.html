@@ -22,6 +22,13 @@
         <nav class="docs-nav" aria-label="Primary navigation">
           {% for item in site_nav %}
           <a href="{{ item.route }}" {% if item.active %}aria-current="page"{% endif %}>{{ item.title }}</a>
+          {% if item.active and sidebar_child_nav and sidebar_child_nav.parent_route == item.route %}
+          <div class="docs-subnav" aria-label="{{ item.title }} pages">
+            {% for child in sidebar_child_nav.items %}
+            <a href="{{ child.route }}" {% if child.active %}aria-current="page"{% endif %}>{{ child.title }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
           {% endfor %}
         </nav>
         {% if site_menus.footer %}
