@@ -13,6 +13,8 @@ The reference section is where Rustipo's behavior is spelled out directly. Use i
   - routes, frontmatter, nested pages, shortcodes, and page metadata
 - [Themes and palettes](/reference/themes-and-palettes/)
   - theme selection, palette tokens, SCSS support, and template helpers
+- [Template context](/reference/template-context/)
+  - stable Tera values, page state, and helper functions for theme authors
 - [Images](/reference/images/)
   - Markdown image behavior and `resize_image(...)`
 - [Taxonomies](/reference/taxonomies/)

@@ -1,7 +1,7 @@
 ---
 title: Deployment
 summary: Understand Rustipo's deployment helpers for GitHub Pages, Cloudflare Pages, and Netlify.
-order: 7
+order: 8
 ---
 
 # Deployment

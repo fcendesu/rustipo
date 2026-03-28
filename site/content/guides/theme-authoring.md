@@ -313,5 +313,6 @@ The most common theme-authoring mistakes are:
 
 - [Template-driven pages](/guides/template-driven-pages/)
 - [Themes and palettes](/reference/themes-and-palettes/)
+- [Template context](/reference/template-context/)
 - [Content model](/reference/content-model/)
 - [CLI reference](/reference/cli/)

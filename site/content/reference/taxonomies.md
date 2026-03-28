@@ -1,7 +1,7 @@
 ---
 title: Taxonomies
 summary: Understand Rustipo's current taxonomy model, generated routes, and taxonomy template values.
-order: 5
+order: 6
 ---
 
 # Taxonomies
