@@ -228,6 +228,7 @@ What each part is for:
 
 - [published docs site](https://fcendesu.github.io/rustipo/)
 - [docs site source](./site)
+- [Contributing guide](./CONTRIBUTING.md)
 - [CLI reference](./docs/cli.md)
 - [Project structure](./docs/project-structure.md)
 - [Theme contract](./docs/theme-contract.md)
@@ -241,7 +242,29 @@ What each part is for:
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+Rustipo is an open-source project, and contributions are welcome across code, docs, examples, and
+bug reports.
+
+Start here:
+
+- [Contributing guide](./CONTRIBUTING.md)
+- [Roadmap](./docs/roadmap.md)
+- [published docs site](https://fcendesu.github.io/rustipo/)
+
+Quick contributor loop:
+
+```bash
+cargo fmt --all
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test -q
+```
+
+If your change affects the docs site:
+
+```bash
+cd site
+cargo run --quiet -- build
+```
 
 ## License
 
