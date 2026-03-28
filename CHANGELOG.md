@@ -10,13 +10,10 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Features
 
-* **atlas:** improve docs navigation and landing ([a043829](https://github.com/fcendesu/rustipo/commit/a04382929c5bba5b5c10f5bf0b28324dfd0ecde1))
-* **atlas:** improve docs-site navigation and landing ([fcbc862](https://github.com/fcendesu/rustipo/commit/fcbc8626a2eb04bcc2b2feb1bdee19a24514c88a))
-* **atlas:** redesign docs landing page ([62d7f1d](https://github.com/fcendesu/rustipo/commit/62d7f1d618ffeb45a995676b5c3ca1d7dd0ce40e))
+* **atlas:** redesign and refine the docs-site landing and navigation ([62d7f1d](https://github.com/fcendesu/rustipo/commit/62d7f1d618ffeb45a995676b5c3ca1d7dd0ce40e), [a043829](https://github.com/fcendesu/rustipo/commit/a04382929c5bba5b5c10f5bf0b28324dfd0ecde1), [fcbc862](https://github.com/fcendesu/rustipo/commit/fcbc8626a2eb04bcc2b2feb1bdee19a24514c88a))
 * **config:** generalize analytics configuration ([f770bcc](https://github.com/fcendesu/rustipo/commit/f770bcca7e09d3399d9769c0de43e4b4966d7207))
 * **content:** add extensible frontmatter data ([d865020](https://github.com/fcendesu/rustipo/commit/d865020d7dca57942ee264e1f2c3aaeb04cbf5bf))
-* **styles:** add optional scss support ([6cca999](https://github.com/fcendesu/rustipo/commit/6cca999df048989a4b1c73b4da3c0fd7ee404c60))
-* **styles:** add optional scss support ([a81db76](https://github.com/fcendesu/rustipo/commit/a81db7649208d134d3798f618cf7943ca3344086))
+* **styles:** add optional scss support ([6cca999](https://github.com/fcendesu/rustipo/commit/6cca999df048989a4b1c73b4da3c0fd7ee404c60), [a81db76](https://github.com/fcendesu/rustipo/commit/a81db7649208d134d3798f618cf7943ca3344086))
 
 
 ### Bug Fixes
