@@ -1,7 +1,7 @@
 ---
 title: Interactive embeds
 summary: Reuse iframe and demo shortcodes in Markdown without dropping down to custom HTML for every page.
-order: 4
+order: 5
 ---
 
 # Interactive embeds

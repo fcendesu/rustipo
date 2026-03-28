@@ -54,6 +54,7 @@ That writes the generated site into `dist/`.
 
 ## Next Reads
 
+- [Deploying Rustipo sites](/guides/deploying-rustipo-sites/)
 - [CLI reference](/reference/cli/)
 - [Content model](/reference/content-model/)
 - [Themes and palettes](/reference/themes-and-palettes/)

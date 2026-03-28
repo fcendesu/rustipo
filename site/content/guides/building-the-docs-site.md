@@ -1,7 +1,7 @@
 ---
 title: Building The Docs Site
 summary: Understand the in-repo docs site project and how it is verified.
-order: 3
+order: 6
 ---
 
 # Building The Docs Site

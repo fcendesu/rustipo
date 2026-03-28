@@ -105,6 +105,7 @@ Use:
 
 ## Related Guides
 
+- [Deploying Rustipo sites](/guides/deploying-rustipo-sites/)
 - [Getting started](/guides/getting-started/)
 - [Building the docs site](/guides/building-the-docs-site/)
 - [CLI reference](/reference/cli/)
