@@ -898,7 +898,7 @@ fn page_description_falls_back_to_site_description_and_omits_empty_values() {
 }
 
 #[test]
-fn analytics_head_html_is_available_to_templates_when_plausible_is_configured() {
+fn analytics_head_html_is_available_to_templates_when_script_analytics_is_configured() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();
 
@@ -945,10 +945,9 @@ fn analytics_head_html_is_available_to_templates_when_plausible_is_configured() 
             posts_per_page: None,
             favicon: None,
             analytics: Some(crate::config::AnalyticsOptions {
-                plausible: Some(crate::config::PlausibleAnalyticsOptions {
-                    domain: "docs.example.com".to_string(),
-                    script_src: Some("https://stats.example.com/js/script.js".to_string()),
-                }),
+                head_html: None,
+                script_src: Some("https://stats.example.com/js/script.js".to_string()),
+                domain: Some("docs.example.com".to_string()),
             }),
             layout: None,
             typography: None,

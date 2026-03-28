@@ -49,15 +49,33 @@ pub struct SiteOptions {
     pub typography: Option<TypographyOptions>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct AnalyticsOptions {
-    pub plausible: Option<PlausibleAnalyticsOptions>,
+    pub head_html: Option<String>,
+    pub script_src: Option<String>,
+    pub domain: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
-pub struct PlausibleAnalyticsOptions {
-    pub domain: String,
-    pub script_src: Option<String>,
+#[derive(Debug, Deserialize)]
+struct AnalyticsOptionsRepr {
+    head_html: Option<String>,
+    script_src: Option<String>,
+    domain: Option<String>,
+}
+
+impl<'de> Deserialize<'de> for AnalyticsOptions {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let repr = AnalyticsOptionsRepr::deserialize(deserializer)?;
+
+        Ok(Self {
+            head_html: repr.head_html,
+            script_src: repr.script_src,
+            domain: repr.domain,
+        })
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -183,22 +201,33 @@ impl SiteConfig {
             .site
             .as_ref()
             .and_then(|site| site.analytics.as_ref())?;
-        let plausible = analytics.plausible.as_ref()?;
-        let domain = plausible.domain.trim();
-        if domain.is_empty() {
-            return None;
-        }
 
-        let script_src = plausible
-            .script_src
+        if let Some(head_html) = analytics
+            .head_html
             .as_deref()
             .map(str::trim)
             .filter(|value| !value.is_empty())
-            .unwrap_or("https://plausible.io/js/script.js");
+        {
+            return Some(head_html.to_string());
+        }
+
+        let script_src = analytics
+            .script_src
+            .as_deref()
+            .map(str::trim)
+            .filter(|value| !value.is_empty())?;
+
+        let domain_attr = analytics
+            .domain
+            .as_deref()
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .map(|value| format!(" data-domain=\"{}\"", escape_html_attr(value)))
+            .unwrap_or_default();
 
         Some(format!(
-            "<script defer data-domain=\"{}\" src=\"{}\"></script>",
-            escape_html_attr(domain),
+            "<script defer{} src=\"{}\"></script>",
+            domain_attr,
             escape_html_attr(script_src)
         ))
     }
@@ -312,18 +341,44 @@ fn validate_analytics(config: &SiteConfig) -> Result<()> {
         return Ok(());
     };
 
-    if let Some(plausible) = &analytics.plausible {
-        if plausible.domain.trim().is_empty() {
-            bail!("site.analytics.plausible.domain must not be empty");
-        }
+    if analytics
+        .head_html
+        .as_deref()
+        .is_some_and(|value| value.trim().is_empty())
+    {
+        bail!("site.analytics.head_html must not be empty");
+    }
 
-        if plausible
+    if analytics
+        .script_src
+        .as_deref()
+        .is_some_and(|value| value.trim().is_empty())
+    {
+        bail!("site.analytics.script_src must not be empty");
+    }
+
+    if analytics
+        .domain
+        .as_deref()
+        .is_some_and(|value| value.trim().is_empty())
+    {
+        bail!("site.analytics.domain must not be empty");
+    }
+
+    if analytics
+        .head_html
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .is_none()
+        && analytics
             .script_src
             .as_deref()
-            .is_some_and(|value| value.trim().is_empty())
-        {
-            bail!("site.analytics.plausible.script_src must not be empty");
-        }
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .is_none()
+    {
+        bail!("site.analytics must set either head_html or script_src");
     }
 
     Ok(())
@@ -353,8 +408,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::{
-        AnalyticsOptions, LayoutOptions, PlausibleAnalyticsOptions, SiteConfig, SiteOptions,
-        TypographyOptions, load,
+        AnalyticsOptions, LayoutOptions, SiteConfig, SiteOptions, TypographyOptions, load,
     };
 
     fn base_config() -> SiteConfig {
@@ -489,7 +543,7 @@ mod tests {
     }
 
     #[test]
-    fn loads_plausible_analytics_from_config() {
+    fn loads_script_based_analytics_from_config() {
         let dir = tempdir().expect("tempdir should be created");
         let config_path = dir.path().join("config.toml");
         fs::write(
@@ -500,8 +554,9 @@ base_url = "https://example.com"
 theme = "default"
 description = "Example"
 
-[site.analytics.plausible]
+[site.analytics]
 domain = "docs.example.com"
+script_src = "https://stats.example.com/js/script.js"
 "#,
         )
         .expect("config should be written");
@@ -511,30 +566,35 @@ domain = "docs.example.com"
             .site
             .as_ref()
             .and_then(|site| site.analytics.as_ref())
-            .and_then(|analytics| analytics.plausible.as_ref())
-            .expect("plausible analytics should be present");
+            .expect("analytics should be present");
 
-        assert_eq!(analytics.domain, "docs.example.com");
-        assert_eq!(analytics.script_src, None);
+        assert_eq!(analytics.head_html, None);
+        assert_eq!(analytics.domain.as_deref(), Some("docs.example.com"));
+        assert_eq!(
+            analytics.script_src.as_deref(),
+            Some("https://stats.example.com/js/script.js")
+        );
         assert_eq!(
             config.analytics_head_html().as_deref(),
             Some(
-                "<script defer data-domain=\"docs.example.com\" src=\"https://plausible.io/js/script.js\"></script>"
+                "<script defer data-domain=\"docs.example.com\" src=\"https://stats.example.com/js/script.js\"></script>"
             )
         );
     }
 
     #[test]
-    fn uses_custom_plausible_script_src_when_present() {
+    fn uses_inline_analytics_html_when_present() {
         let mut config = base_config();
         config.site = Some(SiteOptions {
             posts_per_page: None,
             favicon: None,
             analytics: Some(AnalyticsOptions {
-                plausible: Some(PlausibleAnalyticsOptions {
-                    domain: "docs.example.com".to_string(),
-                    script_src: Some("https://stats.example.com/js/script.js".to_string()),
-                }),
+                head_html: Some(
+                    "<script defer src=\"https://stats.example.com/js/script.js\"></script>"
+                        .to_string(),
+                ),
+                script_src: None,
+                domain: None,
             }),
             layout: None,
             typography: None,
@@ -542,9 +602,7 @@ domain = "docs.example.com"
 
         assert_eq!(
             config.analytics_head_html().as_deref(),
-            Some(
-                "<script defer data-domain=\"docs.example.com\" src=\"https://stats.example.com/js/script.js\"></script>"
-            )
+            Some("<script defer src=\"https://stats.example.com/js/script.js\"></script>")
         );
     }
 
@@ -611,7 +669,7 @@ main = [
     }
 
     #[test]
-    fn rejects_blank_plausible_domain() {
+    fn rejects_blank_analytics_head_html() {
         let dir = tempdir().expect("tempdir should be created");
         let config_path = dir.path().join("config.toml");
         fs::write(
@@ -622,17 +680,44 @@ base_url = "https://example.com"
 theme = "default"
 description = "Example"
 
-[site.analytics.plausible]
-domain = "   "
+[site.analytics]
+head_html = "   "
 "#,
         )
         .expect("config should be written");
 
-        let error = load(&config_path).expect_err("blank plausible domain should fail");
+        let error = load(&config_path).expect_err("blank analytics head_html should fail");
         assert!(
             error
                 .to_string()
-                .contains("site.analytics.plausible.domain must not be empty"),
+                .contains("site.analytics.head_html must not be empty"),
+            "unexpected error: {error}"
+        );
+    }
+
+    #[test]
+    fn rejects_analytics_without_head_html_or_script_src() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Rustipo"
+base_url = "https://example.com"
+theme = "default"
+description = "Example"
+
+[site.analytics]
+domain = "docs.example.com"
+"#,
+        )
+        .expect("config should be written");
+
+        let error = load(&config_path).expect_err("analytics without snippet source should fail");
+        assert!(
+            error
+                .to_string()
+                .contains("site.analytics must set either head_html or script_src"),
             "unexpected error: {error}"
         );
     }

@@ -239,13 +239,12 @@ extra:
 ```
 
 `site_analytics_head_html` is the stable hook for built-in analytics integrations. In `v0.15`,
-Rustipo supports opt-in Plausible analytics via:
+Rustipo supports generic analytics configuration:
 
 ```toml
-[site.analytics.plausible]
+[site.analytics]
 domain = "docs.example.com"
-# Optional for self-hosted Plausible:
-# script_src = "https://stats.example.com/js/script.js"
+script_src = "https://stats.example.com/js/script.js"
 ```
 
 When present, Rustipo renders a ready-to-include head snippet. Themes can inherit the built-in

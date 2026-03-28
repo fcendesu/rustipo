@@ -114,13 +114,12 @@ Example template:
 ```
 
 `site_analytics_head_html` is the stable convenience value for built-in analytics output. In
-`v0.15`, Rustipo supports opt-in Plausible configuration from `config.toml`:
+`v0.15`, Rustipo supports generic analytics configuration from `config.toml`:
 
 ```toml
-[site.analytics.plausible]
+[site.analytics]
 domain = "docs.example.com"
-# Optional for self-hosted Plausible:
-# script_src = "https://stats.example.com/js/script.js"
+script_src = "https://stats.example.com/js/script.js"
 ```
 
 When configured, `site_analytics_head_html` contains a ready-to-render `<script defer ...>`

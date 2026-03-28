@@ -49,14 +49,12 @@ Project validation:
 rustipo check
 ```
 
-Analytics configuration is opt-in. For the first built-in integration, Rustipo supports Plausible
-with an optional self-hosted script override:
+Analytics configuration is opt-in. Rustipo uses a generic analytics config model:
 
 ```toml
-[site.analytics.plausible]
+[site.analytics]
 domain = "docs.example.com"
-# Optional for self-hosted Plausible:
-# script_src = "https://stats.example.com/js/script.js"
+script_src = "https://stats.example.com/js/script.js"
 ```
 
 Built-in themes render the analytics snippet automatically when configured.

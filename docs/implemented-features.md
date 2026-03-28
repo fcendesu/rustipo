@@ -274,8 +274,8 @@
 - resolution order:
   - `page_summary`
   - `site_description`
-- opt-in Plausible analytics snippet support in built-in themes
-- optional self-hosted Plausible `script_src` override
+- generic analytics config
+- analytics `script_src` override support
 - `route`
 - `section_name`
 - `section_title`
