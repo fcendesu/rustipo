@@ -129,6 +129,6 @@ Rustipo writes those generated files into `dist/processed-images/`.
 
 ## Related Pages
 
+- [Theme authoring](/guides/theme-authoring/)
 - [CLI reference](/reference/cli/#theme-and-palette-commands)
 - [Examples](/examples/)
-- [Theme contract](/reference/themes-and-palettes/)
