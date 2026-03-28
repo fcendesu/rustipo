@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a new capability or improvement for Rustipo.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Feature requests are easiest to evaluate when they stay close to a concrete authoring, theme, or publishing problem.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What workflow, limitation, or pain point are you trying to improve?
+      placeholder: I want Rustipo to make it easier to ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What behavior, command, config, or template support would help?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What are you doing today instead, or what other approaches did you consider?
+    validations:
+      required: false
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope notes
+      description: Mention whether this affects content authoring, themes, deployment, docs, or release tooling.
+    validations:
+      required: false
