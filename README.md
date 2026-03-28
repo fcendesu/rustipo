@@ -36,6 +36,7 @@ framework, Rustipo is meant to feel approachable.
 
 - [Published docs site](https://fcendesu.github.io/rustipo/)
 - [Contributing guide](./CONTRIBUTING.md)
+- [Security policy](./SECURITY.md)
 - [Roadmap](./docs/roadmap.md)
 - [Example sites](#example-sites)
 - [GitHub Releases](https://github.com/fcendesu/rustipo/releases)
@@ -288,6 +289,7 @@ Start here:
 
 - [Contributing guide](./CONTRIBUTING.md)
 - [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Security policy](./SECURITY.md)
 - [Roadmap](./docs/roadmap.md)
 - [published docs site](https://fcendesu.github.io/rustipo/)
 

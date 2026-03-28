@@ -6,6 +6,8 @@ Rustipo is still a compact project, so clear, focused changes help a lot. Small 
 docs, examples, themes, tests, and core behavior are all valuable contributions.
 
 Please also read the project's [Code of Conduct](./CODE_OF_CONDUCT.md).
+If you need to report a security issue, use the private path described in [SECURITY.md](./SECURITY.md)
+instead of filing a normal public issue first.
 
 ## Good starting points
 
