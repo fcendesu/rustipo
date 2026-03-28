@@ -22,6 +22,23 @@ This document is for maintainers preparing a Rustipo release and publishing it t
   - `CHANGELOG.md`
   - `.github/release-please/manifest.json`
 
+## Release note framing
+
+Release Please is still the source of truth for version bumps and generated changelog content, but
+the final GitHub release should read like a useful project update rather than a raw commit dump.
+
+For future releases, keep the final release notes framed around:
+
+- highlights
+  - the most important user-facing additions or fixes in the release
+- migration notes
+  - only when behavior changed in a way that needs maintainer or user attention
+- docs links
+  - link to the most relevant docs page when a release adds a new workflow, command, or authoring feature
+
+If Release Please produces duplicated, noisy, or incomplete notes, clean the release PR body and
+`CHANGELOG.md` before merging so the final GitHub release inherits the polished version.
+
 ## Maintainer workflow
 
 1. Make sure the intended release work is already merged to `master`.
@@ -52,6 +69,10 @@ cargo package --list
    - version bump
    - changelog section
    - manifest update
+   - useful release-note framing:
+     - highlights
+     - migration notes when needed
+     - docs links for major new workflows or features
 8. Merge the release PR.
 9. Trigger the `Release Please` workflow manually again if needed to finalize the tag and GitHub release for the newly merged release commit.
 10. Confirm the GitHub release page includes the generated notes body.
