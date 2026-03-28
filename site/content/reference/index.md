@@ -23,6 +23,8 @@ The reference section is where Rustipo's behavior is spelled out directly. Use i
   - generic analytics hook and `site_analytics_head_html`
 - [Deployment](/reference/deployment/)
   - GitHub Pages, Cloudflare Pages, and Netlify helpers
+- [Publishing outputs](/reference/publishing-outputs/)
+  - generated RSS, sitemap, search, robots, and 404 artifacts
 
 ## Use this section when you need
 
