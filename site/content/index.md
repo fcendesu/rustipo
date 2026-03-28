@@ -14,6 +14,7 @@ Rustipo is a Markdown-first static site generator for blogs, notes, docs, and pe
 
 - [Get started](/guides/getting-started/)
 - [Build the docs site](/guides/building-the-docs-site/)
+- [Contributing to Rustipo](/guides/contributing/)
 - [CLI reference](/reference/cli/)
 - [Content model](/reference/content-model/)
 - [Themes and palettes](/reference/themes-and-palettes/)
