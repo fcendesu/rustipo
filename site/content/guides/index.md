@@ -1,6 +1,6 @@
 ---
 title: Guides
-summary: Step-by-step workflows for starting a Rustipo site, authoring themes, shaping custom pages, and understanding the in-repo docs project.
+summary: Step-by-step workflows for starting a Rustipo site, authoring themes, deploying, shaping custom pages, and understanding the in-repo docs project.
 ---
 
 Rustipo's guides are for workflow questions, not raw feature lookup. Start here when you want a practical path through the product and move to [Reference](/reference/) when you need exact behavior.
@@ -25,6 +25,10 @@ Build or customize a Rustipo theme by splitting Tera layout, palettes, assets, a
 
 Use reusable iframe and demo shortcodes without dropping large HTML blocks into content pages.
 
+### [Deploying Rustipo sites](/guides/deploying-rustipo-sites/)
+
+Choose between GitHub Pages, Cloudflare Pages, and Netlify, then generate the right workflow.
+
 ### [Building the docs site](/guides/building-the-docs-site/)
 
 Understand how Rustipo's own docs project is structured, verified, and published.
@@ -35,7 +39,8 @@ Understand how Rustipo's own docs project is structured, verified, and published
 
 1. Read [Getting started](/guides/getting-started/).
 2. Move to [Template-driven pages](/guides/template-driven-pages/) if your homepage or landing page needs stronger structure.
-3. Use [Reference](/reference/) when you need exact command or template details.
+3. Read [Deploying Rustipo sites](/guides/deploying-rustipo-sites/) when you are ready to publish.
+4. Use [Reference](/reference/) when you need exact command or template details.
 
 ### Theme or landing-page author
 
@@ -52,7 +57,7 @@ Understand how Rustipo's own docs project is structured, verified, and published
 
 ## Guides Focus On
 
-- installation and first build workflows
+- installation, first build, and deployment workflows
 - theme authoring with Tera, palettes, assets, and optional SCSS
 - the split between content, layout, and structured page data
 - reusable embed authoring patterns
