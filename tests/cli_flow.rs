@@ -1035,7 +1035,7 @@ fn docs_site_builds_successfully() {
     );
     assert!(project.join("dist/reference/cli/index.html").is_file());
     assert!(project.join("dist/examples/index.html").is_file());
-    assert!(project.join("dist/roadmap/index.html").is_file());
+    assert!(!project.join("dist/roadmap/index.html").is_file());
     assert!(project.join("dist/style.css").is_file());
     assert!(project.join("dist/palette.css").is_file());
     assert!(project.join("dist/search-index.json").is_file());

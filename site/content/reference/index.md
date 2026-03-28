@@ -33,4 +33,3 @@ The reference section is where Rustipo's behavior is spelled out directly. Use i
 
 - [Guides](/guides/) for step-by-step workflows
 - [Examples](/examples/) to see finished site shapes
-- [Roadmap](/roadmap/) for current project direction

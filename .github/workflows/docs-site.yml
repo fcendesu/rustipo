@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      DOCS_ANALYTICS_HEAD_HTML: ${{ vars.DOCS_ANALYTICS_HEAD_HTML }}
 
     steps:
       - name: Checkout
@@ -49,6 +50,16 @@ jobs:
 
       - name: Build Rustipo
         run: cargo build --release --locked
+
+      - name: Inject docs analytics config
+        if: ${{ env.DOCS_ANALYTICS_HEAD_HTML != '' }}
+        working-directory: site
+        run: |
+          cat >> config.toml <<EOF
+
+          [site.analytics]
+          head_html = '''${DOCS_ANALYTICS_HEAD_HTML}'''
+          EOF
 
       - name: Build docs site
         working-directory: site

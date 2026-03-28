@@ -26,7 +26,6 @@ site/
     reference/
     examples/
     index.md
-    roadmap.md
   static/
     favicon.svg
 ```
@@ -58,6 +57,18 @@ The docs site is published from this repository with GitHub Pages.
 - the docs site also publishes `https://fcendesu.github.io/rustipo/llms.txt` as a curated LLM-friendly entry point
 - the workflow lives at `.github/workflows/docs-site.yml`
 
+### Production-only analytics
+
+The committed docs site config stays analytics-free. If maintainers want analytics on the published site, inject it at deploy time through the workflow instead of committing it into `site/config.toml`.
+
+Set a repository variable named `DOCS_ANALYTICS_HEAD_HTML` to the full analytics snippet, for example:
+
+```html
+<script defer src="https://analytics.example.com/script.js" data-website-id="YOUR_UMAMI_SITE_ID"></script>
+```
+
+The docs-site workflow appends a temporary `[site.analytics]` block during the GitHub Pages build when that variable is present. This keeps forks and local builds from inheriting production analytics.
+
 ## What This Site Should Showcase
 
 ### Content model
@@ -75,11 +86,9 @@ The top-level navigation should make the product easy to approach in this order:
 1. getting started
 2. reference material
 3. examples
-4. roadmap
 
 ## Related Pages
 
 - [Template-driven pages](/guides/template-driven-pages/)
 - [CLI reference](/reference/cli/)
 - [Examples](/examples/)
-- [Roadmap](/roadmap/)
