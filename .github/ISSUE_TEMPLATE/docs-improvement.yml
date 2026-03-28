@@ -1,0 +1,32 @@
+name: Docs improvement
+description: Suggest a missing, confusing, or inaccurate documentation change.
+title: "[Docs]: "
+labels:
+  - docs
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Rustipo's documentation.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or missing?
+      description: Explain what was confusing, inaccurate, or absent.
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Where did you hit it?
+      description: Link the page, file, command, or guide that needs work.
+      placeholder: README, docs/cli.md, published docs site guide, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: What explanation, example, or wording would make it better?
+    validations:
+      required: false

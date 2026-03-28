@@ -1,0 +1,55 @@
+name: Bug report
+description: Report broken behavior, regressions, or incorrect output in Rustipo.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please include enough detail for someone else to reproduce it.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is going wrong?
+      placeholder: A short description of the bug or regression.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps, commands, or content needed to reproduce the problem.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Notice ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect Rustipo to do instead?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Rustipo version, install method, OS, and anything else relevant.
+      placeholder: |
+        - Rustipo version:
+        - Install method:
+        - OS:
+        - Rust version:
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra context
+      description: Logs, screenshots, sample config, or any context that would help triage.
+    validations:
+      required: false

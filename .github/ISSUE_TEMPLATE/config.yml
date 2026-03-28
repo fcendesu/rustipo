@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the docs
+    url: https://fcendesu.github.io/rustipo/
+    about: Check the published docs site for current guides and reference material before opening an issue.
+  - name: Review the roadmap
+    url: https://github.com/fcendesu/rustipo/blob/master/docs/roadmap.md
+    about: Check the roadmap if you want to see whether an idea is already planned.
