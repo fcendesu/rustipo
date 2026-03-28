@@ -5,6 +5,8 @@ Thanks for your interest in contributing to Rustipo.
 Rustipo is still a compact project, so clear, focused changes help a lot. Small improvements to
 docs, examples, themes, tests, and core behavior are all valuable contributions.
 
+Please also read the project's [Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## Good starting points
 
 - Read [README.md](./README.md) for the project overview and install story.

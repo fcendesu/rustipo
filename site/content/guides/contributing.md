@@ -21,6 +21,7 @@ If you are new to the repository, these pages help you orient quickly:
 
 - [README on GitHub](https://github.com/fcendesu/rustipo/blob/master/README.md)
 - [Contributing guide on GitHub](https://github.com/fcendesu/rustipo/blob/master/CONTRIBUTING.md)
+- [Code of Conduct on GitHub](https://github.com/fcendesu/rustipo/blob/master/CODE_OF_CONDUCT.md)
 - [Roadmap](/roadmap/)
 - [Project structure on GitHub](https://github.com/fcendesu/rustipo/blob/master/docs/project-structure.md)
 - [Themes and palettes](/reference/themes-and-palettes/)

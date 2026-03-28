@@ -267,6 +267,7 @@ What each part is for:
 - [published docs site](https://fcendesu.github.io/rustipo/)
 - [docs site source](./site)
 - [Contributing guide](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [CLI reference](./docs/cli.md)
 - [Project structure](./docs/project-structure.md)
 - [Theme contract](./docs/theme-contract.md)
@@ -286,6 +287,7 @@ bug reports.
 Start here:
 
 - [Contributing guide](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [Roadmap](./docs/roadmap.md)
 - [published docs site](https://fcendesu.github.io/rustipo/)
 
