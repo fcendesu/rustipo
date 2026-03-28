@@ -28,6 +28,7 @@ main = [
 ]
 
 footer = [
+  { title = "Contribute", route = "/guides/contributing/" },
   { title = "GitHub", route = "https://github.com/fcendesu/rustipo" },
   { title = "Crates.io", route = "https://crates.io/crates/rustipo" },
   { title = "Releases", route = "https://github.com/fcendesu/rustipo/releases" },
