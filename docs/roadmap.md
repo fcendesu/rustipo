@@ -84,19 +84,18 @@ For historical post-MVP batch planning, see:
   - evaluate optional SCSS support for theme authoring
 - `v0.17.0`: template-driven page ergonomics
   - extensible frontmatter data for template-driven pages
-
-## Upcoming milestones
-
-- completed `v0.15.0` release
-  - generic analytics configuration
-  - optional SCSS support for theme authoring
-  - extensible frontmatter data for template-driven pages
-  - docs-site landing and information-architecture improvements
 - `v0.18.0`: docs depth and theme guidance
   - theme authoring guide for the docs site
   - deployment guide for Rustipo sites
   - template context reference page for theme authors
   - publishing outputs reference page for generated artifacts
+
+## Upcoming milestones
+
+- next published release candidate: `0.16.0`
+  - ship the completed docs depth and theme guidance work after `0.15.0`
+- next feature batch: not defined yet
+  - choose the next scope after the docs-depth release instead of inventing placeholder milestone work
 
 Tracked maintenance follow-up:
 
