@@ -98,6 +98,7 @@ fn render_blog_section_pages(
         };
         super::insert_common_site_context(&mut context, env.config, &render_context);
         context.insert("page_title", &format!("Blog | {}", env.config.title));
+        context.insert("page_extra", &super::resolved_page_extra(None));
         context.insert(
             "page_description",
             &super::resolved_page_description(None, env.config),
@@ -154,6 +155,7 @@ fn render_projects_section_page(
     };
     super::insert_common_site_context(&mut context, env.config, &render_context);
     context.insert("page_title", &format!("Projects | {}", env.config.title));
+    context.insert("page_extra", &super::resolved_page_extra(None));
     context.insert(
         "page_description",
         &super::resolved_page_description(None, env.config),

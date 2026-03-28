@@ -113,6 +113,90 @@ fn renders_pages_with_theme_templates() {
 }
 
 #[test]
+fn exposes_structured_frontmatter_extra_to_templates() {
+    let dir = tempdir().expect("tempdir should be created");
+    let project_root = dir.path();
+
+    fs::create_dir_all(project_root.join("content")).expect("content dir should be created");
+    fs::write(
+        project_root.join("content/index.md"),
+        "---\ntitle: Home\nextra:\n  hero:\n    heading: Built from content\n    lead: Template reads structured data\n  actions:\n    - label: Documentation\n---\n",
+    )
+    .expect("index should be written");
+
+    let theme_root = project_root.join("themes/default");
+    fs::create_dir_all(theme_root.join("templates")).expect("templates should be created");
+    fs::create_dir_all(theme_root.join("static")).expect("static should be created");
+
+    fs::write(
+        theme_root.join("templates/base.html"),
+        "{% block body %}{% endblock body %}",
+    )
+    .expect("base template should be written");
+    for template in ["page.html", "post.html", "project.html", "section.html"] {
+        fs::write(
+            theme_root.join("templates").join(template),
+            "{% extends \"base.html\" %}{% block body %}{{ content_html | safe }}{% endblock body %}",
+        )
+        .expect("template should be written");
+    }
+    fs::write(
+        theme_root.join("templates/index.html"),
+        "{% extends \"base.html\" %}{% block body %}<h1>{{ page_extra.hero.heading }}</h1><p>{{ frontmatter.extra.hero.lead }}</p><span>{{ page_extra.actions[0].label }}</span>{% endblock body %}",
+    )
+    .expect("index template should be written");
+    fs::write(
+        theme_root.join("theme.toml"),
+        "name = \"default\"\nversion = \"0.1.0\"\nauthor = \"Rustipo\"\ndescription = \"Default\"\n",
+    )
+    .expect("theme metadata should be written");
+
+    let config = SiteConfig {
+        title: "My Site".to_string(),
+        base_url: "https://example.com".to_string(),
+        theme: "default".to_string(),
+        palette: None,
+        menus: None,
+        description: "A site".to_string(),
+        author: None,
+        site: None,
+    };
+
+    let pages = build_pages(project_root.join("content")).expect("pages should build");
+    let theme = load_active_theme(project_root, "default").expect("theme should load");
+    let favicon_links = config
+        .resolve_favicon_links(project_root)
+        .expect("favicon links should resolve");
+    let site_style = config.style_options();
+    let site_has_custom_css = config.has_custom_css(project_root);
+    let palette =
+        load_palette(project_root, config.selected_palette()).expect("palette should load");
+
+    let rendered = render_pages(
+        &theme,
+        &config,
+        &pages,
+        &SiteRenderContext {
+            favicon_links: &favicon_links,
+            site_style: &site_style,
+            site_has_custom_css,
+            site_font_faces_css: None,
+            asset_version: "test",
+            palette: &palette,
+        },
+    )
+    .expect("pages should render");
+
+    let index = rendered
+        .iter()
+        .find(|page| page.route == "/")
+        .expect("index page should render");
+    assert!(index.html.contains("Built from content"));
+    assert!(index.html.contains("Template reads structured data"));
+    assert!(index.html.contains("Documentation"));
+}
+
+#[test]
 fn supports_tera_includes_macros_inheritance_and_rustipo_helpers() {
     let dir = tempdir().expect("tempdir should be created");
     let project_root = dir.path();

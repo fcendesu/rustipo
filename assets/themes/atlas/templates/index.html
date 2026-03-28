@@ -14,19 +14,31 @@
         <div class="hero-glow hero-glow-b"></div>
 
         <div class="hero-copy">
-          <p class="landing-eyebrow">Markdown-first publishing system</p>
-          <h1>Build a site with a point of view.</h1>
+          <p class="landing-eyebrow">{{ page_extra.eyebrow | default(value="Markdown-first publishing system") }}</p>
+          <h1>{{ page_extra.hero.heading | default(value="Build a site with a point of view.") }}</h1>
           <p class="hero-lead">
-            Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl.
-            Write in Markdown. Shape with Tera. Shift tone with palettes. Publish static output that stays legible.
+            {{ page_extra.hero.lead | default(value="Rustipo is for docs, journals, notes, and personal sites that want structure without becoming framework sprawl. Write in Markdown. Shape with Tera. Shift tone with palettes. Publish static output that stays legible.") }}
           </p>
           <div class="hero-actions">
+            {% if page_extra.actions is defined and page_extra.actions | length > 0 %}
+            {% for action in page_extra.actions %}
+            {% set action_href = action.href | default(value="") %}
+            <a
+              class="landing-button {% if loop.index0 == 0 %}landing-button-primary{% else %}landing-button-secondary{% endif %}"
+              href="{% if action.external | default(value=false) %}{{ action_href }}{% else %}{{ site_root }}{{ action_href }}{% endif %}"
+            >
+              {{ action.label | default(value="Action") }}
+            </a>
+            {% endfor %}
+            {% else %}
             <a class="landing-button landing-button-primary" href="{{ site_root }}guides/getting-started/">Documentation</a>
             <a class="landing-button landing-button-secondary" href="https://github.com/fcendesu/rustipo">GitHub</a>
+            {% endif %}
           </div>
           <div class="hero-command-rack" aria-label="Quick install">
-            <button class="hero-copy-command" type="button" data-copy-text="cargo install rustipo" aria-label="Copy cargo install command">
-              <code>cargo install rustipo</code>
+            {% set install_command = page_extra.install.command | default(value="cargo install rustipo") %}
+            <button class="hero-copy-command" type="button" data-copy-text="{{ install_command }}" aria-label="Copy cargo install command">
+              <code>{{ install_command }}</code>
               <span class="hero-copy-icon" aria-hidden="true"></span>
               <span class="hero-copy-feedback" aria-live="polite">Copied</span>
             </button>
@@ -38,6 +50,37 @@
           <div class="visual-orbit orbit-b"></div>
           <div class="visual-orbit orbit-c"></div>
 
+          {% if page_extra.cards is defined and page_extra.cards | length > 0 %}
+          {% for card in page_extra.cards %}
+          <article class="site-canvas canvas-{{ card.key | default(value='docs') }}" data-canvas-depth="{% if card.key == 'docs' %}0.55{% elif card.key == 'journal' %}0.85{% else %}1.1{% endif %}" data-canvas-key="{{ card.key | default(value='docs') }}" tabindex="0">
+            <div class="site-canvas-bar">
+              <span></span><span></span><span></span>
+            </div>
+            <p class="site-canvas-kicker">{{ card.kicker | default(value="Docs") }}</p>
+            <h2>{{ card.title | default(value="Atlas") }}</h2>
+            <div class="site-canvas-layout {% if card.key == 'journal' %}journal-layout{% elif card.key == 'personal' %}personal-layout{% else %}docs-layout{% endif %}">
+              {% if card.key == "personal" %}
+              <div></div>
+              <div></div>
+              {% elif card.key == "journal" %}
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              {% else %}
+              <div></div>
+              <div></div>
+              <div></div>
+              {% endif %}
+            </div>
+            <ul class="site-canvas-notes">
+              {% for bullet in card.bullets | default(value=[]) %}
+              <li>{{ bullet }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+          {% endfor %}
+          {% else %}
           <article class="site-canvas canvas-docs" data-canvas-depth="0.55" data-canvas-key="docs" tabindex="0">
             <div class="site-canvas-bar">
               <span></span><span></span><span></span>
@@ -88,6 +131,7 @@
               <li>Portfolio-ready structure</li>
             </ul>
           </article>
+          {% endif %}
         </div>
       </section>
 

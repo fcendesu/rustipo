@@ -40,6 +40,10 @@ pub(super) fn render_not_found_page(tera: &Tera, env: &RenderEnvironment<'_>) ->
     context.insert("slug", "404");
     context.insert("content_html", &content_html);
     context.insert("frontmatter", &frontmatter);
+    context.insert(
+        "page_extra",
+        &super::resolved_page_extra(frontmatter.extra.as_ref()),
+    );
     context.insert("page_summary", &frontmatter.summary);
     context.insert(
         "page_description",

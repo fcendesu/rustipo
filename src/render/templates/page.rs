@@ -43,6 +43,10 @@ pub(super) fn render_content_pages(
         context.insert("slug", &page.slug);
         context.insert("content_html", &content_html);
         context.insert("frontmatter", &page.frontmatter);
+        context.insert(
+            "page_extra",
+            &super::resolved_page_extra(page.frontmatter.extra.as_ref()),
+        );
         context.insert("page_summary", &page.frontmatter.summary);
         context.insert(
             "page_description",

@@ -137,6 +137,7 @@ fn render_taxonomy_index_page(
         "page_title",
         &format!("{taxonomy_title} | {}", env.config.title),
     );
+    context.insert("page_extra", &super::resolved_page_extra(None));
     context.insert(
         "page_description",
         &super::resolved_page_description(None, env.config),
@@ -194,6 +195,7 @@ fn render_taxonomy_term_page(
         "page_title",
         &format!("Tag: {} | {}", bucket.term.name, env.config.title),
     );
+    context.insert("page_extra", &super::resolved_page_extra(None));
     context.insert(
         "page_description",
         &super::resolved_page_description(None, env.config),

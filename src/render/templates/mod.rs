@@ -185,6 +185,12 @@ pub(super) fn resolved_page_description(
         })
 }
 
+pub(super) fn resolved_page_extra(extra: Option<&serde_json::Value>) -> serde_json::Value {
+    extra
+        .cloned()
+        .unwrap_or_else(|| serde_json::Value::Object(serde_json::Map::new()))
+}
+
 pub(super) fn rewrite_public_html_urls(html: &str, config: &SiteConfig) -> String {
     let base_path = crate::url::base_path(&config.base_url);
     if base_path == "/" {
