@@ -53,3 +53,6 @@ toml_edit = "0.23.7"
 tower-http = { version = "0.6.8", features = ["fs"] }
 walkdir = "2.5.0"
 grass = { version = "0.13.4", default-features = false }
+
+[dev-dependencies]
+tower = { version = "0.5.3", features = ["util"] }
