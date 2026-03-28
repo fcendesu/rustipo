@@ -41,6 +41,10 @@ framework, Rustipo is meant to feel approachable.
 - [Example sites](#example-sites)
 - [GitHub Releases](https://github.com/fcendesu/rustipo/releases)
 
+![Rustipo docs site preview](./docs/assets/rustipo-docs-preview.png)
+
+Rustipo's own docs site is built with Rustipo using the built-in `atlas` theme.
+
 ## CLI Surface
 
 - `rustipo new <site-name>`
