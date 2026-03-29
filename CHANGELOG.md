@@ -10,8 +10,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Bug Fixes
 
-* **serve:** allow serving dist without config ([deae8c0](https://github.com/fcendesu/rustipo/commit/deae8c02748cb059987517b39b041354be8e0318))
-* **serve:** allow serving dist without config ([f2e2446](https://github.com/fcendesu/rustipo/commit/f2e2446ddf0d41ec9619650ce38570347d862e56))
+* **serve:** allow serving an existing `dist/` directory without requiring `config.toml` ([f2e2446](https://github.com/fcendesu/rustipo/commit/f2e2446ddf0d41ec9619650ce38570347d862e56))
 
 ## [0.16.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.15.0...rustipo-v0.16.0) (2026-03-28)
 
