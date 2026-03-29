@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1](https://github.com/fcendesu/rustipo/compare/rustipo-v0.16.0...rustipo-v0.16.1) (2026-03-29)
+
+
+### Bug Fixes
+
+* **serve:** allow serving an existing `dist/` directory without requiring `config.toml` ([f2e2446](https://github.com/fcendesu/rustipo/commit/f2e2446ddf0d41ec9619650ce38570347d862e56))
+
 ## [0.16.0](https://github.com/fcendesu/rustipo/compare/rustipo-v0.15.0...rustipo-v0.16.0) (2026-03-28)
 
 
