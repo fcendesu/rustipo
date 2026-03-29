@@ -17,8 +17,7 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
     if !Path::new("dist").is_dir() {
         anyhow::bail!("build output directory not found: dist (run `rustipo build` first)");
     }
-    let config = crate::config::load("config.toml")?;
-    let base_path = crate::url::base_path(&config.base_url);
+    let base_path = resolve_base_path(Path::new("config.toml"))?;
     let live_reload_version = if watch {
         Some(Arc::new(AtomicU64::new(0)))
     } else {
@@ -53,6 +52,15 @@ pub fn run(host: &str, port: u16, watch: bool) -> Result<()> {
 
 fn format_addr(host: &str, port: u16) -> String {
     format!("{host}:{port}")
+}
+
+fn resolve_base_path(config_path: &Path) -> Result<String> {
+    if !config_path.is_file() {
+        return Ok("/".to_string());
+    }
+
+    let config = crate::config::load(config_path)?;
+    Ok(crate::url::base_path(&config.base_url))
 }
 
 fn spawn_watch_thread(live_reload_version: Arc<AtomicU64>) -> Result<()> {
@@ -189,7 +197,9 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::{compute_watch_fingerprint, format_addr, format_duration, watch_paths};
+    use super::{
+        compute_watch_fingerprint, format_addr, format_duration, resolve_base_path, watch_paths,
+    };
 
     #[test]
     fn formats_host_and_port() {
@@ -232,5 +242,33 @@ mod tests {
     fn formats_duration_for_millis_and_seconds() {
         assert_eq!(format_duration(Duration::from_millis(140)), "140ms");
         assert_eq!(format_duration(Duration::from_millis(1450)), "1.45s");
+    }
+
+    #[test]
+    fn resolve_base_path_defaults_to_root_when_config_is_missing() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+
+        let base_path = resolve_base_path(&config_path).expect("missing config should be allowed");
+        assert_eq!(base_path, "/");
+    }
+
+    #[test]
+    fn resolve_base_path_reads_base_url_from_config() {
+        let dir = tempdir().expect("tempdir should be created");
+        let config_path = dir.path().join("config.toml");
+        fs::write(
+            &config_path,
+            r#"
+title = "Test"
+base_url = "https://example.com/docs/"
+theme = "atlas"
+description = "Test site"
+"#,
+        )
+        .expect("config should be written");
+
+        let base_path = resolve_base_path(&config_path).expect("config should load");
+        assert_eq!(base_path, "/docs");
     }
 }
